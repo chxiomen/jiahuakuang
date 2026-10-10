@@ -4,6 +4,7 @@ const path = require('path');
 
 const root = __dirname;
 const dataFile = path.join(root, 'prd-data.json');
+const offlineDataFile = path.join(root, 'offline-data.js');
 const port = Number(process.env.PORT || 5173);
 
 function readData() {
@@ -12,6 +13,15 @@ function readData() {
   } catch {
     return { requirements: {} };
   }
+}
+
+// Keep the file:// preview in sync with the JSON edited through this server.
+function syncOfflineData(data = readData()) {
+  fs.writeFileSync(
+    offlineDataFile,
+    `window.__offlineRequirements = ${JSON.stringify(data)};\n`,
+    'utf8'
+  );
 }
 
 function send(res, status, body, type = 'application/json; charset=utf-8') {
@@ -57,6 +67,7 @@ const server = http.createServer(async (req, res) => {
       data.requirements[payload.key] = payload.html;
       data.updatedAt = new Date().toISOString();
       fs.writeFileSync(dataFile, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
+      syncOfflineData(data);
       return send(res, 200, { ok: true, updatedAt: data.updatedAt });
     } catch (error) {
       return send(res, 500, { error: error.message });
@@ -75,6 +86,13 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
+if (process.argv.includes('--sync-offline')) {
+  syncOfflineData();
+  console.log('离线数据已同步到 offline-data.js');
+  process.exit(0);
+}
+
+syncOfflineData();
 server.listen(port, () => {
   console.log(`加画框-mini 工作台：http://localhost:${port}`);
 });
