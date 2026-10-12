@@ -3,10 +3,98 @@ let editorSession = null;
 let editorAbort = null;
 let navigationMenu = null;
 
+function restoreAutomaticTableImageSizes(root) {
+  const fittedImages = [ ...(root.matches?.('img[data-table-width-fit]') ? [root] : []), ...root.querySelectorAll('img[data-table-width-fit]') ];
+  fittedImages.forEach(image => {
+    const width = image.dataset.beforeFitWidth || '';
+    const widthPriority = image.dataset.beforeFitWidthPriority || '';
+    const height = image.dataset.beforeFitHeight || '';
+    const heightPriority = image.dataset.beforeFitHeightPriority || '';
+    if (width) image.style.setProperty('width', width, widthPriority);
+    else image.style.removeProperty('width');
+    if (height) image.style.setProperty('height', height, heightPriority);
+    else image.style.removeProperty('height');
+    ['tableWidthFit','beforeFitWidth','beforeFitWidthPriority','beforeFitHeight','beforeFitHeightPriority'].forEach(key => delete image.dataset[key]);
+  });
+}
+
 function editorContentHtml(session) {
   const copy = session.content.cloneNode(true);
   copy.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+  restoreAutomaticTableImageSizes(copy);
   return copy.innerHTML;
+}
+
+function requirementCellTextWidth(cell) {
+  const clone = cell.cloneNode(true);
+  clone.querySelectorAll('img,button,svg,[data-editor-ui]').forEach(node => node.remove());
+  if (!clone.textContent.trim()) return 0;
+  const style = getComputedStyle(cell);
+  Object.assign(clone.style, { position: 'fixed', left: '-100000px', top: '0', display: 'block', width: 'max-content', maxWidth: 'none', minWidth: '0', padding: '0', border: '0', whiteSpace: 'nowrap', visibility: 'hidden', font: style.font, letterSpacing: style.letterSpacing, lineHeight: style.lineHeight });
+  document.body.append(clone);
+  const width = clone.getBoundingClientRect().width;
+  clone.remove();
+  return width;
+}
+
+function fitRequirementTableImages(content) {
+  if (!content) return;
+  content.querySelectorAll('table').forEach(table => {
+    const rows = [...table.rows];
+    const occupancy = [];
+    const spans = new Map();
+    rows.forEach((row, rowIndex) => {
+      occupancy[rowIndex] ||= [];
+      let column = 0;
+      [...row.cells].forEach(cell => {
+        while (occupancy[rowIndex][column]) column++;
+        const columnSpan = Math.max(1, cell.colSpan || 1);
+        const rowSpan = Math.max(1, cell.rowSpan || 1);
+        spans.set(cell, { column, columnSpan });
+        for (let y = rowIndex; y < Math.min(rows.length, rowIndex + rowSpan); y++) {
+          occupancy[y] ||= [];
+          for (let x = column; x < column + columnSpan; x++) occupancy[y][x] = cell;
+        }
+        column += columnSpan;
+      });
+    });
+    const textWidths = [];
+    spans.forEach((span, cell) => {
+      const width = requirementCellTextWidth(cell);
+      if (!width) return;
+      for (let column = span.column; column < span.column + span.columnSpan; column++) {
+        textWidths[column] = Math.max(textWidths[column] || 0, width / span.columnSpan);
+      }
+    });
+    spans.forEach((span, cell) => {
+      const targetWidth = textWidths.slice(span.column, span.column + span.columnSpan).reduce((total, width) => total + (width || 0), 0);
+      if (targetWidth <= 0) return;
+      cell.querySelectorAll('img').forEach(image => {
+        if (!image.naturalWidth) return;
+        const originalWidth = Number(image.naturalWidth);
+        if (originalWidth <= targetWidth) {
+          restoreAutomaticTableImageSizes(image);
+          return;
+        }
+        if (!image.hasAttribute('data-table-width-fit')) {
+          image.dataset.tableWidthFit = 'true';
+          image.dataset.beforeFitWidth = image.style.getPropertyValue('width');
+          image.dataset.beforeFitWidthPriority = image.style.getPropertyPriority('width');
+          image.dataset.beforeFitHeight = image.style.getPropertyValue('height');
+          image.dataset.beforeFitHeightPriority = image.style.getPropertyPriority('height');
+        }
+        const fittedWidth = `${targetWidth}px`;
+        if (image.style.getPropertyValue('width') !== fittedWidth) image.style.setProperty('width', fittedWidth);
+        if (image.style.getPropertyValue('height') !== 'auto') image.style.setProperty('height', 'auto');
+      });
+    });
+  });
+}
+
+function scheduleRequirementTableImageFit(session) {
+  if (!session?.content) return;
+  cancelAnimationFrame(session.imageFitFrame || 0);
+  session.imageFitFrame = requestAnimationFrame(() => fitRequirementTableImages(session.content));
 }
 
 function editorDirty(session = editorSession) {
@@ -99,6 +187,7 @@ function travelRequirementHistory(direction) {
   const previous = session.history[nextIndex];
   session.content.innerHTML = previous.html;
   session.title.textContent = previous.title;
+  scheduleRequirementTableImageFit(session);
   session.historyObserver.takeRecords();
   session.historyApplying = false;
   session.range = null;
@@ -176,6 +265,7 @@ function cancelRequirementEdit(force = false) {
   if (!force && editorDirty(session) && !window.confirm('确定放弃当前需求说明的未保存修改吗？')) return false;
   session.content.innerHTML = session.snapshot.html;
   session.title.textContent = session.snapshot.title;
+  scheduleRequirementTableImageFit(session);
   session.content.contentEditable = 'false';
   session.title.contentEditable = 'false';
   session.editor.classList.remove('is-editing');
@@ -192,6 +282,7 @@ function cancelRequirementEdit(force = false) {
 function requirementWrites(session) {
   const copy = session.content.cloneNode(true);
   copy.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+  restoreAutomaticTableImageSizes(copy);
   const rule = copy.querySelector('[data-repurchase-rules]');
   const writes = [];
   if (rule) {
@@ -361,10 +452,12 @@ function bindUnifiedEditor() {
   toolbar.querySelector('[data-editor-cancel]').onclick = () => cancelRequirementEdit();
   toolbar.querySelector('[data-editor-save]').onclick = saveRequirementEdit;
   const session = editorSession;
-  session.historyObserver = new MutationObserver(() => recordRequirementHistory(session));
+  scheduleRequirementTableImageFit(session);
+  session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementTableImageFit(session); });
   session.historyObserver.observe(content, { subtree: true, childList: true, characterData: true, attributes: true });
   session.historyObserver.observe(title, { subtree: true, childList: true, characterData: true, attributes: true });
   content.addEventListener('input', () => recordRequirementHistory(session), { signal });
+  content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementTableImageFit(session); }, { capture: true, signal });
   title.addEventListener('input', () => recordRequirementHistory(session), { signal });
   content.addEventListener('focusin', () => { session.lastFocus = 'content'; }, { signal });
   content.querySelectorAll('.requirement-section').forEach(decorateRequirementModule);
