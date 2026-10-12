@@ -3,14 +3,16 @@ const fs = require('fs');
 const path = require('path');
 
 const root = __dirname;
-const dataFile = path.join(root, 'prd-data.json');
+// 本地服务只读写本地快照，永远不连接正式 Supabase。
+// 如需用正式站内容更新本地快照，请显式运行 scripts/pull-production-data.js。
+const dataFile = path.resolve(root, process.env.LOCAL_REQUIREMENTS_FILE || 'prd-data.json');
 const port = Number(process.env.PORT || 5173);
 
 function readData() {
   try {
     return JSON.parse(fs.readFileSync(dataFile, 'utf8'));
   } catch {
-    return { requirements: {} };
+    return { requirements: {}, updatedAt: null };
   }
 }
 
@@ -43,18 +45,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (requestUrl.pathname === '/api/requirements' && req.method === 'GET') {
-    return send(res, 200, readData());
+    return send(res, 200, { ...readData(), environment: 'local', dataSource: 'local-snapshot' });
   }
 
   if (requestUrl.pathname === '/api/requirements' && req.method === 'POST') {
     try {
       const payload = await collect(req);
-      if (!payload.key || typeof payload.html !== 'string') {
-        return send(res, 400, { error: 'key and html are required' });
+      const writes = Array.isArray(payload.items) ? payload.items : [{ key: payload.key, html: payload.html }];
+      if (!writes.length || writes.some(item => !item || typeof item.key !== 'string' || !item.key || typeof item.html !== 'string')) {
+        return send(res, 400, { error: 'key and html are required for every item' });
       }
       const data = readData();
       data.requirements ||= {};
-      data.requirements[payload.key] = payload.html;
+      for (const item of writes) data.requirements[item.key] = item.html;
       data.updatedAt = new Date().toISOString();
       fs.writeFileSync(dataFile, `${JSON.stringify(data, null, 2)}\n`, 'utf8');
       return send(res, 200, { ok: true, updatedAt: data.updatedAt });

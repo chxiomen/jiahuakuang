@@ -109,20 +109,28 @@
     .requirements-editor{position:relative}
     .requirements-editor-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);background:#fbfcfe}
     .requirements-editor-toolbar button{height:27px;padding:0 9px;border:1px solid #dce3ec;border-radius:6px;background:#fff;color:#5c6b80;font-size:11px}
+    .requirements-editor-toolbar button.history-icon{display:inline-flex;align-items:center;justify-content:center;width:29px;padding:0}
+    .requirements-editor-toolbar button.history-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .requirements-editor-toolbar button:disabled{opacity:.4;cursor:not-allowed}
     .requirements-editor-toolbar button:hover{border-color:#9bb8ef;color:var(--blue);background:#f5f8ff}
     .requirements-editor-toolbar button.save{margin-left:auto;border-color:var(--blue);background:var(--blue);color:#fff}
     .requirements-editor-toolbar button.save:hover{background:#1f5fdc;color:#fff}
     .requirements-editor-toolbar select{height:27px;padding:0 5px;border:1px solid #dce3ec;border-radius:6px;background:#fff;color:#5c6b80;font-size:11px}
     .requirements-editor-toolbar small{color:#8b96a5;font-size:10px}
     .requirements-editor-toolbar{display:none}
-    /* 公开链接保持只读；仅在地址后添加 ?edit=1 时显示编辑入口。 */
-    html.public-readonly .requirements-floating-toolbar [data-float="edit"],
-    html.public-readonly .requirements-floating-toolbar [data-float="doubt"],
+    /* 编辑入口始终可见，实际写入仍须通过编辑密码校验。 */
     html.public-readonly .requirements-editor-toolbar{display:none!important}
     .requirements-editor.is-editing .requirements-editor-toolbar{display:flex}
-    .notes.is-editing .note-head h2,.notes.is-editing .note-head .text-button{display:none}
+    .notes.is-editing .note-head .text-button{display:none}
     .notes.is-editing .note-head .requirements-editor-toolbar{display:flex;flex:1;margin:0;padding:0;border:0;background:transparent}
     .requirements-editor-content[contenteditable="true"]{outline:2px solid #c9dafc;outline-offset:-2px;background:#fff}
+    .requirements-note .requirement-section{position:relative}
+    .module-actions{position:absolute;top:9px;right:9px;z-index:2;display:none;align-items:center;gap:4px;padding:3px;border:1px solid #e1e7f0;border-radius:7px;background:rgba(255,255,255,.96);box-shadow:0 2px 7px rgba(45,65,91,.1)}
+    .requirements-editor.is-editing .requirement-section:hover > .module-actions,.requirements-editor.is-editing .requirement-section:focus-within > .module-actions{display:flex}
+    .module-actions button{display:grid;place-items:center;width:25px;height:25px;padding:0;border:0;border-radius:5px;background:transparent;color:#718097;cursor:pointer}
+    .module-actions button:hover{background:#eef4ff;color:var(--blue)}
+    .module-actions button:last-child:hover{background:#fff0f0;color:#c94a4a}
+    .module-actions svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
     .requirements-editor-content tr.editor-row-highlight td{background:#fff2c9!important}
     .requirements-editor-content td.editor-cell-highlight,.requirements-editor-content th.editor-cell-highlight{background:#fff2c9!important}
     .requirement-state-tabs{display:flex;gap:6px;padding:12px 14px 0;background:#fff}
@@ -147,7 +155,7 @@
     .requirements-floating-toolbar{position:fixed;z-index:100;display:flex;align-items:center;flex-wrap:wrap;gap:4px;max-width:calc(100vw - 16px);padding:5px;border:1px solid #dce3ec;border-radius:8px;background:#fff;box-shadow:0 8px 22px rgba(35,52,75,.16)}
     .requirements-floating-toolbar button{height:26px;padding:0 8px;border:0;border-radius:5px;background:#fff;color:#53647b;font-size:11px;white-space:nowrap}
     .requirements-floating-toolbar button:hover{background:#edf4ff;color:var(--blue)}
-    .requirements-floating-toolbar button[data-float]{min-width:30px;padding:0 7px;font-size:0}
+    .requirements-floating-toolbar button[data-float]{min-width:30px;padding:0 7px;font-size:11px}
     .requirements-floating-toolbar button[data-float]::before{font-size:15px;line-height:1}
     .requirements-floating-toolbar button[data-float="copy"]::before{content:"⧉"}
     .requirements-floating-toolbar button[data-float="edit"]::before{content:"✎"}
@@ -204,6 +212,23 @@
     .workspace.repurchase-calculator-mode{grid-template-columns:250px minmax(0,1fr)}.workspace.repurchase-calculator-mode .stage,.workspace.repurchase-calculator-mode .notes{display:none}.workspace.repurchase-calculator-mode .purchase-calculator{display:block;grid-column:2;grid-row:1;max-width:none}@media(max-width:720px){.workspace.repurchase-calculator-mode{display:flex}.workspace.repurchase-calculator-mode .purchase-calculator{order:3;width:100%}}
     .repurchase-rule-section{padding:20px 0 22px;border-bottom:1px solid var(--line)}.repurchase-section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:12px}.repurchase-section-heading h3{display:flex;align-items:center;gap:9px;margin:0;color:#25344a;font-size:15px}.repurchase-section-heading p{margin:0;color:#8490a1;font-size:11px;line-height:1.6}.repurchase-rule-edit{height:26px;padding:0 10px;border:1px solid #dce3ec;border-radius:6px;background:#fff;color:#5c6b80;font-size:11px;font-weight:400}.repurchase-rule-edit:hover{border-color:#9bb8ef;color:var(--blue);background:#f5f8ff}.repurchase-rules-editor .requirements-editor-toolbar{margin-bottom:12px;border:1px solid var(--line);border-radius:8px}.repurchase-rules-editor.is-editing .repurchase-rule-edit{display:none}.repurchase-rule-table-wrap{overflow:auto;border:1px solid #dfe7f2;border-radius:9px}.repurchase-rule-table{width:100%;min-width:950px;border-collapse:collapse;color:#44546a;font-size:11px;line-height:1.6}.repurchase-rule-table th,.repurchase-rule-table td{padding:10px 12px;border-right:1px solid #e5ebf3;border-bottom:1px solid #e5ebf3;vertical-align:top;text-align:left}.repurchase-rule-table th{background:#f3f6fa;color:#53657d;font-weight:700;white-space:nowrap}.repurchase-rule-table .repurchase-source-cell{min-width:125px;color:#25344a;font-weight:700;vertical-align:middle}.repurchase-rule-table .repurchase-target-cell{min-width:245px}.repurchase-rule-table .repurchase-order-cell{min-width:172px}.repurchase-rule-table tr:last-child td{border-bottom:0}.repurchase-rule-table th:last-child,.repurchase-rule-table td:last-child{border-right:0}.repurchase-rule-table .rule-yes{color:#26704a;font-weight:700}.repurchase-rule-table .rule-no{color:#9b6b35;font-weight:700}.repurchase-rule-footnote{margin:9px 0 0;color:#7f8ca0;font-size:10px;line-height:1.65}.repurchase-simulator{padding-top:22px}.repurchase-calculator-mode .calculator-head h2{font-size:18px}.repurchase-calculator-mode .calculator-head p{font-size:12px}
     .workspace.payment-calculator-mode{grid-template-columns:250px 433px minmax(420px,1fr) 340px}.workspace.payment-calculator-mode .stage{display:block;grid-column:2;grid-row:1}.workspace.payment-calculator-mode .notes{grid-column:3;grid-row:1}.workspace.payment-calculator-mode .purchase-calculator{display:block;grid-column:4;grid-row:1}@media(min-width:1121px) and (max-width:1700px){.workspace.payment-calculator-mode{grid-template-columns:250px 433px minmax(0,1fr)}.workspace.payment-calculator-mode .notes{grid-column:3;grid-row:1}.workspace.payment-calculator-mode .purchase-calculator{grid-column:3;grid-row:2}}@media(max-width:1120px){.workspace.payment-calculator-mode{grid-template-columns:230px 433px}.workspace.payment-calculator-mode .stage{grid-column:2;grid-row:1}.workspace.payment-calculator-mode .notes{grid-column:1/-1;grid-row:2}.workspace.payment-calculator-mode .purchase-calculator{grid-column:1/-1;grid-row:3}}@media(max-width:720px){.workspace.payment-calculator-mode .stage{order:1}.workspace.payment-calculator-mode .navigation{order:2}.workspace.payment-calculator-mode .notes{order:3}.workspace.payment-calculator-mode .purchase-calculator{order:4}}
+    /* 轻量页面编辑：页面目录与需求内容共用同一套编辑入口。 */
+    .nav-editor{display:flex;align-items:center;gap:5px}.nav-editor button,.workspace-editor-controls button,.section-controls button{height:25px;padding:0 8px;border:1px solid #dce3ec;border-radius:6px;background:#fff;color:#5c6b80;font-size:11px}.nav-editor button:hover,.workspace-editor-controls button:hover,.section-controls button:hover{border-color:#9bb8ef;background:#f5f8ff;color:var(--blue)}.nav-editor .nav-add,.workspace-editor-controls .primary-action{border-color:var(--blue);background:var(--blue);color:#fff}.nav-editor .nav-add:hover,.workspace-editor-controls .primary-action:hover{background:#1f5fdc;color:#fff}.tree-title-row{display:flex;align-items:center;justify-content:space-between;margin:15px 8px 9px}.tree-title-row .tree-title{margin:0}.page-node{position:relative;padding:0}.page-node .page-select{display:flex;flex:1;align-items:center;gap:7px;min-height:31px;min-width:0;padding:6px 0;border:0;background:transparent;color:inherit;text-align:left;font:inherit}.page-node.is-hidden{opacity:.55}.page-actions{display:flex;gap:1px;margin-left:auto;padding-right:2px}.page-actions button{width:19px;height:21px;padding:0;border:0;border-radius:4px;background:transparent;color:#8692a2;font-size:12px;line-height:1}.page-actions button:hover{background:#eaf2ff;color:var(--blue)}html.public-readonly .page-actions,html.public-readonly .nav-editor,html.public-readonly .tree-group-edit{display:none}.note-head:has(.workspace-editor-controls){flex-wrap:wrap;gap:8px}.note-head:has(.workspace-editor-controls) h2{white-space:nowrap}.workspace-editor-controls{display:flex;align-items:center;flex-wrap:wrap;gap:5px;width:100%;margin-left:0}.workspace-editor-controls[hidden]{display:none}.notes.is-editing .workspace-editor-controls{display:none}.note-head .document-title-input{min-width:0;width:126px;height:27px;padding:0 6px;border:1px solid #a9c5f5;border-radius:6px;color:var(--ink);font-size:15px;font-weight:700}.requirement-section{position:relative;padding:18px 20px;margin:0 0 18px!important;border:1px solid #dfe7f2;border-radius:14px;background:#fbfcff}.requirements-note .requirement-section:last-child{margin-bottom:0!important}.requirement-section h3{display:flex;align-items:center;gap:10px;margin:0 0 10px!important;color:#25344a!important;font-size:16px!important}.requirement-section h3::before{width:4px;height:24px;border-radius:3px;background:var(--blue);content:""}.section-controls{position:absolute;top:10px;right:10px;display:none;gap:4px}.requirements-editor.is-editing .requirement-section:hover .section-controls{display:flex}.requirements-editor.is-editing .requirement-section{padding-top:42px}.requirements-editor.is-editing .requirement-section>h3{margin-top:-2px!important}.requirements-editor.is-editing .section-controls button{width:25px;padding:0;font-size:13px}.requirements-editor.is-editing .requirements-table-wrap{position:relative}.requirements-editor.is-editing .requirements-table{min-width:280px}.editor-help{margin:10px 0 0;color:#7d8999;font-size:11px;line-height:1.6}.requirements-editor-content:focus{outline:none}
+    .note-head .workspace-editor-controls{width:auto;margin-left:auto;flex-wrap:nowrap}
+    .notes.is-editing .note-head .requirements-editor-toolbar{justify-content:flex-end}
+    .notes.is-editing .note-head .requirements-editor-toolbar button.save{margin-left:0}
+    .requirements-editor-toolbar button:disabled{opacity:.45;cursor:default}
+    .note-head .document-title-input{width:auto;min-width:110px;max-width:260px}
+    .notes.is-editing .note-head h2{display:block;outline:1px solid #a9c5f5;border-radius:4px;padding:2px 5px}
+    .page-node:hover,.release-line:hover{background:#edf4ff;border-radius:6px}
+    .page-node,.release-line{display:flex;align-items:center}
+    .page-node .page-select{width:100%}
+    .navigation-context-menu{position:fixed;z-index:300;display:grid;min-width:175px;padding:5px;background:#fff;border:1px solid #dce3ec;border-radius:8px;box-shadow:0 10px 24px rgba(35,52,75,.18)}
+    .navigation-context-menu button{padding:8px 10px;border:0;background:#fff;text-align:left;color:#39485d;cursor:pointer}
+    .navigation-context-menu button:hover{background:#edf4ff;color:var(--blue)}
+    .nav-inline-name{width:100%;min-width:0;padding:4px 5px;border:1px solid #8baff0;border-radius:4px;font:inherit}
+    .requirements-floating-toolbar select{height:26px;border:0;background:#fff;color:#53647b;font-size:11px}
+    .requirements-floating-toolbar[hidden],.requirements-editor-toolbar[hidden],.doubt-note-popover[hidden]{display:none!important}
   </style>
 </head>
 <body>
@@ -216,20 +241,21 @@
     <aside class="purchase-calculator panel" id="purchaseCalculator" hidden></aside>
   </main>
 <script>
-/* 线上版只从 /api/requirements 读取数据。编辑入口：公开网址后加 ?edit=1。 */
-const onlineEditorMode=new URLSearchParams(window.location.search).get('edit')==='1';
+/* 线上版只从 /api/requirements 读取数据；编辑按钮点击后验证密码。 */
+let onlineEditorMode=new URLSearchParams(window.location.search).get('edit')==='1';
 if(!onlineEditorMode)document.documentElement.classList.add('public-readonly');
 // 仅保存在当前电脑的浏览器中；清除本站点数据后才会再次要求输入。
 let editorPassword=localStorage.getItem('requirementsEditorPassword')||'';
 function requirementsWriteHeaders(){return {'Content-Type':'application/json','x-editor-password':editorPassword}}
 function ensureEditorAccess(){
-  if(!onlineEditorMode)return false;
   if(!editorPassword){
     const value=window.prompt('请输入编辑密码');
     if(!value)return false;
     editorPassword=value;
     localStorage.setItem('requirementsEditorPassword',value);
   }
+  onlineEditorMode=true;
+  document.documentElement.classList.remove('public-readonly');
   return true;
 }
 /* 当前真实业务数据：生产接入时可替换为 API 返回的同构数据，不改变视图组件。 */
@@ -294,7 +320,7 @@ subscriptionRelease.changes.splice(renewalChangeIndex+1,0,
   {id:'vip-subscription-canceled',name:'订阅卡 · 已取消',summary:'此页面改动集中在会员卡片上，新增以下三种状态。',sections:[{title:'会员卡片',bullets:['大标题：会员等级 · 已取消续费','副标题：权益到期日：具体年月日','按钮：重新开通']}]},
   {id:'vip-subscription-expired',name:'订阅卡 · 已过期',summary:'此页面改动集中在会员卡片上，新增以下三种状态。',sections:[{title:'会员卡片',bullets:['大标题：会员等级 · 已过期','副标题：会员权益已过期','按钮：重新开通']}]}
  ]}},
- {id:'c-repurchase-rules',title:'复购规则',tag:'新增',pageId:'payment',stateId:'default',annotationIds:[]},
+ {id:'c-repurchase-rules',title:'复购规则',tag:'新增',pageId:'payment',stateId:'default',annotationIds:[],requirements:{sections:[]}},
  {id:'c-subscription-cms',title:'CMS 端',tag:'新增',requirements:{sections:[
   {title:'CMS 端（',titleLink:{text:'pro.jiahk.cn:8020',href:'http://pro.jiahk.cn:8020/'},titleSuffix:'）',table:{headers:['需求名称','涉及页面','功能说明'],rows:[
    ['收入统计',{text:'financeStat/income',href:'http://pro.jiahk.cn:8020/#/financeStat/income'},'1. 套餐筛选与统计列新增「连续包年」、「连续包月」\n2. 收入拆成面额与实际入账两列'],
@@ -351,9 +377,8 @@ function changeTag(change){return change.tag||typeName(change.type)}
 function changeClass(change){return change.type||({新增:'add',修改:'edit',删除:'remove'}[change.tag]||'tag')}
 function inlineMarkdown(text){return escape(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')}
 function renderTree(){ $('#treeSwitch').textContent=state.tree==='release'?'版本树':'页面树'; $('#tree').innerHTML=state.tree==='release'?releaseTree():pageTree(); bindTree() }
-function releaseTree(){return `<h3 class="tree-title">版本迭代</h3>${data.releases.map(r=>{const folded=state.folded.has(r.id),outlineActive=state.noteMode==='release'&&state.selectedRelease===r.id;return `<article class="release ${folded?'folded':''}"><div class="release-line"><button class="release-fold" data-fold-release="${r.id}" aria-label="${folded?'展开':'收起'}版本"><i class="chevron" aria-hidden="true"></i></button><button class="release-header" data-release="${r.id}" aria-expanded="${!folded}"><span><b>${r.id} · ${r.name}</b></span><em></em></button></div><div class="release-content"><button class="release-outline ${outlineActive?'active':''}" data-release-outline="${r.id}"><span><b>需求大纲</b></span></button>${r.changes.map(c=>`<button class="change-item ${state.selectedChange===c.id?'active':''}" data-change="${c.id}" data-parent-release="${r.id}"><span><b>${c.title||`${findPage(c.pageId).name} / ${findState(c.pageId,c.stateId).name}`}</b>${c.description?`<small>${c.description}</small>`:''}</span>${changeTag(c)?`<span class="change-type ${changeClass(c)}">${changeTag(c)}</span>`:''}</button>`).join('')}</div></article>`}).join('')}`}
-function pageTree(){const groups=[...new Set(data.pages.map(p=>p.group))];return groups.map(g=>`<section class="page-group"><h3>${g}</h3>${data.pages.filter(p=>p.group===g).map(p=>`<button class="page-node" data-page="${p.id}" data-first-state="${p.states[0].id}"><i class="dot"></i>${p.name}</button>`).join('')}</section>`).join('')}
-function bindTree(){document.querySelectorAll('[data-release]').forEach(b=>b.onclick=()=>toggleReleaseFold(b.dataset.release));document.querySelectorAll('[data-fold-release]').forEach(b=>b.onclick=()=>toggleReleaseFold(b.dataset.foldRelease));document.querySelectorAll('[data-release-outline]').forEach(b=>b.onclick=()=>showReleaseNote(b.dataset.releaseOutline));document.querySelectorAll('[data-change]').forEach(b=>b.onclick=()=>selectChange(b.dataset.parentRelease,b.dataset.change));document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>selectPage(b.dataset.page,b.dataset.state||b.dataset.firstState))}
+function releaseTree(){return `<h3 class="tree-title">版本迭代</h3>${data.releases.filter(r=>!r.hidden).map(r=>{const folded=state.folded.has(r.id),outlineActive=state.noteMode==='release'&&state.selectedRelease===r.id;return `<article class="release ${folded?'folded':''}" data-version-row="${escape(r.id)}"><div class="release-line"><button class="release-fold" data-fold-release="${r.id}" aria-label="${folded?'展开':'收起'}版本"><i class="chevron" aria-hidden="true"></i></button><button class="release-header" data-release="${r.id}" aria-expanded="${!folded}"><span><b>${escape(r.id)} · ${escape(r.name)}</b></span><em></em></button></div><div class="release-content"><button class="release-outline ${outlineActive?'active':''}" data-release-outline="${r.id}"><span><b>需求大纲</b></span></button>${r.changes.map(c=>`<button class="change-item ${state.selectedChange===c.id?'active':''}" data-change="${c.id}" data-parent-release="${r.id}"><span><b>${c.title||`${findPage(c.pageId).name} / ${findState(c.pageId,c.stateId).name}`}</b>${c.description?`<small>${c.description}</small>`:''}</span>${changeTag(c)?`<span class="change-type ${changeClass(c)}">${changeTag(c)}</span>`:''}</button>`).join('')}</div></article>`}).join('')}`}
+function bindTree(){document.querySelectorAll('[data-release]').forEach(b=>b.onclick=()=>toggleReleaseFold(b.dataset.release));document.querySelectorAll('[data-fold-release]').forEach(b=>b.onclick=()=>toggleReleaseFold(b.dataset.foldRelease));document.querySelectorAll('[data-release-outline]').forEach(b=>b.onclick=()=>showReleaseNote(b.dataset.releaseOutline));document.querySelectorAll('[data-change]').forEach(b=>b.onclick=()=>selectChange(b.dataset.parentRelease,b.dataset.change));document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>selectPage(b.dataset.page,b.dataset.state||b.dataset.firstState));document.querySelectorAll('[data-nav-action]').forEach(b=>b.onclick=()=>workspaceNavigationAction(b.dataset.navAction,b.dataset.group))}
 function toggleReleaseFold(id){state.folded.has(id)?state.folded.delete(id):state.folded.add(id);renderTree()}
 function selectChange(releaseId,changeId){const c=release(releaseId).changes.find(x=>x.id===changeId);state.selectedRelease=releaseId;state.selectedChange=changeId;if(c.pageId&&c.stateId){state.pageId=c.pageId;state.stateId=c.stateId}if(c.pageId==='payment')state.paymentPlanScrollLeft=0;state.noteMode='change';state.activeAnnotation=null;renderAll()}
 function selectPage(pageId,stateId){state.pageId=pageId;state.stateId=stateId;state.selectedChange=null;state.noteMode='page';state.pageNoteRequested=true;state.activeAnnotation=null;renderAll()}
@@ -402,10 +427,8 @@ function requirementLink(link){const text=escape(link.text||'');return link.href
 function requirementTableCell(cell){const render=value=>typeof value==='object'&&value?requirementLink(value):escape(value);return (Array.isArray(cell)?cell:[cell]).map(render).join('<br>')}
 function requirementTable(table){return `<div class="requirements-table-wrap"><table class="requirements-table"><thead><tr>${table.headers.map(cell=>`<th>${escape(cell)}</th>`).join('')}</tr></thead><tbody>${table.rows.map(row=>`<tr>${row.map(cell=>`<td>${requirementTableCell(cell).replace(/\n/g,'<br>')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
 function requirementSection(section){const title=section.title?`${escape(section.title).replace(/^【|】$/g,'')}${section.titleLink?requirementLink(section.titleLink):''}${escape(section.titleSuffix||'')}`:'';return `<section class="requirement-section">${title?`<h3>${title}</h3>`:''}${section.paragraphs?section.paragraphs.map(text=>`<p>${inlineMarkdown(text)}</p>`).join(''):''}${section.table?requirementTable(section.table):''}${section.ordered?requirementList(section.ordered,true):''}${section.bullets?requirementList(section.bullets):''}${section.image?`<figure class="requirements-figure"><img src="${escape(section.image.src)}" alt="${escape(section.image.alt||'微信虚拟支付官方示例图')}"><figcaption>${escape(section.image.caption||'微信官方示例图')}</figcaption></figure>`:''}</section>`}
-function stateRequirementsNote(req,key){const activeState=req.states.find(item=>item.id===state.stateId)||req.states[0];const stateContent=activeState.sections.map(requirementSection).join('');const commonContent=(req.common||[]).map(requirementSection).join('');return `<div class="requirements-editor" data-requirement-key="${escape(`${key}:${activeState.id}`)}"><div class="requirements-editor-toolbar"><button type="button" data-editor-action="edit">编辑</button><button type="button" data-editor-action="bold">加粗</button><button type="button" data-editor-action="highlight">高亮</button><button type="button" data-editor-action="row-highlight">高亮表格行</button><small data-editor-status>只读</small><button type="button" class="save" data-editor-action="save">保存</button></div><nav class="requirement-state-tabs">${req.states.map(item=>`<button class="${item.id===activeState.id?'active':''}" data-requirement-state="${item.id}">${escape(item.name)}</button>`).join('')}</nav><article class="requirements-note requirements-editor-content" contenteditable="false"><div class="requirement-state-content">${stateContent}</div><div class="requirement-common-heading">通用页面需求</div>${commonContent}</article></div>`}
-function stateRequirementsNote(req,key){const activeState=req.states.find(item=>item.id===state.stateId)||req.states[0];const stateKey=`${key}:${activeState.id}`;const saved=savedRequirements[stateKey]||savedRequirements[key];const defaultContent=`<div class="requirement-state-content">${activeState.sections.map(requirementSection).join('')}</div><div class="requirement-common-heading">通用页面需求</div><div class="requirement-common-content">${(req.common||[]).map(requirementSection).join('')}</div>`;const content=saved||defaultContent;return `<div class="requirements-editor" data-requirement-key="${escape(stateKey)}"><div class="requirements-editor-toolbar"><button type="button" data-editor-action="edit">编辑</button><button type="button" data-editor-action="bold">加粗</button><button type="button" data-editor-action="highlight">高亮</button><button type="button" data-editor-action="row-highlight">高亮表格行</button><small data-editor-status>只读</small><button type="button" class="save" data-editor-action="save">保存</button></div><nav class="requirement-state-tabs">${req.states.map(item=>`<button class="${item.id===activeState.id?'active':''}" data-requirement-state="${item.id}">${escape(item.name)}</button>`).join('')}</nav><article class="requirements-note requirements-editor-content" contenteditable="false">${content}</article></div>`}
-function requirementsNote(req,key){if(req.states)return stateRequirementsNote(req,key);const saved=savedRequirements[key];const content=saved|| (req.sections?req.sections.map(requirementSection).join(''):`<section><h3>需求大纲：</h3><ol>${req.outline.map(item=>`<li>${inlineMarkdown(item)}</li>`).join('')}</ol></section><section><h3>运行终端：</h3><p>${inlineMarkdown(req.terminal)}</p></section>`);const paymentButton=(type,id,name,active)=>`<button type="button" class="${active?'active':''}" data-payment-${type}="${id}">${name}</button>`;const paymentStateTabs=key==='change:c-subscription-payment'?`<nav class="payment-requirement-state-tabs" aria-label="付费页需求状态"><div class="payment-requirement-state-row"><span class="payment-requirement-state-label">用户会员状态：</span>${[['free','Free'],['vip','VIP'],['svip','SVIP']].map(([id,name])=>paymentButton('member',id,name,state.paymentMemberType===id)).join('')}</div>${state.paymentMemberType!=='free'?`<div class="payment-requirement-state-row"><span class="payment-requirement-state-label">卡类型：</span>${[['single','单次卡'],['subscription','订阅卡']].map(([id,name])=>paymentButton('card',id,name,state.paymentCardType===id)).join('')}</div>`:''}${state.paymentMemberType!=='free'&&state.paymentCardType==='subscription'?`<div class="payment-requirement-state-row"><span class="payment-requirement-state-label">订阅状态：</span>${[['renewing','续费中'],['canceled','已取消续费']].map(([id,name])=>paymentButton('subscription',id,name,state.paymentSubscriptionState===id)).join('')}</div>`:''}</nav>`:'';return `<div class="requirements-editor" data-requirement-key="${escape(key)}"><div class="requirements-editor-toolbar"><button type="button" data-editor-action="edit">编辑</button><button type="button" data-editor-action="bold">加粗</button><button type="button" data-editor-action="highlight">高亮</button><button type="button" data-editor-action="row-highlight">高亮表格行</button><small data-editor-status>只读</small><button type="button" class="save" data-editor-action="save">保存</button></div>${paymentStateTabs}<article class="requirements-note requirements-editor-content" contenteditable="false">${content}</article></div>`}
-function stateRequirementsNote(req,key){const activeState=req.states.find(item=>item.id===state.stateId)||req.states[0];const stateKey=`${key}:${activeState.id}`;const commonKey=`${key}:common`;let savedState=savedRequirements[stateKey]||'';let savedCommon=savedRequirements[commonKey]||'';const legacy=savedRequirements[key]||'';if(savedState.includes('requirement-state-content')){const temp=document.createElement('div');temp.innerHTML=savedState;savedState=temp.querySelector('.requirement-state-content')?.innerHTML||'';savedCommon=savedCommon||temp.querySelector('.requirement-common-content')?.innerHTML||''}if(!savedCommon&&legacy)savedCommon=legacy;const stateContent=savedState||activeState.sections.map(requirementSection).join('');const commonContent=savedCommon||(req.common||[]).map(requirementSection).join('');const commonHtml=commonContent?`<div class="requirement-common-heading">通用页面需求</div><div class="requirement-common-content">${commonContent}</div>`:'';const content=`<div class="requirement-state-content">${stateContent}</div>${commonHtml}`;return `<div class="requirements-editor" data-requirement-key="${escape(stateKey)}"><div class="requirements-editor-toolbar"><button type="button" data-editor-action="edit">编辑</button><button type="button" data-editor-action="bold">加粗</button><button type="button" data-editor-action="highlight">高亮</button><button type="button" data-editor-action="row-highlight">高亮表格行</button><small data-editor-status>只读</small><button type="button" class="save" data-editor-action="save">保存</button></div><nav class="requirement-state-tabs">${req.states.map(item=>`<button class="${item.id===activeState.id?'active':''}" data-requirement-state="${item.id}">${escape(item.name)}</button>`).join('')}</nav><article class="requirements-note requirements-editor-content" contenteditable="false">${content}</article></div>`}
+function stateRequirementsNote(req,key){const active=req.states.find(item=>item.id===state.stateId)||req.states[0];const stateKey=`${key}:${active.id}`;const commonKey=`${key}:common`;const stateHtml=savedRequirements[stateKey]||active.sections.map(requirementSection).join('');const commonHtml=savedRequirements[commonKey]||savedRequirements[key]||(req.common||[]).map(requirementSection).join('');return `<div class="requirements-editor" data-requirement-key="${escape(stateKey)}"><div class="requirements-editor-toolbar"></div><nav class="requirement-state-tabs">${req.states.map(item=>`<button class="${item.id===active.id?'active':''}" data-requirement-state="${item.id}">${escape(item.name)}</button>`).join('')}</nav><article class="requirements-note requirements-editor-content" contenteditable="false"><div class="requirement-state-content">${stateHtml}</div><div class="requirement-common-heading">通用页面需求</div><div class="requirement-common-content">${commonHtml}</div></article></div>`}
+function requirementsNote(req,key){if(req.states)return stateRequirementsNote(req,key);const saved=savedRequirements[key];const content=Object.prototype.hasOwnProperty.call(savedRequirements,key)?saved:(req.sections?req.sections.map(requirementSection).join(''):`<section><h3>需求大纲：</h3><ol>${req.outline.map(item=>`<li>${inlineMarkdown(item)}</li>`).join('')}</ol></section><section><h3>运行终端：</h3><p>${inlineMarkdown(req.terminal)}</p></section>`);const paymentButton=(type,id,name,active)=>`<button type="button" class="${active?'active':''}" data-payment-${type}="${id}">${name}</button>`;const paymentStateTabs=key==='change:c-subscription-payment'?`<nav class="payment-requirement-state-tabs" aria-label="付费页需求状态"><div class="payment-requirement-state-row"><span class="payment-requirement-state-label">用户会员状态：</span>${[['free','Free'],['vip','VIP'],['svip','SVIP']].map(([id,name])=>paymentButton('member',id,name,state.paymentMemberType===id)).join('')}</div>${state.paymentMemberType!=='free'?`<div class="payment-requirement-state-row"><span class="payment-requirement-state-label">卡类型：</span>${[['single','单次卡'],['subscription','订阅卡']].map(([id,name])=>paymentButton('card',id,name,state.paymentCardType===id)).join('')}</div>`:''}${state.paymentMemberType!=='free'&&state.paymentCardType==='subscription'?`<div class="payment-requirement-state-row"><span class="payment-requirement-state-label">订阅状态：</span>${[['renewing','续费中'],['canceled','已取消续费']].map(([id,name])=>paymentButton('subscription',id,name,state.paymentSubscriptionState===id)).join('')}</div>`:''}</nav>`:'';return `<div class="requirements-editor" data-requirement-key="${escape(key)}"><div class="requirements-editor-toolbar"><button type="button" data-editor-action="edit">编辑</button><button type="button" data-editor-action="bold">加粗</button><button type="button" data-editor-action="highlight">高亮</button><button type="button" data-editor-action="row-highlight">高亮表格行</button><small data-editor-status>只读</small><button type="button" class="save" data-editor-action="save">保存</button></div>${paymentStateTabs}<article class="requirements-note requirements-editor-content" contenteditable="false">${content}</article></div>`}
 function releaseNote(id){const r=release(id),req=r.requirements;if(req)return requirementsNote(req,`release:${id}`);return `<div class="note-context"><small>当前版本</small><b>${r.id} · ${r.name}</b></div><div class="label">版本迭代说明</div><article class="release-summary"><h3>${r.name}</h3>${r.goal?`<p>${r.goal}</p>`:''}<ul>${r.changes.length?r.changes.map(c=>`<li>${changeTag(c)?`${changeTag(c)}：`:''}${c.title||`${findPage(c.pageId).name} / ${findState(c.pageId,c.stateId).name}`}${c.description?` · ${c.description}`:''}</li>`).join(''):'<li>尚无目录项。</li>'}</ul></article><div class="label">查看方式</div><div class="copy">展开一个版本后，点击其中的目录项，即可查看当期的页面预览、交互说明和改动范围。</div>`}
 function changeNote(){const r=release(state.selectedRelease),c=r.changes.find(x=>x.id===state.selectedChange);const requirementKey=`change:${c.id}`;return c.requirements?requirementsNote(c.requirements,requirementKey):`<div class="note-context release-context"><small>${r.id} 本期改动</small><b>${changeTag(c)?`${changeTag(c)} · `:''}${c.title||c.summary}${c.description?` · ${c.description}`:''}</b></div>${pageNote()}`}
 function cleanupEditorHeader(){const notes=$('.notes');const head=$('.note-head');head?.querySelectorAll('.requirements-editor-toolbar').forEach(toolbar=>toolbar.remove());notes?.classList.remove('is-editing')}
@@ -494,7 +517,7 @@ function repurchaseRulesHtml(){
   const key='change:c-repurchase-rules:rules';
   const defaultContent=`<div class="repurchase-rule-table-wrap"><table class="repurchase-rule-table"><thead><tr><th>当前商品</th><th>目标商品</th><th>是否支持</th><th>购买方式</th><th>原权益 → 新权益</th></tr></thead><tbody>${tableRows}</tbody></table></div><p class="repurchase-rule-footnote">“原价复购”按目标商品标准价支付；“升级补款”金额由当前商品和目标商品共同决定，以页面展示金额为准，不随剩余权益天数实时变化。</p>`;
   const content=savedRequirements[key]||defaultContent;
-  return `<section class="repurchase-rule-section requirements-editor repurchase-rules-editor" data-requirement-key="${key}"><div class="repurchase-section-heading"><h3>规则说明 <button type="button" class="repurchase-rule-edit" data-repurchase-editor-action="edit">编辑</button></h3><p>每一条路径均说明本次的支付方式，以及当前权益如何承接到目标权益。</p></div><div class="requirements-editor-toolbar"><button type="button" data-repurchase-editor-action="undo">撤销</button><button type="button" data-repurchase-editor-action="cancel">取消</button><button type="button" data-repurchase-editor-action="italic">斜体</button><button type="button" data-repurchase-editor-action="bold">加粗</button><button type="button" data-repurchase-editor-action="highlight">高亮</button><button type="button" data-repurchase-editor-action="cell-highlight">高亮单元格</button><button type="button" data-repurchase-editor-action="row-highlight">高亮整行</button><button type="button" data-repurchase-editor-action="column-highlight">高亮整列</button><select data-repurchase-editor-action="font-size" aria-label="字号"><option value="">字号</option><option value="12px">小</option><option value="14px">中</option><option value="16px">大</option><option value="18px">特大</option></select><select data-repurchase-editor-action="color" aria-label="文字颜色"><option value="">文字颜色</option><option value="#202631">黑色</option><option value="#d94b58">红色</option><option value="#276cf2">蓝色</option><option value="#4c9a43">绿色</option></select><small data-repurchase-editor-status>只读</small><button type="button" class="save" data-repurchase-editor-action="save">保存</button></div><article class="requirements-editor-content repurchase-rules-content" contenteditable="false">${content}</article></section>`;
+  return `<section class="repurchase-rule-section" data-repurchase-rule-source="true"><div class="repurchase-section-heading"><h3>规则说明</h3><p>每一条路径均说明本次的支付方式，以及当前权益如何承接到目标权益。</p></div><article class="repurchase-rules-content">${content}</article></section>`;
 }
 function purchaseCalculatorHtml(){
   const current=state.purchaseCalculation,available=calculationAvailableProducts(),result=calculationResult();
@@ -576,99 +599,6 @@ function purchaseCalculatorHtml(){
   const productHint=source?.card==='lifetime'?(source.tier==='vip'?'终身 VIP 仅可补差价升级至 SVIP 终身会员，其余商品不可购买。':'已是终身 SVIP，所有商品均不可购买。'):'';
   return `<div class="calculator-head"><h2>复购规则</h2><p>根据当前商品与选择购买的商品，判断是否可购买及权益如何变化。</p></div>${repurchaseRulesHtml()}<section class="repurchase-simulator"><div class="repurchase-section-heading"><h3>复购商品演算</h3><p>选择当前状态与购买商品，查看订单和权益变化。</p></div><div class="calculator-body">${currentState}<div class="calculator-field"><span>本次购买日</span><input class="calculator-date" type="date" value="${current.purchaseDate}" data-calculation-date="purchaseDate"></div><div class="calculator-field"><span>选择购买的商品</span><select class="calculator-select" data-calculation-product-select>${available.map(product=>`<option value="${product.id}" ${current.product===product.id?'selected':''} ${purchasable.has(product.id)?'':'disabled'}>${product.name}（${product.price}）</option>`).join('')}</select>${productHint?`<p class="calculator-product-note">${productHint}</p>`:''}</div><section class="calculator-result"><h3>${result.title}</h3><dl>${result.rows.map(([name,value])=>`<dt>${name}</dt><dd>${value}</dd>`).join('')}</dl></section><section class="calculator-rules"><h3>本次怎么算</h3>${result.rules.map(rule=>`<p>${rule}</p>`).join('')}</section></div></section>`;
 }
-function bindRepurchaseRulesEditor(){
-  const editor=$('.repurchase-rules-editor');
-  if(!editor)return;
-  const content=editor.querySelector('.repurchase-rules-content');
-  const toolbar=editor.querySelector('.requirements-editor-toolbar');
-  const status=editor.querySelector('[data-repurchase-editor-status]');
-  if(!content||!toolbar||!status)return;
-  let snapshot=content.innerHTML;
-  let savedRange=null;
-  const setEditing=editing=>{
-    editor.classList.toggle('is-editing',editing);
-    content.contentEditable=editing?'true':'false';
-    status.textContent=editing?'编辑中':'只读';
-    if(editing)content.focus();
-  };
-  const rememberRange=()=>{
-    const selection=window.getSelection();
-    if(!selection||!selection.rangeCount||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode))return;
-    savedRange=selection.getRangeAt(0).cloneRange();
-  };
-  const restoreRange=()=>{
-    if(!savedRange)return;
-    const selection=window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(savedRange);
-  };
-  const selectedCell=()=>{
-    const selection=window.getSelection();
-    const node=selection?.anchorNode?.nodeType===3?selection.anchorNode.parentElement:selection?.anchorNode;
-    return node?.closest?.('td,th');
-  };
-  const applyText=action=>{
-    restoreRange();
-    if(action==='bold'||action==='italic')document.execCommand(action);
-    if(action==='highlight')document.execCommand('hiliteColor',false,'#fff2c9');
-    content.focus();
-    rememberRange();
-  };
-  const applyTable=action=>{
-    restoreRange();
-    const cell=selectedCell();
-    if(!cell)return;
-    if(action==='cell-highlight')cell.classList.toggle('editor-cell-highlight');
-    if(action==='row-highlight')cell.closest('tr')?.classList.toggle('editor-row-highlight');
-    if(action==='column-highlight'){
-      const column=cell.cellIndex;
-      content.querySelectorAll('tr').forEach(row=>row.children[column]?.classList.toggle('editor-cell-highlight'));
-    }
-    content.focus();
-    rememberRange();
-  };
-  const save=async()=>{
-    status.textContent='保存中';
-    try{
-      const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:editor.dataset.requirementKey,html:content.innerHTML})});
-      if(!response.ok)throw new Error('保存失败');
-      savedRequirements[editor.dataset.requirementKey]=content.innerHTML;
-      snapshot=content.innerHTML;
-      setEditing(false);
-      status.textContent='已保存';
-    }catch(error){status.textContent='保存失败，请确认已通过 Node 服务启动';}
-  };
-  content.addEventListener('mouseup',rememberRange);
-  content.addEventListener('keyup',rememberRange);
-  toolbar.addEventListener('mousedown',event=>{if(event.target.closest('button'))event.preventDefault()});
-  editor.querySelectorAll('[data-repurchase-editor-action]').forEach(control=>{
-    const action=control.dataset.repurchaseEditorAction;
-    if(control.tagName==='SELECT'){
-      control.onchange=()=>{
-        if(content.contentEditable!=='true'||!control.value)return;
-        restoreRange();
-        if(action==='color')document.execCommand('foreColor',false,control.value);
-        if(action==='font-size'){
-          document.execCommand('fontSize',false,'7');
-          content.querySelectorAll('font[size="7"]').forEach(node=>{node.removeAttribute('size');node.style.fontSize=control.value});
-        }
-        control.value='';
-        content.focus();
-        rememberRange();
-      };
-      return;
-    }
-    control.onclick=()=>{
-      if(action==='edit'){snapshot=content.innerHTML;setEditing(true);return;}
-      if(action==='cancel'){content.innerHTML=snapshot;setEditing(false);return;}
-      if(action==='save'){save();return;}
-      if(content.contentEditable!=='true')return;
-      if(action==='undo'){document.execCommand('undo');content.focus();rememberRange();return;}
-      if(['bold','italic','highlight'].includes(action)){applyText(action);return;}
-      if(['cell-highlight','row-highlight','column-highlight'].includes(action))applyTable(action);
-    };
-  });
-}
 function renderPurchaseCalculator(){
   const calculator=$('#purchaseCalculator'),enabled=state.noteMode==='change'&&state.selectedChange==='c-repurchase-rules';
   if(!calculator)return;
@@ -681,259 +611,9 @@ function renderPurchaseCalculator(){
   calculator.querySelector('[data-calculation-source-product]')?.addEventListener('change',event=>{state.purchaseCalculation.sourceProduct=event.target.value;renderPurchaseCalculator()});
   calculator.querySelector('[data-calculation-product-select]')?.addEventListener('change',event=>{state.purchaseCalculation.product=event.target.value;renderPurchaseCalculator()});
   calculator.querySelectorAll('[data-calculation-date]').forEach(input=>input.onchange=()=>{state.purchaseCalculation[input.dataset.calculationDate]=input.value;renderPurchaseCalculator()});
-  bindRepurchaseRulesEditor();
 }
-function renderNotes(){const showingPageNote=state.noteMode==='page'&&(state.tree==='page'||state.pageNoteRequested);const html=state.noteMode==='release'?releaseNote(state.selectedRelease):state.noteMode==='change'?changeNote():state.noteMode==='annotation'?annotationNote(state.activeAnnotation):showingPageNote?pageNote():'<div class="note-empty">请选择版本下的需求大纲或页面条目查看需求。</div>';$('.note-head h2').textContent=showingPageNote?'页面说明':'需求说明';$('#fullNote').hidden=state.tree==='release';$('#notes').innerHTML=html;cleanupEditorHeader();bindRequirementStateTabs();bindPaymentRequirementStateTabs();bindMineStateTabs();bindFloatingEditor();bindEditorHeader();renderPurchaseCalculator();$('#returnNote')?.addEventListener('click',()=>{state.noteMode='page';state.pageNoteRequested=true;state.activeAnnotation=null;renderNotes()})}
-function bindRequirementEditor(){const editor=$('.requirements-editor');if(!editor)return;const content=editor.querySelector('.requirements-editor-content');const status=editor.querySelector('[data-editor-status]');const setEditing=editing=>{content.contentEditable=editing?'true':'false';status.textContent=editing?'编辑中':'只读';if(editing)content.focus()};editor.querySelectorAll('[data-editor-action]').forEach(button=>button.onclick=async()=>{const action=button.dataset.editorAction;if(action==='edit'){setEditing(content.contentEditable!=='true');return}if(content.contentEditable!=='true'){setEditing(true);return}if(action==='bold'){document.execCommand('bold');content.focus();return}if(action==='highlight'){document.execCommand('hiliteColor',false,'#fff2c9');content.focus();return}if(action==='row-highlight'){const row=window.getSelection()?.anchorNode?.parentElement?.closest('tr');if(row)row.classList.toggle('editor-row-highlight');return}if(action==='save'){const key=editor.dataset.requirementKey;status.textContent='保存中';try{const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key,html:content.innerHTML})});if(!response.ok)throw new Error('保存失败');savedRequirements[key]=content.innerHTML;setEditing(false);status.textContent='已保存'}catch(error){status.textContent='保存失败，请确认已通过 Node 服务启动';}}})}
-async function loadRequirements(){try{const response=await fetch('/api/requirements');if(response.ok){const payload=await response.json();savedRequirements=payload.requirements||{};const activeKey='change:c-subscription-renewal:active';const commonKey='change:c-subscription-renewal:common';const legacyKey='change:c-subscription-renewal';const legacyActive=savedRequirements[activeKey]||'';if(legacyActive.includes('<h3>状态说明</h3>')){const active=renewalChange.requirements.states.find(item=>item.id==='active');savedRequirements[activeKey]=active.sections.map(requirementSection).join('');if(!savedRequirements[commonKey]&&savedRequirements[legacyKey]){const common=document.createElement('div');common.innerHTML=savedRequirements[legacyKey];common.querySelectorAll('.requirement-section').forEach(section=>{const title=section.querySelector('h3')?.textContent?.trim();if(title==='会员卡片'||title==='下次扣费信息'||title==='状态说明')section.remove()});savedRequirements[commonKey]=common.innerHTML}try{await Promise.all([fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:activeKey,html:savedRequirements[activeKey]})}),savedRequirements[commonKey]?fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:commonKey,html:savedRequirements[commonKey]})}):Promise.resolve()])}catch(error){}}}}catch(error){savedRequirements=window.__offlineRequirements?.requirements||embeddedRequirements.requirements||{}}}
-function bindAdvancedRequirementEditor(){const editor=$('.requirements-editor');if(!editor)return;const content=editor.querySelector('.requirements-editor-content');const topbar=editor.querySelector('.requirements-editor-toolbar');if(!content||!topbar)return;let snapshot=content.innerHTML;let savedRange=null;let floating=document.querySelector('.requirements-floating-toolbar');floating?.remove();floating=document.createElement('div');floating.className='requirements-floating-toolbar';floating.style.display='none';document.body.appendChild(floating);const statusText=text=>{const status=topbar.querySelector('[data-editor-status]');if(status)status.textContent=text};const setEditing=editing=>{editor.classList.toggle('is-editing',editing);content.contentEditable=editing?'true':'false';statusText(editing?'编辑中':'只读');renderFloating(editing);if(editing){content.focus()}else{savedRange=null}};const restoreRange=()=>{if(!savedRange)return;const selection=window.getSelection();selection.removeAllRanges();selection.addRange(savedRange)};const positionFloating=rect=>{floating.style.display='flex';const left=Math.max(8,Math.min(window.innerWidth-floating.offsetWidth-8,rect.left+(rect.width/2)-(floating.offsetWidth/2)));const top=Math.max(8,rect.top-floating.offsetHeight-8);floating.style.left=`${left}px`;floating.style.top=`${top}px`};const updateSelection=()=>{const selection=window.getSelection();if(!selection||selection.rangeCount===0||selection.isCollapsed||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode)){if(!editor.classList.contains('is-editing'))floating.style.display='none';return}savedRange=selection.getRangeAt(0).cloneRange();positionFloating(selection.getRangeAt(0).getBoundingClientRect())};const copySelection=async()=>{const text=window.getSelection()?.toString()||'';if(!text)return;try{await navigator.clipboard.writeText(text)}catch{const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove()}statusText('已复制');setTimeout(()=>{if(!editor.classList.contains('is-editing'))statusText('只读')},1000)};const applyTextFormat=(action,value)=>{restoreRange();if(action==='bold'||action==='italic'||action==='underline')document.execCommand(action);if(action==='highlight')document.execCommand('hiliteColor',false,'#fff2c9');if(action==='color'&&value)document.execCommand('foreColor',false,value);if(action==='font-size'&&value){document.execCommand('fontSize',false,'7');content.querySelectorAll('font[size="7"]').forEach(node=>{node.removeAttribute('size');node.style.fontSize=value})}content.focus();updateSelection()};const applyTableFormat=action=>{restoreRange();const selection=window.getSelection();const node=selection?.anchorNode?.nodeType===3?selection.anchorNode.parentElement:selection?.anchorNode;const cell=node?.closest?.('td,th');if(!cell)return;if(action==='cell-highlight')cell.classList.toggle('editor-cell-highlight');if(action==='row-highlight')cell.closest('tr')?.classList.toggle('editor-row-highlight');if(action==='column-highlight'){const row=cell.closest('tr');const index=[...row.children].indexOf(cell);content.querySelectorAll('tr').forEach(tr=>tr.children[index]?.classList.toggle('editor-cell-highlight'))}content.focus();updateSelection()};const save=async()=>{statusText('保存中');try{const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:editor.dataset.requirementKey,html:content.innerHTML})});if(!response.ok)throw new Error('save failed');savedRequirements[editor.dataset.requirementKey]=content.innerHTML;snapshot=content.innerHTML;setEditing(false);statusText('已保存')}catch{statusText('保存失败，请确认已通过 Node 服务启动')}};const renderFloating=editing=>{floating.innerHTML=editing?'<button data-float-action="italic">斜体</button><button data-float-action="bold">加粗</button><select data-float-action="font-size"><option value="">字号</option><option value="12px">小</option><option value="14px">中</option><option value="16px">大</option><option value="18px">特大</option></select><button data-float-action="highlight">高亮</button><button data-float-action="cell-highlight">高亮单元格</button><button data-float-action="row-highlight">高亮整行</button><button data-float-action="column-highlight">高亮整列</button><select data-float-action="color"><option value="">颜色</option><option value="#202631">黑色</option><option value="#d94b58">红色</option><option value="#276cf2">蓝色</option><option value="#4c9a43">绿色</option></select>':'<button data-float-action="copy">复制</button><button data-float-action="edit">编辑</button>';floating.style.display='none'};topbar.innerHTML='<button type="button" data-top-action="undo">撤销</button><button type="button" data-top-action="cancel">取消</button><small data-editor-status>只读</small><button type="button" class="save" data-top-action="save">保存</button>';renderFloating(false);content.addEventListener('mouseup',updateSelection);content.addEventListener('keyup',updateSelection);topbar.querySelector('[data-top-action="undo"]').onclick=()=>{if(content.contentEditable==='true'){document.execCommand('undo');content.focus()}};topbar.querySelector('[data-top-action="cancel"]').onclick=()=>{content.innerHTML=snapshot;setEditing(false)};topbar.querySelector('[data-top-action="save"]').onclick=save;floating.addEventListener('mousedown',event=>event.preventDefault());floating.addEventListener('click',event=>{const control=event.target.closest('[data-float-action]');if(!control)return;const action=control.dataset.floatAction;if(action==='copy'){copySelection();return}if(action==='edit'){snapshot=content.innerHTML;setEditing(true);return}if(action==='italic'||action==='bold'||action==='underline'||action==='highlight'){applyTextFormat(action);return}if(action==='cell-highlight'||action==='row-highlight'||action==='column-highlight'){applyTableFormat(action);return}});floating.addEventListener('change',event=>{const control=event.target.closest('select[data-float-action]');if(control)applyTextFormat(control.dataset.floatAction,control.value);control.value=''})}
-function bindAdvancedRequirementEditor(){const editor=$('.requirements-editor');if(!editor)return;const toolbar=editor.querySelector('.requirements-editor-toolbar');const content=editor.querySelector('.requirements-editor-content');const status=editor.querySelector('[data-editor-status]');if(!toolbar||!content)return;if(!toolbar.dataset.advanced){toolbar.insertAdjacentHTML('afterbegin','<button type="button" data-editor-action="italic">斜体</button><button type="button" data-editor-action="underline">下划线</button><select data-editor-action="color" aria-label="文字颜色"><option value="">文字颜色</option><option value="#202631">黑色</option><option value="#d94b58">红色</option><option value="#276cf2">蓝色</option><option value="#4c9a43">绿色</option><option value="#8b5cf6">紫色</option></select><select data-editor-action="font-size" aria-label="字号"><option value="">字号</option><option value="12px">小</option><option value="14px">中</option><option value="16px">大</option><option value="18px">特大</option></select><button type="button" data-editor-action="cell-highlight">高亮单元格</button><button type="button" data-editor-action="column-highlight">高亮整列</button>');toolbar.dataset.advanced='true'}const setEditing=editing=>{content.contentEditable=editing?'true':'false';status.textContent=editing?'编辑中':'只读';if(editing)content.focus()};const save=async()=>{const key=editor.dataset.requirementKey;status.textContent='保存中';try{const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key,html:content.innerHTML})});if(!response.ok)throw new Error('保存失败');savedRequirements[key]=content.innerHTML;setEditing(false);status.textContent='已保存'}catch(error){status.textContent='保存失败，请确认已通过 Node 服务启动'}};toolbar.querySelectorAll('[data-editor-action]').forEach(control=>control.onclick=()=>{const action=control.dataset.editorAction;if(action==='edit'){setEditing(content.contentEditable!=='true');return}if(action==='save'){save();return}if(content.contentEditable!=='true'){setEditing(true);return}if(action==='bold'||action==='italic'||action==='underline'){document.execCommand(action==='bold'?'bold':action);content.focus();return}if(action==='highlight'){document.execCommand('hiliteColor',false,'#fff2c9');content.focus();return}if(action==='color'&&control.value){document.execCommand('foreColor',false,control.value);control.value='';content.focus();return}if(action==='font-size'&&control.value){document.execCommand('fontSize',false,'7');content.querySelectorAll('font[size="7"]').forEach(node=>{node.removeAttribute('size');node.style.fontSize=control.value});control.value='';content.focus();return}const selection=window.getSelection();const node=selection?.anchorNode?.nodeType===3?selection.anchorNode.parentElement:selection?.anchorNode;if(!node)return;const cell=node.closest('td,th');if(!cell)return;if(action==='row-highlight'){cell.closest('tr')?.classList.toggle('editor-row-highlight');return}if(action==='cell-highlight'){cell.classList.toggle('editor-cell-highlight');return}if(action==='column-highlight'){const row=cell.closest('tr');const index=[...row.children].indexOf(cell);content.querySelectorAll('tr').forEach(tr=>tr.children[index]?.classList.toggle('editor-cell-highlight'));}})}
+function renderNotes(){const showingPageNote=state.noteMode==='page'&&(state.tree==='page'||state.pageNoteRequested);const html=state.noteMode==='release'?releaseNote(state.selectedRelease):state.noteMode==='change'?changeNote():state.noteMode==='annotation'?annotationNote(state.activeAnnotation):showingPageNote?pageNote():'<div class="note-empty">请选择版本下的需求大纲或页面条目查看需求。</div>';$('.note-head h2').textContent=showingPageNote?'页面说明':'需求说明';$('#fullNote').hidden=state.tree==='release';$('#notes').innerHTML=html;cleanupEditorHeader();bindRequirementStateTabs();bindPaymentRequirementStateTabs();bindMineStateTabs();renderPurchaseCalculator();bindUnifiedEditor();$('#returnNote')?.addEventListener('click',()=>{state.noteMode='page';state.pageNoteRequested=true;state.activeAnnotation=null;renderNotes()})}
 function syncWorkspaceMode(){const workspace=$('#workspace');const docOnly=['c-virtual-payment','c-subscription-cms','c-subscription-server'].includes(state.selectedChange),showPaymentCalculator=state.noteMode==='change'&&state.selectedChange==='c-subscription-payment',showRepurchaseCalculator=state.noteMode==='change'&&state.selectedChange==='c-repurchase-rules';workspace.classList.toggle('doc-only',docOnly);workspace.classList.toggle('payment-calculator-mode',showPaymentCalculator);workspace.classList.toggle('repurchase-calculator-mode',showRepurchaseCalculator);state.noteMode==='release'?workspace.classList.add('release-note-mode'):workspace.classList.remove('release-note-mode')}
-function bindFloatingEditor(){const editor=$('.requirements-editor');if(!editor)return;const content=editor.querySelector('.requirements-editor-content');const topbar=editor.querySelector('.requirements-editor-toolbar');if(!content||!topbar)return;document.querySelector('.requirements-floating-toolbar')?.remove();const bar=document.createElement('div');bar.className='requirements-floating-toolbar';bar.style.display='none';document.body.appendChild(bar);let snapshot=content.innerHTML;let savedRange=null;const status=text=>{const el=topbar.querySelector('[data-editor-status]');if(el)el.textContent=text};const editing=flag=>{editor.classList.toggle('is-editing',flag);content.contentEditable=flag?'true':'false';status(flag?'编辑中':'只读');renderBar(flag);if(!flag)bar.style.display='none'};const save=async()=>{status('保存中');try{const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:editor.dataset.requirementKey,html:content.innerHTML})});if(!response.ok)throw new Error();savedRequirements[editor.dataset.requirementKey]=content.innerHTML;snapshot=content.innerHTML;editing(false);status('已保存')}catch{status('保存失败，请确认已通过 Node 服务启动')}};const restore=()=>{if(savedRange){const selection=window.getSelection();selection.removeAllRanges();selection.addRange(savedRange)}};const show=()=>{const selection=window.getSelection();if(!selection||selection.rangeCount===0||selection.isCollapsed||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode))return;savedRange=selection.getRangeAt(0).cloneRange();bar.style.display='flex';const rect=selection.getRangeAt(0).getBoundingClientRect();bar.style.left=`${Math.max(8,Math.min(window.innerWidth-bar.offsetWidth-8,rect.left+rect.width/2-bar.offsetWidth/2))}px`;bar.style.top=`${Math.max(8,rect.top-bar.offsetHeight-8)}px`};const format=action=>{restore();const selection=window.getSelection();const node=selection?.anchorNode?.nodeType===3?selection.anchorNode.parentElement:selection?.anchorNode;const cell=node?.closest?.('td,th');if(action==='cell-highlight'&&cell)cell.classList.toggle('editor-cell-highlight');if(action==='row-highlight'&&cell)cell.closest('tr')?.classList.toggle('editor-row-highlight');if(action==='column-highlight'&&cell){const row=cell.closest('tr');const index=[...row.children].indexOf(cell);content.querySelectorAll('tr').forEach(tr=>tr.children[index]?.classList.toggle('editor-cell-highlight'))}if(action==='bold'||action==='italic')document.execCommand(action);if(action==='highlight')document.execCommand('hiliteColor',false,'#fff2c9');content.focus();show()};const renderBar=flag=>{bar.innerHTML=flag?'<button data-float="italic">斜体</button><button data-float="bold">加粗</button><select data-float="font-size"><option value="">字号</option><option value="12px">小</option><option value="14px">中</option><option value="16px">大</option><option value="18px">特大</option></select><button data-float="highlight">高亮</button><button data-float="cell-highlight">高亮单元格</button><button data-float="row-highlight">高亮整行</button><button data-float="column-highlight">高亮整列</button><select data-float="color"><option value="">颜色</option><option value="#202631">黑色</option><option value="#d94b58">红色</option><option value="#276cf2">蓝色</option><option value="#4c9a43">绿色</option></select>':'<button data-float="copy">复制</button><button data-float="edit">编辑</button>';bar.style.display='none'};topbar.innerHTML='<button type="button" data-top="undo">撤销</button><button type="button" data-top="cancel">取消</button><small data-editor-status>只读</small><button type="button" class="save" data-top="save">保存</button>';renderBar(false);content.addEventListener('mouseup',show);content.addEventListener('keyup',show);topbar.querySelector('[data-top="undo"]').onclick=()=>{document.execCommand('undo');content.focus()};topbar.querySelector('[data-top="cancel"]').onclick=()=>{content.innerHTML=snapshot;editing(false)};topbar.querySelector('[data-top="save"]').onclick=save;bar.onmousedown=event=>event.preventDefault();bar.onclick=event=>{const button=event.target.closest('[data-float]');if(!button)return;const action=button.dataset.float;if(action==='copy'){navigator.clipboard?.writeText(window.getSelection()?.toString()||'');return}if(action==='edit'){snapshot=content.innerHTML;editing(true);show();return}format(action)};bar.onchange=event=>{const control=event.target.closest('select[data-float]');if(!control)return;restore();if(control.dataset.float==='color')document.execCommand('foreColor',false,control.value);if(control.dataset.float==='font-size'){document.execCommand('fontSize',false,'7');content.querySelectorAll('font[size="7"]').forEach(node=>{node.removeAttribute('size');node.style.fontSize=control.value})}control.value='';content.focus()}}
-function bindFloatingEditor(){
-  const editor=$('.requirements-editor');
-  if(!editor)return;
-  const content=editor.querySelector('.requirements-editor-content');
-  const topbar=editor.querySelector('.requirements-editor-toolbar');
-  if(!content||!topbar)return;
-  document.querySelector('.requirements-floating-toolbar')?.remove();
-  document.querySelector('.doubt-note-popover')?.remove();
-  const bar=document.createElement('div');
-  const doubtNote=document.createElement('aside');
-  bar.className='requirements-floating-toolbar';
-  doubtNote.className='doubt-note-popover';
-  bar.style.display='none';
-  document.body.append(bar,doubtNote);
-  let snapshot=content.innerHTML;
-  let savedRange=null;
-  let activeDoubt=null;
-  let doubtSaveQueue=Promise.resolve();
-  window.__doubtPopoverAbort?.abort();
-  const doubtEvents=new AbortController();
-  window.__doubtPopoverAbort=doubtEvents;
-  const status=text=>{const el=topbar.querySelector('[data-editor-status]');if(el)el.textContent=text};
-  const restore=()=>{if(!savedRange)return;const selection=window.getSelection();selection.removeAllRanges();selection.addRange(savedRange)};
-  const hideDoubtNote=()=>{activeDoubt=null;doubtNote.style.display='none';doubtNote.innerHTML=''};
-  const positionDoubtNote=marker=>{
-    if(!marker?.isConnected||doubtNote.style.display==='none')return;
-    const margin=10;
-    const rect=marker.getBoundingClientRect();
-    const width=doubtNote.offsetWidth;
-    const height=doubtNote.offsetHeight;
-    const left=Math.max(margin,Math.min(window.innerWidth-width-margin,rect.left));
-    const below=rect.bottom+8;
-    const top=below+height<=window.innerHeight-margin?below:Math.max(margin,rect.top-height-8);
-    doubtNote.style.left=`${left}px`;
-    doubtNote.style.top=`${top}px`;
-  };
-  const persistDoubt=successText=>{
-    const persist=async()=>{
-      status('保存中');
-      const key=editor.dataset.requirementKey;
-      const post=(targetKey,html)=>fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:targetKey,html})});
-      try{
-        if(/:(active|canceled|expired)$/.test(key)){
-          const commonKey=key.replace(/:(active|canceled|expired)$/,'')+':common';
-          const stateHtml=content.querySelector('.requirement-state-content')?.innerHTML||'';
-          const commonHtml=content.querySelector('.requirement-common-content')?.innerHTML||'';
-          const responses=await Promise.all([post(key,stateHtml),post(commonKey,commonHtml)]);
-          if(responses.some(response=>!response.ok))throw new Error();
-          savedRequirements[key]=stateHtml;
-          savedRequirements[commonKey]=commonHtml;
-        }else{
-          const html=content.innerHTML;
-          const response=await post(key,html);
-          if(!response.ok)throw new Error();
-          savedRequirements[key]=html;
-        }
-        snapshot=content.innerHTML;
-        status(successText);
-      }catch{status('存疑保存失败，请确认已通过 Node 服务启动')}
-    };
-    doubtSaveQueue=doubtSaveQueue.catch(()=>{}).then(persist);
-    return doubtSaveQueue;
-  };
-  const showDoubtNote=marker=>{
-    activeDoubt=marker;
-    doubtNote.classList.remove('is-editing-note');
-    doubtNote.innerHTML='<div class="doubt-note-entry"><textarea aria-label="存疑备注" rows="1" placeholder="添加备注（可选）" readonly></textarea><span class="doubt-note-actions"><button type="button" data-doubt-save title="保存备注">✓</button><button type="button" data-doubt-cancel title="不保存备注">×</button></span></div><footer><button type="button" data-doubt-complete="true">关闭存疑</button></footer>';
-    const input=doubtNote.querySelector('textarea');
-    const savedNote=marker.dataset.doubtNote||'';
-    input.value=savedNote;
-    const resizeNote=()=>{
-      input.style.height='auto';
-      input.style.height=`${Math.max(32,input.scrollHeight)}px`;
-      positionDoubtNote(marker);
-    };
-    const activate=()=>{
-      if(doubtNote.classList.contains('is-editing-note'))return;
-      doubtNote.classList.add('is-editing-note');
-      input.readOnly=false;
-      input.focus();
-    };
-    input.onclick=activate;
-    input.onfocus=activate;
-    input.oninput=resizeNote;
-    doubtNote.querySelector('[data-doubt-save]').onclick=async()=>{
-      marker.dataset.doubtNote=input.value;
-      input.readOnly=true;
-      doubtNote.classList.remove('is-editing-note');
-      positionDoubtNote(marker);
-      await persistDoubt('备注已保存');
-    };
-    doubtNote.querySelector('[data-doubt-cancel]').onclick=()=>{
-      input.value=marker.dataset.doubtNote||'';
-      resizeNote();
-      input.readOnly=true;
-      doubtNote.classList.remove('is-editing-note');
-    };
-    input.onkeydown=event=>{if(event.key==='Escape'){event.preventDefault();doubtNote.querySelector('[data-doubt-cancel]').click()}};
-    doubtNote.querySelector('[data-doubt-complete]').onclick=async()=>{
-      const children=[...marker.childNodes];
-      const parent=marker.parentNode;
-      marker.replaceWith(...children);
-      if(parent&&children.length){
-        const range=document.createRange();
-        range.setStartBefore(children[0]);
-        range.setEndAfter(children[children.length-1]);
-        const selection=window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        savedRange=range.cloneRange();
-      }else savedRange=null;
-      hideDoubtNote();
-      bar.style.display='none';
-      await persistDoubt('已关闭存疑');
-    };
-    doubtNote.style.display='block';
-    resizeNote();
-    positionDoubtNote(marker);
-  };
-  const selectionBlock=container=>{
-    const node=container.nodeType===Node.TEXT_NODE?container.parentElement:container;
-    return node?.closest?.('p,li,td,th,h3');
-  };
-  const markDoubt=()=>{
-    const selection=window.getSelection();
-    if(!selection||selection.rangeCount===0||selection.isCollapsed||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode))return;
-    const range=selection.getRangeAt(0);
-    const startMarker=(range.startContainer.nodeType===Node.TEXT_NODE?range.startContainer.parentElement:range.startContainer)?.closest?.('.doubt-mark');
-    const endMarker=(range.endContainer.nodeType===Node.TEXT_NODE?range.endContainer.parentElement:range.endContainer)?.closest?.('.doubt-mark');
-    if(startMarker&&startMarker===endMarker){showDoubtNote(startMarker);return}
-    if(selectionBlock(range.startContainer)!==selectionBlock(range.endContainer)){status('请在同一段文字或表格单元格内标记存疑');return}
-    const marker=document.createElement('span');
-    marker.className='doubt-mark';
-    marker.dataset.doubtNote='';
-    marker.title='存疑：点击填写备注';
-    const fragment=range.extractContents();
-    if(!fragment.textContent.trim()){status('请先选择需要标记的文字');return}
-    marker.append(fragment);
-    range.insertNode(marker);
-    const markedRange=document.createRange();
-    markedRange.selectNodeContents(marker);
-    selection.removeAllRanges();
-    selection.addRange(markedRange);
-    savedRange=markedRange.cloneRange();
-    showDoubtNote(marker);
-    void persistDoubt('已标记存疑');
-  };
-  const show=()=>{
-    const selection=window.getSelection();
-    if(!selection||selection.rangeCount===0||selection.isCollapsed||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode))return;
-    savedRange=selection.getRangeAt(0).cloneRange();
-    const rect=savedRange.getBoundingClientRect();
-    bar.style.display='flex';
-    bar.style.left=`${Math.max(8,Math.min(window.innerWidth-bar.offsetWidth-8,rect.left+rect.width/2-bar.offsetWidth/2))}px`;
-    bar.style.top=`${Math.max(8,rect.top-bar.offsetHeight-8)}px`;
-  };
-  const editing=flag=>{
-    editor.classList.toggle('is-editing',flag);
-    content.contentEditable=flag?'true':'false';
-    status(flag?'编辑中':'只读');
-    renderBar(flag);
-    if(!flag)bar.style.display='none';
-  };
-  const save=async()=>{
-    status('保存中');
-    try{
-      const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:editor.dataset.requirementKey,html:content.innerHTML})});
-      if(!response.ok)throw new Error();
-      savedRequirements[editor.dataset.requirementKey]=content.innerHTML;
-      snapshot=content.innerHTML;
-      editing(false);
-      status('已保存');
-    }catch{status('保存失败，请确认已通过 Node 服务启动')}
-  };
-  const format=action=>{
-    restore();
-    const selection=window.getSelection();
-    const node=selection?.anchorNode?.nodeType===3?selection.anchorNode.parentElement:selection?.anchorNode;
-    const cell=node?.closest?.('td,th');
-    if(action==='cell-highlight'&&cell)cell.classList.toggle('editor-cell-highlight');
-    if(action==='row-highlight'&&cell)cell.closest('tr')?.classList.toggle('editor-row-highlight');
-    if(action==='column-highlight'&&cell){const row=cell.closest('tr');const index=[...row.children].indexOf(cell);content.querySelectorAll('tr').forEach(tr=>tr.children[index]?.classList.toggle('editor-cell-highlight'))}
-    if(action==='bold'||action==='italic')document.execCommand(action);
-    if(action==='highlight')document.execCommand('hiliteColor',false,'#fff2c9');
-    content.focus();
-    show();
-  };
-  const renderBar=flag=>{
-    bar.innerHTML=flag
-      ?'<button data-float="italic">斜体</button><button data-float="bold">加粗</button><select data-float="font-size"><option value="">字号</option><option value="12px">小</option><option value="14px">中</option><option value="16px">大</option><option value="18px">特大</option></select><button data-float="highlight">高亮</button><button data-float="cell-highlight">高亮单元格</button><button data-float="row-highlight">高亮整行</button><button data-float="column-highlight">高亮整列</button><select data-float="color"><option value="">颜色</option><option value="#202631">黑色</option><option value="#d94b58">红色</option><option value="#276cf2">蓝色</option><option value="#4c9a43">绿色</option></select>'
-      :'<button data-float="copy">复制</button><button data-float="edit">编辑</button><button data-float="doubt">存疑</button>';
-    bar.style.display='none';
-  };
-  topbar.innerHTML='<button type="button" data-top="undo">撤销</button><button type="button" data-top="cancel">取消</button><small data-editor-status>只读</small><button type="button" class="save" data-top="save">保存</button>';
-  renderBar(false);
-  content.addEventListener('mouseup',show);
-  content.addEventListener('keyup',show);
-  content.addEventListener('click',event=>{const marker=event.target.closest?.('.doubt-mark');if(marker)showDoubtNote(marker)});
-  document.addEventListener('mousedown',event=>{
-    if(!activeDoubt||doubtNote.contains(event.target)||event.target.closest?.('.doubt-mark')||bar.contains(event.target))return;
-    hideDoubtNote();
-  },{signal:doubtEvents.signal});
-  window.addEventListener('resize',()=>positionDoubtNote(activeDoubt),{signal:doubtEvents.signal});
-  document.addEventListener('scroll',()=>positionDoubtNote(activeDoubt),{capture:true,signal:doubtEvents.signal});
-  topbar.querySelector('[data-top="undo"]').onclick=()=>{document.execCommand('undo');content.focus()};
-  topbar.querySelector('[data-top="cancel"]').onclick=()=>{content.innerHTML=snapshot;hideDoubtNote();editing(false)};
-  topbar.querySelector('[data-top="save"]').onclick=save;
-  bar.onmousedown=event=>event.preventDefault();
-  bar.onclick=event=>{
-    const button=event.target.closest('[data-float]');
-    if(!button)return;
-    const action=button.dataset.float;
-    if(action==='copy'){navigator.clipboard?.writeText(window.getSelection()?.toString()||'');return}
-    if(action==='edit'){if(!ensureEditorAccess())return;snapshot=content.innerHTML;editing(true);return}
-    if(action==='doubt'){if(!ensureEditorAccess())return;markDoubt();return}
-    format(action);
-  };
-  bar.onchange=event=>{
-    const control=event.target.closest('select[data-float]');
-    if(!control)return;
-    restore();
-    if(control.dataset.float==='color')document.execCommand('foreColor',false,control.value);
-    if(control.dataset.float==='font-size'){document.execCommand('fontSize',false,'7');content.querySelectorAll('font[size="7"]').forEach(node=>{node.removeAttribute('size');node.style.fontSize=control.value})}
-    control.value='';
-    content.focus();
-  };
-}
-function bindEditorHeader(){const editor=$('.requirements-editor');const notes=$('.notes');const head=$('.note-head');const content=editor?.querySelector('.requirements-editor-content');const topbar=editor?.querySelector('.requirements-editor-toolbar');if(!editor||!notes||!head||!content||!topbar)return;head.appendChild(topbar);const sync=()=>notes.classList.toggle('is-editing',content.isContentEditable);sync();new MutationObserver(sync).observe(content,{attributes:true,attributeFilter:['contenteditable']})}
-document.addEventListener('click',event=>{const button=event.target.closest?.('[data-top="save"]');const editor=$('.requirements-editor');const content=editor?.querySelector('.requirements-editor-content');if(!button||!editor||!content||!editor.dataset.requirementKey.endsWith(':active')&&!editor.dataset.requirementKey.endsWith(':canceled')&&!editor.dataset.requirementKey.endsWith(':expired'))return;event.preventDefault();event.stopImmediatePropagation();const stateKey=editor.dataset.requirementKey;const commonKey=stateKey.replace(/:(active|canceled|expired)$/,'')+':common';const stateHtml=content.querySelector('.requirement-state-content')?.innerHTML||'';const commonHtml=content.querySelector('.requirement-common-content')?.innerHTML||'';const status=editor.querySelector('[data-editor-status]');if(status)status.textContent='保存中';Promise.all([fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:stateKey,html:stateHtml})}),fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:commonKey,html:commonHtml})})]).then(responses=>{if(responses.some(response=>!response.ok))throw new Error();savedRequirements[stateKey]=stateHtml;savedRequirements[commonKey]=commonHtml;content.contentEditable='false';editor.classList.remove('is-editing');if(status)status.textContent='已保存'}).catch(()=>{if(status)status.textContent='保存失败，请确认已通过 Node 服务启动'})},true)
-document.addEventListener('selectionchange',()=>{const content=$('.requirements-editor-content');const bar=$('.requirements-floating-toolbar');const selection=window.getSelection();if(!content||!bar||!selection||selection.rangeCount===0||selection.isCollapsed||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode))return;const rect=selection.getRangeAt(0).getBoundingClientRect();bar.style.display='flex';bar.style.left=`${Math.max(8,Math.min(window.innerWidth-bar.offsetWidth-8,rect.left+rect.width/2-bar.offsetWidth/2))}px`;bar.style.top=`${Math.max(8,rect.top-bar.offsetHeight-8)}px`})
-function syncFloatingToolbarState(){const content=$('.requirements-editor-content');const bar=$('.requirements-floating-toolbar');const selection=window.getSelection();if(!content||!bar||!selection||selection.rangeCount===0||!content.contains(selection.anchorNode))return;const titles={copy:'复制',edit:'编辑',italic:'斜体',bold:'加粗',highlight:'文字高亮','cell-highlight':'高亮单元格','row-highlight':'高亮整行','column-highlight':'高亮整列'};bar.querySelectorAll('[data-float]').forEach(button=>{button.title=titles[button.dataset.float]||button.title});const size=bar.querySelector('select[data-float="font-size"] option:first-child');const color=bar.querySelector('select[data-float="color"] option:first-child');if(size)size.textContent='A↕';if(color)color.textContent='A●';const node=selection.anchorNode.nodeType===3?selection.anchorNode.parentElement:selection.anchorNode;const toggle=(name,active)=>bar.querySelector(`[data-float="${name}"]`)?.classList.toggle('is-active',Boolean(active));toggle('bold',document.queryCommandState?.('bold'));toggle('italic',document.queryCommandState?.('italic'));toggle('highlight',document.queryCommandState?.('hiliteColor')||document.queryCommandState?.('backColor'));const cell=node?.closest?.('td,th');toggle('cell-highlight',cell?.classList.contains('editor-cell-highlight'));toggle('row-highlight',cell?.closest('tr')?.classList.contains('editor-row-highlight'));if(cell){const row=cell.closest('tr');const index=[...row.children].indexOf(cell);toggle('column-highlight',[...content.querySelectorAll('tr')].every(tr=>tr.children[index]?.classList.contains('editor-cell-highlight')))}}
-document.addEventListener('selectionchange',syncFloatingToolbarState)
-document.addEventListener('selectionchange',()=>{const content=$('.requirements-editor-content');const bar=$('.requirements-floating-toolbar');const selection=window.getSelection();if(!content||!bar||!selection||selection.rangeCount===0||!content.contains(selection.anchorNode)||!content.contains(selection.focusNode))return;const startNode=selection.anchorNode.nodeType===3?selection.anchorNode.parentElement:selection.anchorNode;const endNode=selection.focusNode.nodeType===3?selection.focusNode.parentElement:selection.focusNode;const startCell=startNode?.closest?.('td,th');const endCell=endNode?.closest?.('td,th');const inSameCell=Boolean(startCell&&endCell&&startCell===endCell);bar.querySelectorAll('[data-float="cell-highlight"],[data-float="row-highlight"],[data-float="column-highlight"]').forEach(button=>{button.style.display=inSameCell?'':'none'})})
-document.addEventListener('selectionchange',()=>{const bar=$('.requirements-floating-toolbar');const selection=window.getSelection();if(!bar||!selection||selection.rangeCount===0||selection.isCollapsed){if(bar)bar.style.display='none'}})
-document.addEventListener('selectionchange',()=>{const content=$('.requirements-editor-content');const bar=$('.requirements-floating-toolbar');const selection=window.getSelection();const buttons=bar?.querySelectorAll('[data-float="cell-highlight"],[data-float="row-highlight"],[data-float="column-highlight"]');if(!buttons)return;const valid=Boolean(content&&selection&&selection.rangeCount&&!selection.isCollapsed&&content.contains(selection.anchorNode)&&content.contains(selection.focusNode));const start=valid?(selection.anchorNode.nodeType===3?selection.anchorNode.parentElement:selection.anchorNode):null;const end=valid?(selection.focusNode.nodeType===3?selection.focusNode.parentElement:selection.focusNode):null;const sameCell=Boolean(start?.closest?.('td,th')&&start.closest('td,th')===end?.closest?.('td,th'));buttons.forEach(button=>{button.style.display=sameCell?'':'none'})})
-document.addEventListener('click',event=>{const button=event.target.closest?.('[data-float="highlight"]');const content=$('.requirements-editor-content');const selection=window.getSelection();if(!button||!content||!selection||selection.rangeCount===0||selection.isCollapsed||!content.contains(selection.anchorNode))return;const node=selection.anchorNode.nodeType===3?selection.anchorNode.parentElement:selection.anchorNode;const background=node&&getComputedStyle(node).backgroundColor;const highlighted=background&&background!=='transparent'&&background!=='rgba(0, 0, 0, 0)'&&background!=='rgb(255, 255, 255)';event.preventDefault();event.stopImmediatePropagation();document.execCommand('hiliteColor',false,highlighted?'transparent':'#fff2c9');content.focus()},true)
-document.addEventListener('selectionchange',()=>{const content=$('.requirements-editor-content');const bar=$('.requirements-floating-toolbar');const selection=window.getSelection();if(!content||!bar||!selection||selection.rangeCount===0||!content.contains(selection.anchorNode))return;const node=selection.anchorNode.nodeType===3?selection.anchorNode.parentElement:selection.anchorNode;const background=node&&getComputedStyle(node).backgroundColor;const active=background&&background!=='transparent'&&background!=='rgba(0, 0, 0, 0)'&&background!=='rgb(255, 255, 255)';bar.querySelector('[data-float="highlight"]')?.classList.toggle('is-active',active)})
-document.addEventListener('mousedown',event=>{const content=event.target.closest?.('.requirements-editor-content');if(!content||!content.isContentEditable)return;if(event.target.closest('h3,p,li,td,th,figure,img,figcaption'))return;const blocks=[...content.querySelectorAll('h3,p,li,td,th')].filter(block=>{const rect=block.getBoundingClientRect();return rect.width>0&&rect.height>0});const previous=blocks.filter(block=>block.getBoundingClientRect().bottom<=event.clientY).pop();const next=blocks.find(block=>block.getBoundingClientRect().top>=event.clientY);if(!previous||!next||previous===next)return;const walker=document.createTreeWalker(previous,NodeFilter.SHOW_TEXT);let lastText=null;while(walker.nextNode())lastText=walker.currentNode;if(lastText){event.preventDefault();const selection=window.getSelection();const range=document.createRange();range.setStart(lastText,lastText.length);range.collapse(true);selection.removeAllRanges();selection.addRange(range)}})
-document.addEventListener('selectionchange',()=>{const editor=$('.requirements-editor');const bar=$('.requirements-floating-toolbar');const primary=bar?.querySelector('[data-float="copy"],[data-float="edit"]');if(editor&&!editor.classList.contains('is-editing')&&bar&&!primary)bar.style.display='none'})
-document.addEventListener('mouseup',()=>{const editor=$('.requirements-editor');const bar=$('.requirements-floating-toolbar');const primary=bar?.querySelector('[data-float="copy"],[data-float="edit"]');if(editor&&!editor.classList.contains('is-editing')&&bar&&!primary)bar.style.display='none'})
-function ensureIndentControls(){const editor=$('.requirements-editor');const bar=$('.requirements-floating-toolbar');if(!bar)return;if(!bar.dataset.indentObserved){bar.dataset.indentObserved='true';new MutationObserver(ensureIndentControls).observe(bar,{childList:true})}if(!editor||!editor.classList.contains('is-editing')||bar.querySelector('[data-float="indent"]'))return;bar.insertAdjacentHTML('beforeend','<button type="button" data-float="outdent" title="减少缩进"></button><button type="button" data-float="indent" title="增加缩进"></button>')}
-new MutationObserver(ensureIndentControls).observe($('#notes'),{childList:true,subtree:true});document.addEventListener('click',event=>{const button=event.target.closest?.('[data-float="indent"],[data-float="outdent"]');const editor=$('.requirements-editor');const content=editor?.querySelector('.requirements-editor-content');if(!button||!editor?.classList.contains('is-editing')||!content)return;event.preventDefault();event.stopImmediatePropagation();content.focus();document.execCommand(button.dataset.float==='indent'?'indent':'outdent');content.focus()},true)
-function syncReadonlyFloatingToolbar(){const editor=$('.requirements-editor');const content=editor?.querySelector('.requirements-editor-content');const bar=$('.requirements-floating-toolbar');if(!editor||!content||!bar||content.isContentEditable||bar.querySelector('[data-float="copy"]'))return;bar.innerHTML='<button data-float="copy">复制</button><button data-float="edit">编辑</button>';bar.style.display='none'}
-new MutationObserver(syncReadonlyFloatingToolbar).observe($('#notes'),{childList:true,subtree:true,attributes:true,attributeFilter:['contenteditable']});
 function showReleaseNote(id){state.noteMode='release';state.activeAnnotation=null;state.selectedRelease=id;syncWorkspaceMode();renderPhone();renderNotes()}
 function isRecurringPlan(){return state.paymentPlan==='annual'||state.paymentPlan==='monthly'}
 function clearTextSelection(){const selection=window.getSelection?.();if(selection)selection.removeAllRanges()}
@@ -951,10 +631,83 @@ const showRenewalActionBase=showRenewalAction;showRenewalAction=function(action)
 function bindRenewalFooter(){if(state.pageId!=='renewal')return;document.querySelector('.renewal-help')?.remove();const renewal=$('.renewal');if(!renewal)return;let links=renewal.querySelector('.renewal-action-links');if(!links){renewal.insertAdjacentHTML('beforeend','<nav class="renewal-action-links" aria-label="续费服务操作"><button data-renewal-action="protocol">自动续费协议</button><i></i><button data-renewal-action="cancel">取消续费</button><i></i><button data-renewal-action="refund">申请退款</button></nav>');links=renewal.querySelector('.renewal-action-links')}links.querySelectorAll('[data-renewal-action]').forEach(button=>button.onclick=()=>showRenewalAction(button.dataset.renewalAction))}
 function normalizeRenewalCommonRequirements(){const commonKey='change:c-subscription-renewal:common';const legacyKey='change:c-subscription-renewal';if(!savedRequirements[commonKey]&&!savedRequirements[legacyKey])return;const common=document.createElement('div');common.innerHTML=savedRequirements[commonKey]||savedRequirements[legacyKey];common.querySelectorAll('.requirement-section').forEach(section=>{const title=section.querySelector('h3')?.textContent?.trim();if(title==='会员卡片'||title==='下次扣费信息'||title==='状态说明')section.remove()});if(!common.innerHTML.includes('底部操作入口'))common.insertAdjacentHTML('beforeend','<section class="requirement-section"><h3>底部操作入口</h3><ul class="requirement-list"><li>页面底部展示三个文本按钮：自动续费协议、取消续费、申请退款。</li><li>点击“自动续费协议”，弹窗展示自动续费协议内容。</li><li>点击“取消续费”，弹窗展示两种取消方式：前往微信支付的自动续费页面关闭，或点击页面上方的自动续费开关关闭。</li><li>点击“申请退款”，弹窗提示用户联系客服，由客服协助核实订单并处理退款。</li></ul></section>');const html=common.innerHTML;if(savedRequirements[commonKey]!==html){savedRequirements[commonKey]=html;fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:commonKey,html})}).catch(()=>{})}}
 function normalizeEmptyExpiredState(){const key='change:c-subscription-renewal:expired';if(Object.prototype.hasOwnProperty.call(savedRequirements,key)&&savedRequirements[key]==='')savedRequirements[key]='<!--empty-state-->'}
+/* 页面结构原先只存在于前端常量中，因此导航和页面无法编辑。
+   轻量结构保存在现有 requirements 数据源的独立记录中，和正文一样受编辑密码保护。 */
+const workspaceStructureKey='workspace:structure:v1';
+let workspaceStructure={documentTitle:'需求说明'};
+const clone=value=>JSON.parse(JSON.stringify(value));
+function serialiseWorkspacePage(page){const base={id:page.id,name:page.name,group:page.group,hidden:Boolean(page.hidden),custom:Boolean(page.__workspaceCustom)};return base.custom?{...base,pageNote:clone(page.pageNote),states:clone(page.states)}:base}
+function workspaceStructurePayload(){return JSON.stringify({documentTitle:workspaceStructure.documentTitle||'需求说明',pages:data.pages.map(serialiseWorkspacePage),releases:data.releases.map(item=>({id:item.id,name:item.name,hidden:Boolean(item.hidden),custom:Boolean(item.__workspaceCustom),changes:item.__workspaceCustom?clone(item.changes):undefined}))})}
+async function persistWorkspaceStructure(){if(!ensureEditorAccess())return false;const html=workspaceStructurePayload();try{const response=await fetch('/api/requirements',{method:'POST',headers:requirementsWriteHeaders(),body:JSON.stringify({key:workspaceStructureKey,html})});if(!response.ok)throw new Error();savedRequirements[workspaceStructureKey]=html;workspaceStructure=JSON.parse(html);showToast('页面结构已保存');return true}catch{showToast('保存失败，请确认已通过 Node 服务启动');return false}}
+function loadWorkspaceStructure(){const raw=savedRequirements[workspaceStructureKey];if(!raw)return;try{const saved=JSON.parse(raw);if(!Array.isArray(saved.pages))return;workspaceStructure.documentTitle=typeof saved.documentTitle==='string'&&saved.documentTitle.trim()?saved.documentTitle.trim():'需求说明';const known=new Map(data.pages.map(page=>[page.id,page])),ordered=[];saved.pages.forEach(entry=>{if(!entry||typeof entry.id!=='string')return;let page=known.get(entry.id);if(page){page.name=typeof entry.name==='string'&&entry.name.trim()?entry.name.trim():page.name;page.group=typeof entry.group==='string'&&entry.group.trim()?entry.group.trim():page.group;page.hidden=Boolean(entry.hidden)}else if(entry.custom&&entry.pageNote&&Array.isArray(entry.states)){page={id:entry.id,name:entry.name||'未命名页面',group:entry.group||'未分组',hidden:Boolean(entry.hidden),__workspaceCustom:true,pageNote:entry.pageNote,states:entry.states.length?entry.states:[{id:'default',name:'默认态',stateNote:{rule:'请补充当前页面状态说明。'}}]}}if(page){ordered.push(page);known.delete(entry.id)}});data.pages.splice(0,data.pages.length,...ordered,...known.values());if(Array.isArray(saved.releases)){const knownReleases=new Map(data.releases.map(item=>[item.id,item])),orderedReleases=[];saved.releases.forEach(entry=>{if(!entry||typeof entry.id!=='string')return;let item=knownReleases.get(entry.id);if(item){item.name=entry.name||item.name;item.hidden=Boolean(entry.hidden)}else if(entry.custom){item={id:entry.id,name:entry.name||'新版本',changes:Array.isArray(entry.changes)?entry.changes:[],hidden:Boolean(entry.hidden),__workspaceCustom:true}}if(item){orderedReleases.push(item);knownReleases.delete(entry.id)}});data.releases.splice(0,data.releases.length,...orderedReleases,...knownReleases.values())}}catch{/* 忽略旧版或损坏记录，继续使用内置导航。 */}}
+function pageTree(){const visible=data.pages.filter(page=>!page.hidden),groups=[...new Set(visible.map(page=>page.group))],row=page=>`<div class="page-node" data-page-row="${escape(page.id)}"><button class="page-select" data-page="${escape(page.id)}" data-first-state="${escape(page.states[0]?.id||'default')}"><i class="dot"></i><span>${escape(page.name)}</span></button></div>`;return `${groups.map(group=>`<section class="page-group"><div class="tree-title-row"><h3>${escape(group)}</h3><button type="button" class="tree-group-edit" data-nav-action="rename-group" data-group="${escape(group)}" title="修改导航分组">✎</button></div>${visible.filter(page=>page.group===group).map(row).join('')}</section>`).join('')}<div class="nav-editor"><button type="button" data-nav-action="add-group">＋ 分组</button></div>`}
+function nextPageId(){return `page-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`}
+async function workspaceNavigationAction(action,group){if(!ensureEditorAccess())return;if(action==='add-page'||action==='add-group'){const name=action==='add-page'?window.prompt('页面名称','新页面'):'新页面';if(!name?.trim())return;const groupName=action==='add-page'?window.prompt('放入哪个导航分组？',data.pages.find(page=>!page.hidden)?.group||'未分组'):window.prompt('导航分组名称','新分组');if(!groupName?.trim())return;const page={id:nextPageId(),name:name.trim(),group:groupName.trim(),__workspaceCustom:true,pageNote:{description:'请填写此页面的需求说明。',path:'待补充进入路径。',modules:[]},states:[{id:'default',name:'默认态',stateNote:{rule:'请补充当前页面的状态规则。'}}]};data.pages.push(page);state.tree='page';state.pageId=page.id;state.stateId='default';state.selectedChange=null;state.noteMode='page';await persistWorkspaceStructure();renderAll();return}if(action==='rename-group'){const next=window.prompt('导航分组名称',group);if(!next?.trim()||next.trim()===group)return;data.pages.filter(page=>page.group===group).forEach(page=>page.group=next.trim());await persistWorkspaceStructure();renderTree()}}
+function cleanEditorUi(content){content?.querySelectorAll('[data-editor-ui]').forEach(node=>node.remove())}
+function requirementEditor(){return $('.requirements-editor')}function editableRequirementContent(){const content=requirementEditor()?.querySelector('.requirements-editor-content');return content?.isContentEditable?content:null}
+function focusText(node){if(!node)return;const range=document.createRange();range.selectNodeContents(node);range.collapse(false);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);node.focus?.()}
+function selectedRequirementSection(content){const selection=window.getSelection(),node=selection?.anchorNode?.nodeType===Node.TEXT_NODE?selection.anchorNode.parentElement:selection?.anchorNode;return node?.closest?.('.requirement-section')||content.querySelector(':scope > .requirement-section:last-of-type')}
+function selectedTableCell(){const selection=window.getSelection(),node=selection?.anchorNode?.nodeType===Node.TEXT_NODE?selection.anchorNode.parentElement:selection?.anchorNode;return node?.closest?.('td,th')}
+function requirementTableGrid(table){const grid=[],positions=new Map();[...table.rows].forEach((row,r)=>{grid[r]||=[];let column=0;[...row.cells].forEach(cell=>{while(grid[r][column])column++;positions.set(cell,column);for(let y=r;y<r+cell.rowSpan;y++){grid[y]||=[];for(let x=column;x<column+cell.colSpan;x++)grid[y][x]=cell}column+=cell.colSpan})});return {grid,positions,width:Math.max(0,...grid.map(row=>row.length))}}
+function changeRequirementTable(action){
+  const content=editableRequirementContent(),cell=selectedTableCell(),table=cell?.closest('table');
+  if(!content||!table){showToast('请先将光标放入表格单元格');return}
+  const row=cell.parentElement,rows=[...table.rows],rowIndex=rows.indexOf(row),layout=requirementTableGrid(table),column=layout.positions.get(cell);
+  if(action==='add-row'){
+    const next=document.createElement('tr');
+    const occupied=new Set();
+    layout.grid[rowIndex+1]?.forEach((source,index)=>{if(source&&rows.indexOf(source.parentElement)<=rowIndex&&rows.indexOf(source.parentElement)+source.rowSpan>rowIndex+1){occupied.add(index);source.rowSpan++}});
+    for(let index=0;index<layout.width;index++)if(!occupied.has(index)){const part=document.createElement(row.parentElement.tagName==='THEAD'?'th':'td');part.textContent='内容';next.append(part)}
+    row.after(next);
+  }else if(action==='delete-row'){
+    if(row.parentElement.rows.length<=1){showToast('表格至少保留一行');return}
+    row.remove();
+  }else if(action==='add-column'){
+    rows.forEach(current=>{const part=document.createElement(current.parentElement.tagName==='THEAD'?'th':'td');part.textContent=part.tagName==='TH'?'列标题':'内容';const following=[...current.cells].find(existing=>layout.positions.get(existing)>column);current.insertBefore(part,following||null)});
+  }else if(action==='delete-column'){
+    if(layout.width<=1){showToast('表格至少保留一列');return}
+    const affected=new Set(layout.grid.map(cells=>cells[column]).filter(Boolean));
+    affected.forEach(target=>{if(target.colSpan>1)target.colSpan--;else target.remove()});
+  }
+}
 function renderAll(){syncWorkspaceMode();renderTree();renderTools();renderPhone();syncRenewalPreview();renderRenewalToggle();bindRenewalFooter();renderNotes()}
-$('#treeSwitch').onclick=()=>{state.tree=state.tree==='release'?'page':'release';state.selectedChange=null;state.noteMode='page';state.pageNoteRequested=state.tree==='page';state.activeAnnotation=null;renderAll()};$('#fullNote').onclick=()=>{state.noteMode='page';state.pageNoteRequested=true;state.activeAnnotation=null;state.selectedChange=null;renderAll()};$('#cancel').onclick=closeSheet;$('#mask').onclick=closeSheet;$('#confirm').onclick=confirmAction;loadRequirements().finally(()=>{normalizeRenewalCommonRequirements();normalizeEmptyExpiredState();renderAll()});
+
+/* 正文只来自 /api/requirements。旧版内置样例仅保留作开发历史，绝不能在读取失败时展示或写回。 */
+let requirementsLoadError='';
+let requirementsLoadSucceeded=false;
+function missingRequirementNote(){
+  const detail=requirementsLoadError?'暂时无法读取已保存的需求内容。请检查数据服务后刷新页面。':'这部分内容尚未保存，因而不会用旧版本或模板内容替代。';
+  return `<article class="requirements-note" role="status" style="padding:22px;border:1px solid #f1d7a8;border-radius:12px;background:#fffaf0;color:#6d5732;line-height:1.75"><strong>内容未加载</strong><p style="margin:8px 0 0">${detail}</p></article>`;
+}
+const requirementsNoteFromSavedData=requirementsNote;
+requirementsNote=function(req,key){
+  if(req.states)return stateRequirementsNote(req,key);
+  return Object.prototype.hasOwnProperty.call(savedRequirements,key)||requirementsLoadSucceeded?requirementsNoteFromSavedData(req,key):missingRequirementNote();
+};
+const stateRequirementsNoteFromDefaults=stateRequirementsNote;
+stateRequirementsNote=function(req,key){
+  const activeState=req.states.find(item=>item.id===state.stateId)||req.states[0];
+  const stateKey=`${key}:${activeState.id}`;
+  const commonKey=`${key}:common`;
+  let stateHtml=savedRequirements[stateKey]||'';
+  let commonHtml=savedRequirements[commonKey]||savedRequirements[key]||'';
+  if(!stateHtml&&!commonHtml&&!Object.prototype.hasOwnProperty.call(savedRequirements,stateKey)&&!Object.prototype.hasOwnProperty.call(savedRequirements,commonKey))return requirementsLoadSucceeded?stateRequirementsNoteFromDefaults(req,key):missingRequirementNote();
+  if(stateHtml.includes('requirement-state-content')){
+    const temp=document.createElement('div');
+    temp.innerHTML=stateHtml;
+    stateHtml=temp.querySelector('.requirement-state-content')?.innerHTML||'';
+    commonHtml=commonHtml||temp.querySelector('.requirement-common-content')?.innerHTML||'';
+  }
+  const stateContent=stateHtml||'<p class="requirement-state-summary">当前状态暂无已保存内容。</p>';
+  const commonContent=commonHtml?`<div class="requirement-common-heading">通用页面需求</div><div class="requirement-common-content">${commonHtml}</div>`:'';
+  return `<div class="requirements-editor" data-requirement-key="${escape(stateKey)}"><div class="requirements-editor-toolbar"><button type="button" data-editor-action="edit">编辑</button><button type="button" data-editor-action="bold">加粗</button><button type="button" data-editor-action="highlight">高亮</button><button type="button" data-editor-action="row-highlight">高亮表格行</button><small data-editor-status>只读</small><button type="button" class="save" data-editor-action="save">保存</button></div><nav class="requirement-state-tabs">${req.states.map(item=>`<button class="${item.id===activeState.id?'active':''}" data-requirement-state="${item.id}">${escape(item.name)}</button>`).join('')}</nav><article class="requirements-note requirements-editor-content" contenteditable="false"><div class="requirement-state-content">${stateContent}</div>${commonContent}</article></div>`;
+};
+
+$('#treeSwitch').onclick=()=>{state.tree=state.tree==='release'?'page':'release';state.selectedChange=null;state.noteMode='page';state.pageNoteRequested=state.tree==='page';state.activeAnnotation=null;renderAll()};$('#fullNote').onclick=()=>{state.noteMode='page';state.pageNoteRequested=true;state.activeAnnotation=null;state.selectedChange=null;renderAll()};$('#cancel').onclick=closeSheet;$('#mask').onclick=closeSheet;$('#confirm').onclick=confirmAction;
+loadRequirements().catch(error=>{savedRequirements={};requirementsLoadError=error?.message||'无法读取需求数据'}).finally(()=>{loadWorkspaceStructure();renderAll()});
 // 线上唯一数据源：Vercel API 读取 Supabase；不再维护离线 JS 数据副本。
-async function loadRequirements(){const response=await fetch('/api/requirements',{cache:'no-store'});if(!response.ok)throw new Error('无法读取线上需求数据');const payload=await response.json();savedRequirements=payload.requirements||{}}
+async function loadRequirements(){const response=await fetch('/api/requirements',{cache:'no-store'});if(!response.ok)throw new Error('无法读取线上需求数据');const payload=await response.json();savedRequirements=payload.requirements||{};requirementsLoadSucceeded=true}
 </script>
+<script src="editor-controller.js"></script>
 </body>
 </html>
