@@ -415,7 +415,7 @@ function bindUnifiedEditor() {
   editorAbort?.abort();
   editorSession?.historyObserver?.disconnect();
   editorAbort = new AbortController();
-  const editor = document.querySelector('#notes > .requirements-editor');
+  const editor = document.querySelector('#notes .requirements-editor');
   const head = document.querySelector('.note-head');
   head?.querySelector('.workspace-editor-controls')?.remove();
   document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover').forEach(node => node.remove());
