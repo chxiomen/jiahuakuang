@@ -219,7 +219,8 @@
 /* 线上版只从 /api/requirements 读取数据。编辑入口：公开网址后加 ?edit=1。 */
 const onlineEditorMode=new URLSearchParams(window.location.search).get('edit')==='1';
 if(!onlineEditorMode)document.documentElement.classList.add('public-readonly');
-let editorPassword=sessionStorage.getItem('requirementsEditorPassword')||'';
+// 仅保存在当前电脑的浏览器中；清除本站点数据后才会再次要求输入。
+let editorPassword=localStorage.getItem('requirementsEditorPassword')||'';
 function requirementsWriteHeaders(){return {'Content-Type':'application/json','x-editor-password':editorPassword}}
 function ensureEditorAccess(){
   if(!onlineEditorMode)return false;
@@ -227,7 +228,7 @@ function ensureEditorAccess(){
     const value=window.prompt('请输入编辑密码');
     if(!value)return false;
     editorPassword=value;
-    sessionStorage.setItem('requirementsEditorPassword',value);
+    localStorage.setItem('requirementsEditorPassword',value);
   }
   return true;
 }
