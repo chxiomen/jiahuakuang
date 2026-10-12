@@ -3,8 +3,8 @@ let editorSession = null;
 let editorAbort = null;
 let navigationMenu = null;
 
-function restoreAutomaticTableImageSizes(root) {
-  const fittedImages = [ ...(root.matches?.('img[data-table-width-fit]') ? [root] : []), ...root.querySelectorAll('img[data-table-width-fit]') ];
+function restoreAutomaticRequirementImageSizes(root) {
+  const fittedImages = [ ...(root.matches?.('img[data-requirement-width-fit]') ? [root] : []), ...root.querySelectorAll('img[data-requirement-width-fit]') ];
   fittedImages.forEach(image => {
     const width = image.dataset.beforeFitWidth || '';
     const widthPriority = image.dataset.beforeFitWidthPriority || '';
@@ -14,14 +14,14 @@ function restoreAutomaticTableImageSizes(root) {
     else image.style.removeProperty('width');
     if (height) image.style.setProperty('height', height, heightPriority);
     else image.style.removeProperty('height');
-    ['tableWidthFit','beforeFitWidth','beforeFitWidthPriority','beforeFitHeight','beforeFitHeightPriority'].forEach(key => delete image.dataset[key]);
+    ['requirementWidthFit','beforeFitWidth','beforeFitWidthPriority','beforeFitHeight','beforeFitHeightPriority'].forEach(key => delete image.dataset[key]);
   });
 }
 
 function editorContentHtml(session) {
   const copy = session.content.cloneNode(true);
   copy.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
-  restoreAutomaticTableImageSizes(copy);
+  restoreAutomaticRequirementImageSizes(copy);
   return copy.innerHTML;
 }
 
@@ -37,7 +37,25 @@ function requirementCellTextWidth(cell) {
   return width;
 }
 
-function fitRequirementTableImages(content) {
+function fitRequirementImageToText(image, targetWidth) {
+  if (!image.naturalWidth || targetWidth <= 0) return;
+  if (image.naturalWidth <= targetWidth) {
+    restoreAutomaticRequirementImageSizes(image);
+    return;
+  }
+  if (!image.hasAttribute('data-requirement-width-fit')) {
+    image.dataset.requirementWidthFit = 'true';
+    image.dataset.beforeFitWidth = image.style.getPropertyValue('width');
+    image.dataset.beforeFitWidthPriority = image.style.getPropertyPriority('width');
+    image.dataset.beforeFitHeight = image.style.getPropertyValue('height');
+    image.dataset.beforeFitHeightPriority = image.style.getPropertyPriority('height');
+  }
+  const fittedWidth = `${targetWidth}px`;
+  if (image.style.getPropertyValue('width') !== fittedWidth) image.style.setProperty('width', fittedWidth);
+  if (image.style.getPropertyValue('height') !== 'auto') image.style.setProperty('height', 'auto');
+}
+
+function fitRequirementImagesToText(content) {
   if (!content) return;
   content.querySelectorAll('table').forEach(table => {
     const rows = [...table.rows];
@@ -69,32 +87,21 @@ function fitRequirementTableImages(content) {
     spans.forEach((span, cell) => {
       const targetWidth = textWidths.slice(span.column, span.column + span.columnSpan).reduce((total, width) => total + (width || 0), 0);
       if (targetWidth <= 0) return;
-      cell.querySelectorAll('img').forEach(image => {
-        if (!image.naturalWidth) return;
-        const originalWidth = Number(image.naturalWidth);
-        if (originalWidth <= targetWidth) {
-          restoreAutomaticTableImageSizes(image);
-          return;
-        }
-        if (!image.hasAttribute('data-table-width-fit')) {
-          image.dataset.tableWidthFit = 'true';
-          image.dataset.beforeFitWidth = image.style.getPropertyValue('width');
-          image.dataset.beforeFitWidthPriority = image.style.getPropertyPriority('width');
-          image.dataset.beforeFitHeight = image.style.getPropertyValue('height');
-          image.dataset.beforeFitHeightPriority = image.style.getPropertyPriority('height');
-        }
-        const fittedWidth = `${targetWidth}px`;
-        if (image.style.getPropertyValue('width') !== fittedWidth) image.style.setProperty('width', fittedWidth);
-        if (image.style.getPropertyValue('height') !== 'auto') image.style.setProperty('height', 'auto');
-      });
+      cell.querySelectorAll('img').forEach(image => fitRequirementImageToText(image, targetWidth));
     });
+  });
+  content.querySelectorAll('.requirement-section').forEach(section => {
+    const textWidth = [...section.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,td,th,figcaption')]
+      .reduce((longest, node) => Math.max(longest, requirementCellTextWidth(node)), 0);
+    if (textWidth <= 0) return;
+    section.querySelectorAll('img').forEach(image => { if (!image.closest('table')) fitRequirementImageToText(image, textWidth); });
   });
 }
 
-function scheduleRequirementTableImageFit(session) {
+function scheduleRequirementImageFit(session) {
   if (!session?.content) return;
   cancelAnimationFrame(session.imageFitFrame || 0);
-  session.imageFitFrame = requestAnimationFrame(() => fitRequirementTableImages(session.content));
+  session.imageFitFrame = requestAnimationFrame(() => fitRequirementImagesToText(session.content));
 }
 
 function editorDirty(session = editorSession) {
@@ -187,7 +194,7 @@ function travelRequirementHistory(direction) {
   const previous = session.history[nextIndex];
   session.content.innerHTML = previous.html;
   session.title.textContent = previous.title;
-  scheduleRequirementTableImageFit(session);
+  scheduleRequirementImageFit(session);
   session.historyObserver.takeRecords();
   session.historyApplying = false;
   session.range = null;
@@ -265,7 +272,7 @@ function cancelRequirementEdit(force = false) {
   if (!force && editorDirty(session) && !window.confirm('确定放弃当前需求说明的未保存修改吗？')) return false;
   session.content.innerHTML = session.snapshot.html;
   session.title.textContent = session.snapshot.title;
-  scheduleRequirementTableImageFit(session);
+  scheduleRequirementImageFit(session);
   session.content.contentEditable = 'false';
   session.title.contentEditable = 'false';
   session.editor.classList.remove('is-editing');
@@ -282,7 +289,7 @@ function cancelRequirementEdit(force = false) {
 function requirementWrites(session) {
   const copy = session.content.cloneNode(true);
   copy.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
-  restoreAutomaticTableImageSizes(copy);
+  restoreAutomaticRequirementImageSizes(copy);
   const rule = copy.querySelector('[data-repurchase-rules]');
   const writes = [];
   if (rule) {
@@ -452,12 +459,12 @@ function bindUnifiedEditor() {
   toolbar.querySelector('[data-editor-cancel]').onclick = () => cancelRequirementEdit();
   toolbar.querySelector('[data-editor-save]').onclick = saveRequirementEdit;
   const session = editorSession;
-  scheduleRequirementTableImageFit(session);
-  session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementTableImageFit(session); });
+  scheduleRequirementImageFit(session);
+  session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementImageFit(session); });
   session.historyObserver.observe(content, { subtree: true, childList: true, characterData: true, attributes: true });
   session.historyObserver.observe(title, { subtree: true, childList: true, characterData: true, attributes: true });
   content.addEventListener('input', () => recordRequirementHistory(session), { signal });
-  content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementTableImageFit(session); }, { capture: true, signal });
+  content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementImageFit(session); }, { capture: true, signal });
   title.addEventListener('input', () => recordRequirementHistory(session), { signal });
   content.addEventListener('focusin', () => { session.lastFocus = 'content'; }, { signal });
   content.querySelectorAll('.requirement-section').forEach(decorateRequirementModule);
