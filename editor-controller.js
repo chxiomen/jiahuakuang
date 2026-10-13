@@ -223,6 +223,7 @@ function editorFloatingSelection() {
 function updateFloatingToolbar() {
   const session = editorSession;
   if (!session) return;
+  if (session.toolbarInteracting || session.floating.contains(document.activeElement)) return;
   const range = editorFloatingSelection();
   const bar = session.floating;
   if (!range) { bar.hidden = true; return; }
@@ -231,7 +232,7 @@ function updateFloatingToolbar() {
   const end = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentElement : range.endContainer;
   const cell = node?.closest?.('td,th');
   const sameCell = cell && cell === end?.closest?.('td,th');
-  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="12px">小</option><option value="14px">中</option><option value="16px">大</option><option value="18px">大+</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
+  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
   bar.innerHTML = `${format}<button data-float="doubt">存疑</button>`;
   bar.hidden = false;
   const rect = range.getBoundingClientRect();
@@ -380,6 +381,26 @@ function markEditorDoubt() {
   void persistReadingDoubt();
 }
 
+function normalizeEditorLists(content) {
+  const selected = window.getSelection()?.anchorNode;
+  const selectedElement = selected?.nodeType === Node.TEXT_NODE ? selected.parentElement : selected;
+  const activeList = selectedElement?.closest?.('ol,ul');
+  if (activeList && content.contains(activeList)) activeList.classList.add('requirement-list');
+  content.querySelectorAll('p > ol,p > ul').forEach(list => {
+    const paragraph = list.parentElement;
+    const before = paragraph.cloneNode(false);
+    const after = paragraph.cloneNode(false);
+    while (paragraph.firstChild !== list) before.append(paragraph.firstChild);
+    paragraph.removeChild(list);
+    while (paragraph.firstChild) after.append(paragraph.firstChild);
+    if (before.textContent.trim() || before.querySelector('img,br')) paragraph.before(before);
+    paragraph.before(list);
+    if (after.textContent.trim() || after.querySelector('img,br')) paragraph.before(after);
+    paragraph.remove();
+    list.classList.add('requirement-list');
+  });
+}
+
 function applyEditorFormat(action, value) {
   const session = editorSession;
   if (!session?.editing || !restoreEditorSelection()) return;
@@ -387,7 +408,9 @@ function applyEditorFormat(action, value) {
   const node = selection.anchorNode?.nodeType === Node.TEXT_NODE ? selection.anchorNode.parentElement : selection.anchorNode;
   const cell = node?.closest?.('td,th');
   const table = cell?.closest('table');
-  if (['bold','italic','underline','indent','outdent'].includes(action)) document.execCommand(action);
+  const commands = { 'ordered-list': 'insertOrderedList', 'unordered-list': 'insertUnorderedList' };
+  if (commands[action]) { document.execCommand(commands[action]); normalizeEditorLists(session.content); }
+  else if (['bold','italic','underline','indent','outdent'].includes(action)) document.execCommand(action);
   else if (action === 'highlight') document.execCommand('hiliteColor', false, '#fff2c9');
   else if (action === 'color' && value) document.execCommand('foreColor', false, value);
   else if (action === 'font-size' && value) {
@@ -437,7 +460,7 @@ function bindUnifiedEditor() {
   doubt.hidden = true;
   doubt.style.display = 'none';
   document.body.append(floating, doubt);
-  editorSession = { editor, notes: document.querySelector('.notes'), content, title, toolbar, controls, floating, doubt, editing: false, saving: false, snapshot: { html: content.innerHTML, title: title.textContent.trim() }, range: null, history: [], historyIndex: -1, historyApplying: false, lastFocus: 'content' };
+  editorSession = { editor, notes: document.querySelector('.notes'), content, title, toolbar, controls, floating, doubt, editing: false, saving: false, toolbarInteracting: false, snapshot: { html: content.innerHTML, title: title.textContent.trim() }, range: null, history: [], historyIndex: -1, historyApplying: false, lastFocus: 'content' };
   const signal = editorAbort.signal;
   controls.querySelector('[data-editor-start]').onclick = startRequirementEdit;
   toolbar.querySelector('[data-editor-undo]').onclick = () => travelRequirementHistory(-1);
@@ -465,7 +488,9 @@ function bindUnifiedEditor() {
   content.addEventListener('mouseup', updateFloatingToolbar, { signal });
   content.addEventListener('keyup', updateFloatingToolbar, { signal });
   content.addEventListener('click', event => { const marker = event.target.closest('.doubt-mark'); if (marker) showDoubtPopover(marker); }, { signal });
-  floating.addEventListener('mousedown', event => { if (event.target.tagName !== 'SELECT') event.preventDefault(); }, { signal });
+  floating.addEventListener('mousedown', event => { if (event.target.tagName === 'SELECT') session.toolbarInteracting = true; else event.preventDefault(); }, { signal });
+  floating.addEventListener('focusin', event => { if (event.target.matches('select[data-float]')) session.toolbarInteracting = true; }, { signal });
+  floating.addEventListener('focusout', event => { if (event.target.matches('select[data-float]')) requestAnimationFrame(() => { session.toolbarInteracting = false; updateFloatingToolbar(); }); }, { signal });
   floating.addEventListener('click', event => {
     const action = event.target.closest('[data-float]')?.dataset.float;
     if (!action) return;
@@ -473,7 +498,7 @@ function bindUnifiedEditor() {
     else if (action === 'doubt') markEditorDoubt();
     else applyEditorFormat(action);
   }, { signal });
-  floating.addEventListener('change', event => { const control = event.target.closest('select[data-float]'); if (!control?.value) return; applyEditorFormat(control.dataset.float, control.value); }, { signal });
+  floating.addEventListener('change', event => { const control = event.target.closest('select[data-float]'); if (!control?.value) return; applyEditorFormat(control.dataset.float, control.value); session.toolbarInteracting = false; updateFloatingToolbar(); }, { signal });
   document.addEventListener('selectionchange', updateFloatingToolbar, { signal });
   document.addEventListener('mousedown', event => { if (!doubt.contains(event.target) && !event.target.closest('.doubt-mark')) { doubt.hidden = true; doubt.style.display = 'none'; } }, { signal });
 }
