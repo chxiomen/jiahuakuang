@@ -385,19 +385,20 @@ function normalizeEditorLists(content) {
   const selected = window.getSelection()?.anchorNode;
   const selectedElement = selected?.nodeType === Node.TEXT_NODE ? selected.parentElement : selected;
   const activeList = selectedElement?.closest?.('ol,ul');
-  if (activeList && content.contains(activeList)) activeList.classList.add('requirement-list');
-  content.querySelectorAll('p > ol,p > ul').forEach(list => {
-    const paragraph = list.parentElement;
-    const before = paragraph.cloneNode(false);
-    const after = paragraph.cloneNode(false);
-    while (paragraph.firstChild !== list) before.append(paragraph.firstChild);
-    paragraph.removeChild(list);
-    while (paragraph.firstChild) after.append(paragraph.firstChild);
-    if (before.textContent.trim() || before.querySelector('img,br')) paragraph.before(before);
-    paragraph.before(list);
-    if (after.textContent.trim() || after.querySelector('img,br')) paragraph.before(after);
-    paragraph.remove();
-    list.classList.add('requirement-list');
+  const styleList = list => list.classList.toggle('requirement-list', !list.closest('.membership-core'));
+  if (activeList && content.contains(activeList)) styleList(activeList);
+  content.querySelectorAll('p > ol,p > ul,h1 > ol,h1 > ul,h2 > ol,h2 > ul,h3 > ol,h3 > ul,h4 > ol,h4 > ul,h5 > ol,h5 > ul,h6 > ol,h6 > ul').forEach(list => {
+    const wrapper = list.parentElement;
+    const before = wrapper.cloneNode(false);
+    const after = wrapper.cloneNode(false);
+    while (wrapper.firstChild !== list) before.append(wrapper.firstChild);
+    wrapper.removeChild(list);
+    while (wrapper.firstChild) after.append(wrapper.firstChild);
+    if (before.textContent.trim() || before.querySelector('img,br')) wrapper.before(before);
+    wrapper.before(list);
+    if (after.textContent.trim() || after.querySelector('img,br')) wrapper.before(after);
+    wrapper.remove();
+    styleList(list);
   });
 }
 
