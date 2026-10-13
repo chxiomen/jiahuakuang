@@ -290,12 +290,7 @@ function requirementWrites(session) {
   const copy = session.content.cloneNode(true);
   copy.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
   restoreAutomaticRequirementImageSizes(copy);
-  const rule = copy.querySelector('[data-repurchase-rules]');
   const writes = [];
-  if (rule) {
-    writes.push({ key: 'change:c-repurchase-rules:rules', html: rule.innerHTML });
-    rule.closest('.requirement-section')?.remove();
-  }
   const key = session.editor.dataset.requirementKey;
   const state = copy.querySelector('.requirement-state-content');
   const common = copy.querySelector('.requirement-common-content');
@@ -425,16 +420,6 @@ function bindUnifiedEditor() {
   const title = head.querySelector('h2');
   if (!content || !title) return;
   title.textContent = workspaceStructure.documentTitle || '需求说明';
-  if (editor.dataset.requirementKey === 'change:c-repurchase-rules') {
-    const source = document.querySelector('[data-repurchase-rule-source]');
-    if (source) {
-      const section = document.createElement('section');
-      section.className = 'requirement-section';
-      section.innerHTML = `<h3>规则说明</h3><div data-repurchase-rules>${source.querySelector('.repurchase-rules-content').innerHTML}</div>`;
-      content.append(section);
-      source.remove();
-    }
-  }
   const toolbar = editor.querySelector('.requirements-editor-toolbar');
   head.append(toolbar);
   toolbar.innerHTML = '<small data-editor-status>只读</small><button type="button" class="history-icon" data-editor-undo title="撤销 Ctrl+Z" aria-label="撤销" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6 3.5 9.5 7 13M4 9.5h7a5 5 0 0 1 0 10"/></svg></button><button type="button" class="history-icon" data-editor-redo title="恢复 Ctrl+Shift+Z" aria-label="恢复" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m13 6 3.5 3.5L13 13m3-3.5H9a5 5 0 0 0 0 10"/></svg></button><button type="button" data-editor-cancel>取消</button><button type="button" class="save" data-editor-save>保存</button>';
