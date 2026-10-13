@@ -348,6 +348,7 @@ function showDoubtPopover(marker) {
   if (!session) return;
   const pop = session.doubt;
   pop.innerHTML = '<div class="doubt-note-entry"><textarea aria-label="存疑备注" rows="2" placeholder="添加备注"></textarea><span class="doubt-note-actions"><button type="button" data-note-save>✓</button><button type="button" data-note-cancel>×</button></span></div><footer><button type="button" data-note-close>关闭存疑</button></footer>';
+  pop.classList.add('is-editing-note');
   const field = pop.querySelector('textarea');
   field.value = marker.dataset.doubtNote || '';
   pop.hidden = false;
@@ -355,9 +356,9 @@ function showDoubtPopover(marker) {
   const rect = marker.getBoundingClientRect();
   pop.style.left = `${Math.max(8, Math.min(window.innerWidth - pop.offsetWidth - 8, rect.left))}px`;
   pop.style.top = `${Math.max(8, Math.min(window.innerHeight - pop.offsetHeight - 8, rect.bottom + 8))}px`;
-  pop.querySelector('[data-note-save]').onclick = () => { marker.dataset.doubtNote = field.value; pop.hidden = true; pop.style.display = 'none'; void persistReadingDoubt(); };
+  pop.querySelector('[data-note-save]').onclick = () => { if (!session.editing && !ensureEditorAccess()) return; marker.dataset.doubtNote = field.value; pop.hidden = true; pop.style.display = 'none'; if (session.editing) recordRequirementHistory(session); else void persistReadingDoubt(); };
   pop.querySelector('[data-note-cancel]').onclick = () => { pop.hidden = true; pop.style.display = 'none'; };
-  pop.querySelector('[data-note-close]').onclick = () => { marker.replaceWith(...marker.childNodes); pop.hidden = true; pop.style.display = 'none'; void persistReadingDoubt(); };
+  pop.querySelector('[data-note-close]').onclick = () => { if (!session.editing && !ensureEditorAccess()) return; marker.replaceWith(...marker.childNodes); pop.hidden = true; pop.style.display = 'none'; if (session.editing) recordRequirementHistory(session); else void persistReadingDoubt(); };
 }
 
 function markEditorDoubt() {
