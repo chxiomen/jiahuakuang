@@ -126,14 +126,14 @@ function requirementHistoryState(session) {
   return { html: editorContentHtml(session), title: session.title.textContent };
 }
 
-function decorateRequirementModule(section) {
-  if (!section || section.querySelector(':scope > .module-actions')) return;
+function decorateRequirementBlock(block) {
+  if (!block || block.querySelector(':scope > .module-actions')) return;
   const actions = document.createElement('div');
   actions.className = 'module-actions';
   actions.dataset.editorUi = 'true';
   actions.contentEditable = 'false';
-  actions.innerHTML = '<button type="button" data-module-action="insert" title="在下方添加模块" aria-label="在下方添加模块"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button><button type="button" data-module-action="down" title="下移模块" aria-label="下移模块"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v10m-4-4 4 4 4-4"/></svg></button><button type="button" data-module-action="delete" title="删除模块" aria-label="删除模块"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M6 4V2h4v2m2 0-.6 9H4.6L4 4m2.5 2v5m3-5v5"/></svg></button>';
-  section.append(actions);
+  actions.innerHTML = '<button type="button" data-module-action="insert" title="在下方添加模块" aria-label="在下方添加模块"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button><button type="button" data-module-action="insert-text" title="在下方添加文本" aria-label="在下方添加文本">T</button><button type="button" data-module-action="down" title="下移内容" aria-label="下移内容"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v10m-4-4 4 4 4-4"/></svg></button><button type="button" data-module-action="delete" title="删除内容" aria-label="删除内容"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h10M6 4V2h4v2m2 0-.6 9H4.6L4 4m2.5 2v5m3-5v5"/></svg></button>';
+  block.append(actions);
 }
 
 function handleModuleAction(event) {
@@ -141,30 +141,57 @@ function handleModuleAction(event) {
   if (!button || !editorSession?.editing) return;
   event.preventDefault();
   event.stopPropagation();
-  const section = button.closest('.requirement-section');
+  const block = button.closest('.requirement-section,.requirement-text-item');
   const action = button.dataset.moduleAction;
-  if (!section) return;
-  if (action === 'insert') {
-    const next = document.createElement('section');
-    next.className = 'requirement-section';
-    next.innerHTML = '<h3>新模块</h3><p>在此输入内容</p>';
-    section.insertAdjacentElement('afterend', next);
-    decorateRequirementModule(next);
-    const heading = next.querySelector('h3');
-    heading.focus();
-    const range = document.createRange();
-    range.selectNodeContents(heading);
-    range.collapse(false);
-    const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+  if (!block) return;
+  if (action === 'insert' || action === 'insert-text') {
+    const next = action === 'insert' ? document.createElement('section') : document.createElement('p');
+    if (action === 'insert') {
+      next.className = 'requirement-section';
+      next.innerHTML = '<h3>新模块</h3><p>在此输入内容</p>';
+    } else {
+      next.className = 'requirement-text-item';
+      next.textContent = '在此输入内容';
+    }
+    block.insertAdjacentElement('afterend', next);
+    decorateRequirementBlock(next);
+    focusRequirementBlock(next);
   } else if (action === 'down') {
-    const peer = [...section.parentElement.children].filter(node => node.matches('.requirement-section'));
-    const index = peer.indexOf(section);
-    if (index >= 0 && index < peer.length - 1) peer[index + 1].insertAdjacentElement('afterend', section);
+    const peer = [...block.parentElement.children].filter(node => node.matches('.requirement-section,.requirement-text-item'));
+    const index = peer.indexOf(block);
+    if (index >= 0 && index < peer.length - 1) peer[index + 1].insertAdjacentElement('afterend', block);
   } else if (action === 'delete') {
-    section.remove();
+    block.remove();
   }
+  recordRequirementHistory();
+}
+
+function focusRequirementBlock(block) {
+  if (!block) return;
+  const target = block.matches('.requirement-section') ? block.querySelector('h3') : block;
+  target?.focus?.();
+  const range = document.createRange();
+  range.selectNodeContents(target || block);
+  range.collapse(false);
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function addRequirementText() {
+  const session = editorSession;
+  if (!session?.editing) return;
+  const content = session.content;
+  const focused = session.lastRequirementBlock?.isConnected && content.contains(session.lastRequirementBlock)
+    ? session.lastRequirementBlock
+    : [...content.querySelectorAll('.requirement-section,.requirement-text-item')].slice(-1)[0];
+  const next = document.createElement('p');
+  next.className = 'requirement-text-item';
+  next.textContent = '在此输入内容';
+  if (focused) focused.insertAdjacentElement('afterend', next);
+  else content.append(next);
+  decorateRequirementBlock(next);
+  focusRequirementBlock(next);
   recordRequirementHistory();
 }
 
@@ -194,6 +221,7 @@ function travelRequirementHistory(direction) {
   session.historyIndex = nextIndex;
   const previous = session.history[nextIndex];
   session.content.innerHTML = previous.html;
+  session.content.querySelectorAll('.requirement-section,.requirement-text-item').forEach(decorateRequirementBlock);
   session.title.textContent = previous.title;
   scheduleRequirementImageFit(session);
   session.historyObserver.takeRecords();
@@ -250,7 +278,7 @@ function startRequirementEdit() {
   const session = editorSession;
   if (!session || !ensureEditorAccess()) return false;
   if (session.editing) return true;
-  session.content.querySelectorAll('.requirement-section').forEach(decorateRequirementModule);
+  session.content.querySelectorAll('.requirement-section,.requirement-text-item').forEach(decorateRequirementBlock);
   session.snapshot = { html: editorContentHtml(session), title: session.title.textContent.trim() };
   session.editing = true;
   session.history = [requirementHistoryState(session)];
@@ -457,7 +485,7 @@ function bindUnifiedEditor() {
   title.textContent = workspaceStructure.documentTitle || '需求说明';
   const toolbar = editor.querySelector('.requirements-editor-toolbar');
   head.append(toolbar);
-  toolbar.innerHTML = '<small data-editor-status>只读</small><button type="button" class="history-icon" data-editor-undo title="撤销 Ctrl+Z" aria-label="撤销" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6 3.5 9.5 7 13M4 9.5h7a5 5 0 0 1 0 10"/></svg></button><button type="button" class="history-icon" data-editor-redo title="恢复 Ctrl+Shift+Z" aria-label="恢复" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m13 6 3.5 3.5L13 13m3-3.5H9a5 5 0 0 0 0 10"/></svg></button><button type="button" data-editor-cancel>取消</button><button type="button" class="save" data-editor-save>保存</button>';
+  toolbar.innerHTML = '<small data-editor-status>只读</small><button type="button" class="history-icon" data-editor-undo title="撤销 Ctrl+Z" aria-label="撤销" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 6 3.5 9.5 7 13M4 9.5h7a5 5 0 0 1 0 10"/></svg></button><button type="button" class="history-icon" data-editor-redo title="恢复 Ctrl+Shift+Z" aria-label="恢复" disabled><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m13 6 3.5 3.5L13 13m3-3.5H9a5 5 0 0 1 0 10"/></svg></button><button type="button" data-editor-add-text>添加文本</button><button type="button" data-editor-cancel>取消</button><button type="button" class="save" data-editor-save>保存</button>';
   toolbar.hidden = true;
   const controls = document.createElement('span');
   controls.className = 'workspace-editor-controls';
@@ -478,6 +506,7 @@ function bindUnifiedEditor() {
   toolbar.querySelector('[data-editor-redo]').onclick = () => travelRequirementHistory(1);
   toolbar.querySelector('[data-editor-cancel]').onclick = () => cancelRequirementEdit();
   toolbar.querySelector('[data-editor-save]').onclick = saveRequirementEdit;
+  toolbar.querySelector('[data-editor-add-text]').onclick = addRequirementText;
   const session = editorSession;
   scheduleRequirementImageFit(session);
   session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementImageFit(session); });
@@ -492,8 +521,12 @@ function bindUnifiedEditor() {
   }, { signal });
   content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementImageFit(session); }, { capture: true, signal });
   title.addEventListener('input', () => recordRequirementHistory(session), { signal });
-  content.addEventListener('focusin', () => { session.lastFocus = 'content'; }, { signal });
-  content.querySelectorAll('.requirement-section').forEach(decorateRequirementModule);
+  content.addEventListener('focusin', event => {
+    session.lastFocus = 'content';
+    const block = event.target.closest('.requirement-section,.requirement-text-item');
+    if (block && content.contains(block)) session.lastRequirementBlock = block;
+  }, { signal });
+  content.querySelectorAll('.requirement-section,.requirement-text-item').forEach(decorateRequirementBlock);
   content.addEventListener('click', handleModuleAction, { signal });
   title.addEventListener('focusin', () => { session.lastFocus = 'title'; }, { signal });
   document.addEventListener('keydown', event => {
