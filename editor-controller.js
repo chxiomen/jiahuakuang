@@ -291,6 +291,7 @@ function cancelRequirementEdit(force = false) {
 function requirementWrites(session) {
   const copy = session.content.cloneNode(true);
   copy.querySelectorAll('[data-editor-ui]').forEach(node => node.remove());
+  removeEmptyRequirementHeadings(copy);
   restoreAutomaticRequirementImageSizes(copy);
   const writes = [];
   const key = session.editor.dataset.requirementKey;
@@ -313,6 +314,7 @@ function requirementWrites(session) {
 async function saveRequirementEdit() {
   const session = editorSession;
   if (!session?.editing || session.saving) return;
+  removeEmptyRequirementHeadings(session.content);
   session.saving = true;
   editorStatus('保存中');
   const writes = requirementWrites(session);
@@ -402,6 +404,13 @@ function normalizeEditorLists(content) {
   });
 }
 
+function removeEmptyRequirementHeadings(content) {
+  content.querySelectorAll('h1,h2,h3,h4,h5,h6').forEach(heading => {
+    const visibleText = heading.textContent.replace(/[\s\u00a0\u200b-\u200d\ufeff]/g, '');
+    if (!visibleText && !heading.querySelector('img,svg,video,canvas')) heading.remove();
+  });
+}
+
 function applyEditorFormat(action, value) {
   const session = editorSession;
   if (!session?.editing || !restoreEditorSelection()) return;
@@ -444,6 +453,7 @@ function bindUnifiedEditor() {
   const content = editor.querySelector('.requirements-editor-content');
   const title = head.querySelector('h2');
   if (!content || !title) return;
+  removeEmptyRequirementHeadings(content);
   title.textContent = workspaceStructure.documentTitle || '需求说明';
   const toolbar = editor.querySelector('.requirements-editor-toolbar');
   head.append(toolbar);
@@ -473,7 +483,13 @@ function bindUnifiedEditor() {
   session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementImageFit(session); });
   session.historyObserver.observe(content, { subtree: true, childList: true, characterData: true, attributes: true });
   session.historyObserver.observe(title, { subtree: true, childList: true, characterData: true, attributes: true });
-  content.addEventListener('input', () => recordRequirementHistory(session), { signal });
+  content.addEventListener('input', () => {
+    const selected = window.getSelection()?.anchorNode;
+    const element = selected?.nodeType === Node.TEXT_NODE ? selected.parentElement : selected;
+    const heading = element?.closest?.('h1,h2,h3,h4,h5,h6');
+    if (heading && content.contains(heading)) removeEmptyRequirementHeadings(content);
+    recordRequirementHistory(session);
+  }, { signal });
   content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementImageFit(session); }, { capture: true, signal });
   title.addEventListener('input', () => recordRequirementHistory(session), { signal });
   content.addEventListener('focusin', () => { session.lastFocus = 'content'; }, { signal });
