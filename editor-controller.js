@@ -347,8 +347,7 @@ function showDoubtPopover(marker) {
   const session = editorSession;
   if (!session) return;
   const pop = session.doubt;
-  pop.innerHTML = '<div class="doubt-note-entry"><textarea aria-label="存疑备注" rows="2" placeholder="添加备注"></textarea><span class="doubt-note-actions"><button type="button" data-note-save>✓</button><button type="button" data-note-cancel>×</button></span></div><footer><button type="button" data-note-close>关闭存疑</button></footer>';
-  pop.classList.add('is-editing-note');
+  pop.innerHTML = '<div class="doubt-note-entry"><textarea aria-label="存疑备注" rows="2" placeholder="添加备注"></textarea><span class="doubt-note-actions"><button type="button" data-note-save aria-label="保存备注" title="保存备注"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m4 10 4 4 8-8"/></svg></button><button type="button" data-note-cancel aria-label="取消修改" title="取消修改"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5 5 15"/></svg></button></span></div><footer><button type="button" data-note-close>关闭存疑</button></footer>';
   const field = pop.querySelector('textarea');
   field.value = marker.dataset.doubtNote || '';
   pop.hidden = false;
