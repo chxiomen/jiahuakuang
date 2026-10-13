@@ -27,7 +27,8 @@ function editorContentHtml(session) {
 
 function requirementCellTextWidth(cell) {
   const clone = cell.cloneNode(true);
-  clone.querySelectorAll('img,button,svg,[data-editor-ui]').forEach(node => node.remove());
+  // Measure this text block only. A parent list item must not absorb every nested item.
+  clone.querySelectorAll('img,button,svg,ul,ol,figure,table,[data-editor-ui]').forEach(node => node.remove());
   if (!clone.textContent.trim()) return 0;
   const style = getComputedStyle(cell);
   Object.assign(clone.style, { position: 'fixed', left: '-100000px', top: '0', display: 'block', width: 'max-content', maxWidth: 'none', minWidth: '0', padding: '0', border: '0', whiteSpace: 'nowrap', visibility: 'hidden', font: style.font, letterSpacing: style.letterSpacing, lineHeight: style.lineHeight });
@@ -91,7 +92,7 @@ function fitRequirementImagesToText(content) {
     });
   });
   content.querySelectorAll('.requirement-section').forEach(section => {
-    const textWidth = [...section.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,td,th,figcaption')]
+    const textWidth = [...section.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,td,th')]
       .reduce((longest, node) => Math.max(longest, requirementCellTextWidth(node)), 0);
     if (textWidth <= 0) return;
     section.querySelectorAll('img').forEach(image => { if (!image.closest('table')) fitRequirementImageToText(image, textWidth); });
