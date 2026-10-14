@@ -228,6 +228,7 @@ function travelRequirementHistory(direction) {
   session.historyApplying = false;
   session.range = null;
   session.floating.hidden = true;
+  closeEditorLinkPopover();
   session.doubt.hidden = true;
   session.doubt.style.display = 'none';
   const focus = session.lastFocus === 'title' ? session.title : session.content;
@@ -251,7 +252,7 @@ function editorFloatingSelection() {
 function updateFloatingToolbar() {
   const session = editorSession;
   if (!session) return;
-  if (session.toolbarInteracting || session.floating.contains(document.activeElement)) return;
+  if (session.toolbarInteracting || !session.link.hidden || session.floating.contains(document.activeElement)) return;
   const range = editorFloatingSelection();
   const bar = session.floating;
   if (!range) { bar.hidden = true; return; }
@@ -260,12 +261,92 @@ function updateFloatingToolbar() {
   const end = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentElement : range.endContainer;
   const cell = node?.closest?.('td,th');
   const sameCell = cell && cell === end?.closest?.('td,th');
-  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
+  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="link">${editorLinkForRange(range, session.content) ? '修改链接' : '添加链接'}</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
   bar.innerHTML = `${format}<button data-float="doubt">存疑</button>`;
   bar.hidden = false;
   const rect = range.getBoundingClientRect();
   bar.style.left = `${Math.max(8, Math.min(window.innerWidth - bar.offsetWidth - 8, rect.left + rect.width / 2 - bar.offsetWidth / 2))}px`;
   bar.style.top = `${Math.max(8, rect.top - bar.offsetHeight - 8)}px`;
+}
+
+function editorLinkForRange(range, content) {
+  if (!range) return null;
+  const parent = node => (node.nodeType === Node.TEXT_NODE ? node.parentElement : node)?.closest?.('a[href]');
+  const link = parent(range.startContainer);
+  return link && link === parent(range.endContainer) && content.contains(link) ? link : null;
+}
+
+function closeEditorLinkPopover() {
+  const session = editorSession;
+  if (!session) return;
+  session.link.hidden = true;
+  session.linkTarget = null;
+  session.linkError.textContent = '';
+}
+
+function showEditorLinkPopover(anchor = null) {
+  const session = editorSession;
+  if (!session?.editing) return;
+  const range = anchor ? document.createRange() : session.range?.cloneRange();
+  if (anchor) range.selectNodeContents(anchor);
+  if (!range || range.collapsed || !session.content.contains(range.commonAncestorContainer)) return;
+  session.range = range.cloneRange();
+  session.linkTarget = anchor || editorLinkForRange(range, session.content);
+  session.linkInput.value = session.linkTarget?.getAttribute('href') || '';
+  session.linkError.textContent = '';
+  session.link.querySelector('[data-link-remove]').hidden = !session.linkTarget;
+  session.link.hidden = false;
+  session.floating.hidden = true;
+  const rect = range.getBoundingClientRect();
+  session.link.style.left = `${Math.max(8, Math.min(window.innerWidth - session.link.offsetWidth - 8, rect.left))}px`;
+  session.link.style.top = `${Math.max(8, Math.min(window.innerHeight - session.link.offsetHeight - 8, rect.bottom + 8))}px`;
+  session.linkInput.focus();
+  session.linkInput.select();
+}
+
+function editorLinkUrl(value) {
+  const input = value.trim();
+  if (!input) return null;
+  const candidate = /^[a-z][a-z\d+.-]*:/i.test(input) ? input : `https://${input}`;
+  try {
+    const url = new URL(candidate);
+    return ['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol) ? url.href : null;
+  } catch { return null; }
+}
+
+function saveEditorLink() {
+  const session = editorSession;
+  if (!session?.editing) return;
+  const url = editorLinkUrl(session.linkInput.value);
+  if (!url) { session.linkError.textContent = '请输入有效的网址（http、https、mailto 或 tel）'; return; }
+  const existing = session.linkTarget;
+  if (existing?.isConnected && session.content.contains(existing)) {
+    existing.href = url;
+    existing.target = '_blank';
+    existing.rel = 'noopener noreferrer';
+  } else {
+    session.content.focus();
+    if (!restoreEditorSelection() || !editorFloatingSelection()) { session.linkError.textContent = '文字选择已失效，请重新选择'; return; }
+    document.execCommand('createLink', false, url);
+    session.content.querySelectorAll('a[href]').forEach(link => {
+      if (link.href === url) { link.target = '_blank'; link.rel = 'noopener noreferrer'; }
+    });
+  }
+  closeEditorLinkPopover();
+  session.content.focus();
+  recordRequirementHistory(session);
+  updateFloatingToolbar();
+}
+
+function removeEditorLink() {
+  const session = editorSession;
+  const link = session?.linkTarget;
+  if (!session?.editing || !link?.isConnected || !session.content.contains(link)) return;
+  link.replaceWith(...link.childNodes);
+  closeEditorLinkPopover();
+  session.content.focus();
+  recordRequirementHistory(session);
+  updateFloatingToolbar();
 }
 
 function restoreEditorSelection() {
@@ -311,6 +392,7 @@ function cancelRequirementEdit(force = false) {
   session.toolbar.hidden = true;
   session.controls.hidden = false;
   session.floating.hidden = true;
+  closeEditorLinkPopover();
   session.doubt.hidden = true;
   editorStatus('只读');
   return true;
@@ -475,7 +557,7 @@ function bindUnifiedEditor() {
   const editor = document.querySelector('#notes .requirements-editor');
   const head = document.querySelector('.note-head');
   head?.querySelector('.workspace-editor-controls')?.remove();
-  document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover').forEach(node => node.remove());
+  document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover,.requirements-link-popover').forEach(node => node.remove());
   editorSession = null;
   if (!editor || !head) return;
   const content = editor.querySelector('.requirements-editor-content');
@@ -498,8 +580,12 @@ function bindUnifiedEditor() {
   doubt.className = 'doubt-note-popover';
   doubt.hidden = true;
   doubt.style.display = 'none';
-  document.body.append(floating, doubt);
-  editorSession = { editor, notes: document.querySelector('.notes'), content, title, toolbar, controls, floating, doubt, editing: false, saving: false, toolbarInteracting: false, snapshot: { html: content.innerHTML, title: title.textContent.trim() }, range: null, history: [], historyIndex: -1, historyApplying: false, lastFocus: 'content' };
+  const link = document.createElement('form');
+  link.className = 'requirements-link-popover';
+  link.hidden = true;
+  link.innerHTML = '<label for="requirement-link-url">链接地址</label><input id="requirement-link-url" type="text" inputmode="url" placeholder="https://example.com" autocomplete="url"><small class="requirements-link-error" role="alert"></small><div class="requirements-link-actions"><button type="button" data-link-remove>移除链接</button><button type="button" data-link-cancel>取消</button><button type="submit" class="primary">确定</button></div>';
+  document.body.append(floating, doubt, link);
+  editorSession = { editor, notes: document.querySelector('.notes'), content, title, toolbar, controls, floating, doubt, link, linkInput: link.querySelector('input'), linkError: link.querySelector('.requirements-link-error'), linkTarget: null, editing: false, saving: false, toolbarInteracting: false, snapshot: { html: content.innerHTML, title: title.textContent.trim() }, range: null, history: [], historyIndex: -1, historyApplying: false, lastFocus: 'content' };
   const signal = editorAbort.signal;
   controls.querySelector('[data-editor-start]').onclick = startRequirementEdit;
   toolbar.querySelector('[data-editor-undo]').onclick = () => travelRequirementHistory(-1);
@@ -507,6 +593,9 @@ function bindUnifiedEditor() {
   toolbar.querySelector('[data-editor-cancel]').onclick = () => cancelRequirementEdit();
   toolbar.querySelector('[data-editor-save]').onclick = saveRequirementEdit;
   toolbar.querySelector('[data-editor-add-text]').onclick = addRequirementText;
+  link.addEventListener('submit', event => { event.preventDefault(); saveEditorLink(); }, { signal });
+  link.querySelector('[data-link-cancel]').onclick = closeEditorLinkPopover;
+  link.querySelector('[data-link-remove]').onclick = removeEditorLink;
   const session = editorSession;
   scheduleRequirementImageFit(session);
   session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementImageFit(session); });
@@ -537,7 +626,12 @@ function bindUnifiedEditor() {
   }, { signal });
   content.addEventListener('mouseup', updateFloatingToolbar, { signal });
   content.addEventListener('keyup', updateFloatingToolbar, { signal });
-  content.addEventListener('click', event => { const marker = event.target.closest('.doubt-mark'); if (marker) showDoubtPopover(marker); }, { signal });
+  content.addEventListener('click', event => {
+    const marker = event.target.closest('.doubt-mark');
+    if (marker) showDoubtPopover(marker);
+    const anchor = event.target.closest('a[href]');
+    if (anchor && session.editing) { event.preventDefault(); showEditorLinkPopover(anchor); }
+  }, { signal });
   floating.addEventListener('mousedown', event => { if (event.target.tagName === 'SELECT') session.toolbarInteracting = true; else event.preventDefault(); }, { signal });
   floating.addEventListener('focusin', event => { if (event.target.matches('select[data-float]')) session.toolbarInteracting = true; }, { signal });
   floating.addEventListener('focusout', event => { if (event.target.matches('select[data-float]')) requestAnimationFrame(() => { session.toolbarInteracting = false; updateFloatingToolbar(); }); }, { signal });
@@ -546,11 +640,13 @@ function bindUnifiedEditor() {
     if (!action) return;
     if (action === 'edit') startRequirementEdit();
     else if (action === 'doubt') markEditorDoubt();
+    else if (action === 'link') showEditorLinkPopover();
     else applyEditorFormat(action);
   }, { signal });
   floating.addEventListener('change', event => { const control = event.target.closest('select[data-float]'); if (!control?.value) return; applyEditorFormat(control.dataset.float, control.value); session.toolbarInteracting = false; updateFloatingToolbar(); }, { signal });
   document.addEventListener('selectionchange', updateFloatingToolbar, { signal });
   document.addEventListener('mousedown', event => { if (!doubt.contains(event.target) && !event.target.closest('.doubt-mark')) { doubt.hidden = true; doubt.style.display = 'none'; } }, { signal });
+  document.addEventListener('mousedown', event => { if (!link.contains(event.target) && !floating.contains(event.target) && !event.target.closest('#notes a[href]')) closeEditorLinkPopover(); }, { signal });
 }
 
 window.addEventListener('beforeunload', event => { if (editorDirty()) { event.preventDefault(); event.returnValue = ''; } });
