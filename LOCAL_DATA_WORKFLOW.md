@@ -1,5 +1,7 @@
 # 内容数据约定
 
+当前 `codex/workspace-snapshot-20261014` 分支用于跨电脑继续本地快照，包含代码及当前数据。启动步骤、同步方式和线上隔离设置见 [SNAPSHOT.md](SNAPSHOT.md)。
+
 正式环境的 `/api/requirements` 使用 Supabase，是唯一正式内容来源。
 
 本地 `node server.js` 只读写 `prd-data.json`，用于调试编辑功能；本地改动不会访问或覆盖正式 Supabase。

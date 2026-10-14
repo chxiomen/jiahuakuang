@@ -357,7 +357,7 @@ function restoreEditorSelection() {
 
 function startRequirementEdit() {
   const session = editorSession;
-  if (!session || !ensureEditorAccess()) return false;
+  if (!session || !ensureEditorAccess(() => startRequirementEdit())) return false;
   if (session.editing) return true;
   session.content.querySelectorAll('.requirement-section,.requirement-text-item').forEach(decorateRequirementBlock);
   session.snapshot = { html: editorContentHtml(session), title: session.title.textContent.trim() };
@@ -706,6 +706,7 @@ function inlineNavigationName(kind, id, isNew = false) {
 
 async function navigationAction(kind, id, action) {
   if (!ensureEditorAccess() || !abandonEditorIfNeeded()) return;
+  if (kind === 'version' && action === 'insert') { openNewVersionDialog(); return; }
   const collection = kind === 'page' ? data.pages : data.releases;
   const index = collection.findIndex(item => item.id === id);
   const item = collection[index];
@@ -749,7 +750,7 @@ document.addEventListener('contextmenu', event => {
   const id = page ? page.dataset.pageRow : version.closest('[data-version-row]').dataset.versionRow;
   const menu = document.createElement('div');
   menu.className = 'navigation-context-menu';
-  menu.innerHTML = `<button data-nav-menu="rename">重命名</button><button data-nav-menu="insert">在下面插入新${kind === 'page' ? '页面' : '版本'}</button><button data-nav-menu="delete">删除</button>`;
+  menu.innerHTML = `<button data-nav-menu="rename">重命名</button><button data-nav-menu="insert">${kind === 'page' ? '在下面插入新页面' : '新建版本'}</button><button data-nav-menu="delete">删除</button>`;
   document.body.append(menu);
   navigationMenu = menu;
   menu.style.left = `${Math.max(8, Math.min(window.innerWidth - menu.offsetWidth - 8, event.clientX))}px`;
