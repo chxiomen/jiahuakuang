@@ -64,6 +64,27 @@ function mergeRequirementTableCells(){
   focusText(target);
   session.range=window.getSelection().getRangeAt(0).cloneRange();
 }
+function unmergeRequirementTableCell(){
+  const session=editorSession,cell=selectedTableCell(),table=cell?.closest('table');
+  if(!session?.editing||!cell||!session.content.contains(cell)||!table)return;
+  const height=cell.rowSpan,width=cell.colSpan;
+  if(height<=1&&width<=1)return;
+  const rows=[...table.rows],layout=requirementTableGrid(table);
+  const top=rows.indexOf(cell.parentElement),left=layout.positions.get(cell);
+  if(top<0||left===undefined)return;
+  cell.rowSpan=1;
+  cell.colSpan=1;
+  for(let row=top;row<top+height;row++){
+    for(let column=left;column<left+width;column++){
+      if(row===top&&column===left)continue;
+      const part=document.createElement(cell.tagName.toLowerCase());
+      const following=[...rows[row].cells].find(existing=>layout.positions.get(existing)>column);
+      rows[row].insertBefore(part,following||null);
+    }
+  }
+  focusText(cell);
+  session.range=window.getSelection().getRangeAt(0).cloneRange();
+}
 function changeRequirementTable(action,targetRow){
   const content=editableRequirementContent(),cell=selectedTableCell(),table=cell?.closest('table');
   if(!content||!table){showToast('请先将光标放入表格单元格');return}

@@ -245,7 +245,7 @@ function travelRequirementHistory(direction) {
 function editorFloatingSelection() {
   const session = editorSession;
   const selection = window.getSelection();
-  if (!session || !selection?.rangeCount || selection.isCollapsed || !session.content.contains(selection.anchorNode) || !session.content.contains(selection.focusNode)) return null;
+  if (!session || !selection?.rangeCount || selection.isCollapsed || !selection.toString().trim() || !session.content.contains(selection.anchorNode) || !session.content.contains(selection.focusNode)) return null;
   return selection.getRangeAt(0);
 }
 
@@ -264,14 +264,9 @@ function updateFloatingToolbar() {
   const session = editorSession;
   if (!session) return;
   if (session.toolbarInteracting || !session.link.hidden || session.floating.contains(document.activeElement)) return;
-  let range = editorFloatingSelection();
-  if (!range && session.editing) {
-    const selection = window.getSelection();
-    const node = selection?.anchorNode?.nodeType === Node.TEXT_NODE ? selection.anchorNode.parentElement : selection?.anchorNode;
-    if (selection?.rangeCount && selection.isCollapsed && node?.closest?.('td,th') && session.content.contains(node)) range = selection.getRangeAt(0);
-  }
+  const range = editorFloatingSelection();
   const bar = session.floating;
-  if (!range) { bar.hidden = true; return; }
+  if (!range) { bar.hidden = true; session.range = null; session.toolbarRow = null; return; }
   session.range = range.cloneRange();
   const node = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentElement : range.startContainer;
   const end = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentElement : range.endContainer;
@@ -281,7 +276,7 @@ function updateFloatingToolbar() {
     ? session.tablePointerTarget.row : sameCell ? cell.parentElement : null;
   const mergeCells = session.editing && requirementMergeSelection(window.getSelection(), session.content);
   const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="link">${editorLinkForRange(range, session.content) ? '修改链接' : '添加链接'}</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="8px">8px</option><option value="10px">10px</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#808080">灰</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><select data-float="align" aria-label="对齐方式"><option value="">对齐</option><option value="left">靠左对齐</option><option value="center">居中对齐</option><option value="right">靠右对齐</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
-  bar.innerHTML = `${format}${mergeCells ? '<button data-float="merge-cells">合并单元格</button>' : ''}<button data-float="doubt">存疑</button>`;
+  bar.innerHTML = `${format}${mergeCells ? '<button data-float="merge-cells">合并单元格</button>' : ''}${session.editing && sameCell && (cell.rowSpan > 1 || cell.colSpan > 1) ? '<button data-float="unmerge-cell">取消合并</button>' : ''}<button data-float="doubt">存疑</button>`;
   bar.hidden = false;
   const rect = range.getBoundingClientRect();
   bar.style.left = `${Math.max(8, Math.min(window.innerWidth - bar.offsetWidth - 8, rect.left + rect.width / 2 - bar.offsetWidth / 2))}px`;
@@ -554,6 +549,7 @@ function applyEditorFormat(action, value) {
   const alignmentCommands = { left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight' };
   if (commands[action]) { document.execCommand(commands[action]); normalizeEditorLists(session.content); }
   else if (action === 'merge-cells') mergeRequirementTableCells();
+  else if (action === 'unmerge-cell') unmergeRequirementTableCell();
   else if (action === 'align' && alignmentCommands[value]) document.execCommand(alignmentCommands[value]);
   else if (['bold','italic','underline','indent','outdent'].includes(action)) document.execCommand(action);
   else if (action === 'highlight') document.execCommand('hiliteColor', false, '#fff2c9');
