@@ -249,11 +249,27 @@ function editorFloatingSelection() {
   return selection.getRangeAt(0);
 }
 
+function editorTablePointerTarget(event, content) {
+  const cell = event.target.closest?.('td,th');
+  if (!cell || !content.contains(cell)) return null;
+  const table = cell.closest('table');
+  const row = [...table.rows].find(candidate => {
+    const bounds = candidate.getBoundingClientRect();
+    return event.clientY >= bounds.top && event.clientY < bounds.bottom;
+  }) || cell.parentElement;
+  return { cell, row };
+}
+
 function updateFloatingToolbar() {
   const session = editorSession;
   if (!session) return;
   if (session.toolbarInteracting || !session.link.hidden || session.floating.contains(document.activeElement)) return;
-  const range = editorFloatingSelection();
+  let range = editorFloatingSelection();
+  if (!range && session.editing) {
+    const selection = window.getSelection();
+    const node = selection?.anchorNode?.nodeType === Node.TEXT_NODE ? selection.anchorNode.parentElement : selection?.anchorNode;
+    if (selection?.rangeCount && selection.isCollapsed && node?.closest?.('td,th') && session.content.contains(node)) range = selection.getRangeAt(0);
+  }
   const bar = session.floating;
   if (!range) { bar.hidden = true; return; }
   session.range = range.cloneRange();
@@ -261,8 +277,11 @@ function updateFloatingToolbar() {
   const end = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentElement : range.endContainer;
   const cell = node?.closest?.('td,th');
   const sameCell = cell && cell === end?.closest?.('td,th');
-  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="link">${editorLinkForRange(range, session.content) ? '修改链接' : '添加链接'}</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
-  bar.innerHTML = `${format}<button data-float="doubt">存疑</button>`;
+  session.toolbarRow = sameCell && session.tablePointerTarget?.cell === cell
+    ? session.tablePointerTarget.row : sameCell ? cell.parentElement : null;
+  const mergeCells = session.editing && requirementMergeSelection(window.getSelection(), session.content);
+  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="link">${editorLinkForRange(range, session.content) ? '修改链接' : '添加链接'}</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="8px">8px</option><option value="10px">10px</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#808080">灰</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><select data-float="align" aria-label="对齐方式"><option value="">对齐</option><option value="left">靠左对齐</option><option value="center">居中对齐</option><option value="right">靠右对齐</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
+  bar.innerHTML = `${format}${mergeCells ? '<button data-float="merge-cells">合并单元格</button>' : ''}<button data-float="doubt">存疑</button>`;
   bar.hidden = false;
   const rect = range.getBoundingClientRect();
   bar.style.left = `${Math.max(8, Math.min(window.innerWidth - bar.offsetWidth - 8, rect.left + rect.width / 2 - bar.offsetWidth / 2))}px`;
@@ -357,11 +376,12 @@ function restoreEditorSelection() {
 
 function startRequirementEdit() {
   const session = editorSession;
-  if (!session || !ensureEditorAccess()) return false;
+  if (!session || !ensureEditorAccess(() => startRequirementEdit())) return false;
   if (session.editing) return true;
   session.content.querySelectorAll('.requirement-section,.requirement-text-item').forEach(decorateRequirementBlock);
   session.snapshot = { html: editorContentHtml(session), title: session.title.textContent.trim() };
   session.editing = true;
+  if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   session.history = [requirementHistoryState(session)];
   session.historyIndex = 0;
   session.lastFocus = 'content';
@@ -389,6 +409,7 @@ function cancelRequirementEdit(force = false) {
   session.editor.classList.remove('is-editing');
   session.notes.classList.remove('is-editing');
   session.editing = false;
+  if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   session.toolbar.hidden = true;
   session.controls.hidden = false;
   session.floating.hidden = true;
@@ -523,13 +544,17 @@ function removeEmptyRequirementHeadings(content) {
 
 function applyEditorFormat(action, value) {
   const session = editorSession;
+  const toolbarRow = session?.toolbarRow;
   if (!session?.editing || !restoreEditorSelection()) return;
   const selection = window.getSelection();
   const node = selection.anchorNode?.nodeType === Node.TEXT_NODE ? selection.anchorNode.parentElement : selection.anchorNode;
   const cell = node?.closest?.('td,th');
   const table = cell?.closest('table');
   const commands = { 'ordered-list': 'insertOrderedList', 'unordered-list': 'insertUnorderedList' };
+  const alignmentCommands = { left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight' };
   if (commands[action]) { document.execCommand(commands[action]); normalizeEditorLists(session.content); }
+  else if (action === 'merge-cells') mergeRequirementTableCells();
+  else if (action === 'align' && alignmentCommands[value]) document.execCommand(alignmentCommands[value]);
   else if (['bold','italic','underline','indent','outdent'].includes(action)) document.execCommand(action);
   else if (action === 'highlight') document.execCommand('hiliteColor', false, '#fff2c9');
   else if (action === 'color' && value) document.execCommand('foreColor', false, value);
@@ -544,7 +569,7 @@ function applyEditorFormat(action, value) {
       const column = layout.positions.get(cell);
       new Set(layout.grid.map(row => row[column]).filter(Boolean)).forEach(target => target.classList.toggle('editor-cell-highlight'));
     }
-    if (['add-row','delete-row','add-column','delete-column'].includes(action)) changeRequirementTable(action);
+    if (['add-row','delete-row','add-column','delete-column'].includes(action)) changeRequirementTable(action, toolbarRow);
   }
   session.content.focus();
   updateFloatingToolbar();
@@ -559,6 +584,7 @@ function bindUnifiedEditor() {
   head?.querySelector('.workspace-editor-controls')?.remove();
   document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover,.requirements-link-popover').forEach(node => node.remove());
   editorSession = null;
+  if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   if (!editor || !head) return;
   const content = editor.querySelector('.requirements-editor-content');
   const title = head.querySelector('h2');
@@ -624,8 +650,11 @@ function bindUnifiedEditor() {
     event.preventDefault();
     travelRequirementHistory(event.shiftKey ? 1 : -1);
   }, { signal });
-  content.addEventListener('mouseup', updateFloatingToolbar, { signal });
-  content.addEventListener('keyup', updateFloatingToolbar, { signal });
+  content.addEventListener('mouseup', event => {
+    session.tablePointerTarget = editorTablePointerTarget(event, content);
+    updateFloatingToolbar();
+  }, { signal });
+  content.addEventListener('keyup', () => { session.tablePointerTarget = null; updateFloatingToolbar(); }, { signal });
   content.addEventListener('click', event => {
     const marker = event.target.closest('.doubt-mark');
     if (marker) showDoubtPopover(marker);
@@ -636,7 +665,7 @@ function bindUnifiedEditor() {
   floating.addEventListener('focusin', event => { if (event.target.matches('select[data-float]')) session.toolbarInteracting = true; }, { signal });
   floating.addEventListener('focusout', event => { if (event.target.matches('select[data-float]')) requestAnimationFrame(() => { session.toolbarInteracting = false; updateFloatingToolbar(); }); }, { signal });
   floating.addEventListener('click', event => {
-    const action = event.target.closest('[data-float]')?.dataset.float;
+    const action = event.target.closest('button[data-float]')?.dataset.float;
     if (!action) return;
     if (action === 'edit') startRequirementEdit();
     else if (action === 'doubt') markEditorDoubt();
@@ -652,6 +681,7 @@ function bindUnifiedEditor() {
 window.addEventListener('beforeunload', event => { if (editorDirty()) { event.preventDefault(); event.returnValue = ''; } });
 document.addEventListener('click', event => {
   if (!editorSession?.editing) return;
+  if (event.target.closest('#phone')) return;
   if (!event.target.closest('#tree,#treeSwitch,#fullNote,[data-tool-state],[data-requirement-state],[data-mine-type],[data-mine-card],[data-mine-status],[data-payment-member],[data-payment-card],[data-payment-subscription],[data-payment-tab],[data-payment-plan],[data-platform],[data-target]')) return;
   if (!abandonEditorIfNeeded()) { event.preventDefault(); event.stopImmediatePropagation(); }
 }, true);
@@ -705,7 +735,9 @@ function inlineNavigationName(kind, id, isNew = false) {
 }
 
 async function navigationAction(kind, id, action) {
+  if (kind === 'version' && action === 'rename') { openVersionRenameDialog(id); return; }
   if (!ensureEditorAccess() || !abandonEditorIfNeeded()) return;
+  if (kind === 'version' && action === 'insert') { openNewVersionDialog(); return; }
   const collection = kind === 'page' ? data.pages : data.releases;
   const index = collection.findIndex(item => item.id === id);
   const item = collection[index];
@@ -749,7 +781,7 @@ document.addEventListener('contextmenu', event => {
   const id = page ? page.dataset.pageRow : version.closest('[data-version-row]').dataset.versionRow;
   const menu = document.createElement('div');
   menu.className = 'navigation-context-menu';
-  menu.innerHTML = `<button data-nav-menu="rename">重命名</button><button data-nav-menu="insert">在下面插入新${kind === 'page' ? '页面' : '版本'}</button><button data-nav-menu="delete">删除</button>`;
+  menu.innerHTML = `<button data-nav-menu="rename">重命名</button><button data-nav-menu="insert">${kind === 'page' ? '在下面插入新页面' : '新建版本'}</button><button data-nav-menu="delete">删除</button>`;
   document.body.append(menu);
   navigationMenu = menu;
   menu.style.left = `${Math.max(8, Math.min(window.innerWidth - menu.offsetWidth - 8, event.clientX))}px`;
