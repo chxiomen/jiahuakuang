@@ -1,0 +1,174 @@
+.mine-requirements-layout{position:relative;display:block}
+.mine-upgrade-modal-anchor{display:inline;border-bottom:1px dashed #276cf2;color:#276cf2;cursor:pointer}
+.mine-upgrade-modal-anchor:hover{color:#1659c9;border-bottom-color:#1659c9}
+.mine-upgrade-modal-spec{position:absolute;z-index:3;top:86px;left:calc(100% + 34px);width:300px;color:#4c402d}
+.mine-upgrade-modal-spec::before,.mine-upgrade-modal-spec::after{display:none}
+.mine-upgrade-modal-prototype{width:300px}
+.mine-upgrade-modal-prototype .repurchase-modal{width:300px;padding:23px 18px 17px}
+.mine-upgrade-modal-prototype .repurchase-modal-actions{pointer-events:none}
+.mine-upgrade-modal-prototype .repurchase-close{pointer-events:none}
+.mine-upgrade-modal-connector-svg{position:absolute;z-index:2;top:0;left:0;overflow:visible;width:100%;height:100%;pointer-events:none}
+.mine-upgrade-modal-connector-svg line{fill:none;stroke:#9da9b8;stroke-dasharray:5 5;stroke-width:1.2}
+@media(max-width:1320px){
+.mine-upgrade-modal-spec{position:relative;top:auto;left:auto;width:100%;margin:18px 0 0;padding-top:14px;border-top:1px dashed #c7a866}
+.mine-upgrade-modal-prototype{margin:0 auto}
+.mine-upgrade-modal-connector-svg{display:none}
+}
+.mine-primary-flow-note{display:block;margin:0 0 10px;padding:9px 11px;border:1px solid #dfe7f2;border-radius:9px;background:#f7faff;color:#60728c;font-size:12px;line-height:1.6}
+.phone.mine-phone{border-color:#252b34;background:#0d1c17}
+.phone.mine-phone .screen{height:100%;padding:0;background:#0d1c17}
+.phone.mine-phone .notch,.phone.mine-phone>.status-bar{display:none}
+.mine-screen{position:relative;min-height:100%;padding:14px 12px 88px;overflow:auto;background:#0d1c17;color:#f6f7f3}
+.mine-status{display:flex;align-items:center;justify-content:space-between;padding:2px 16px 0;color:#fff;font-size:12px}
+.mine-status b{font-size:14px}
+.mine-title{display:flex;align-items:center;justify-content:center;height:50px;position:relative}
+.mine-title h1{margin:0;font-size:23px}
+.mine-more{position:absolute;right:3px;top:11px;padding:8px 10px;border:1px solid #1b2b25;border-radius:22px;color:#d7ded9;font-size:13px;letter-spacing:2px}
+.mine-user{display:flex;align-items:center;min-height:99px;padding:12px 10px 15px;gap:9px}
+.mine-avatar{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;background:#f2f2f0;color:#9fa09e;font-size:34px}
+.mine-user>strong{font-size:21px;white-space:nowrap}
+.mine-vip-badge{padding:2px 5px;border-radius:4px;background:#e9e9e6;color:#8e8e88;font-size:9px;font-style:italic}
+.mine-user>span{margin-left:auto;color:#aeb6b1;font-size:14px}
+.mine-vip-card{display:flex;align-items:center;justify-content:space-between;min-height:88px;margin:10px 1px 19px;padding:16px 14px;border-radius:13px;background:linear-gradient(110deg,#ffeeb0,#ffe191);color:#282622}
+.mine-vip-card h2{margin:0 0 4px;font-size:20px}
+.mine-vip-card p{margin:0;font-size:12px;white-space:nowrap}
+.mine-vip-card button{height:43px;padding:0 20px;border:0;border-radius:23px;background:#4b3528;color:#ffeaa4;font-size:18px;white-space:nowrap}
+.mine-menu-group,.mine-recommend{overflow:hidden;margin:0 3px 18px;border-radius:13px;background:#162a24}
+.mine-row{display:flex;width:100%;align-items:center;min-height:59px;padding:0 14px;border:0;background:transparent;color:#f5f7f2;text-align:left}
+.mine-row+.mine-row{border-top:1px solid rgba(255,255,255,.015)}
+.mine-row b{font-size:19px;font-weight:500}
+.mine-row span{margin-left:auto;color:#aeb8b2;font-size:16px}
+.mine-row em,.mine-recommend em{margin-left:10px;color:#c3cbc5;font-size:28px;font-style:normal;font-weight:200;line-height:1}
+.mine-icon{display:grid;flex:0 0 27px;place-items:center;width:27px;height:27px;margin-right:13px;color:#f3f5f1;font-size:25px;font-style:normal}
+.mine-icon.works{border:2px solid #f3f5f1;border-radius:5px}
+.mine-icon.works:after{width:14px;height:7px;border:2px solid #f3f5f1;border-radius:3px;content:""}
+.mine-icon.heart{font-size:33px;line-height:1}
+.mine-icon.desktop{height:19px;border:2px solid #f3f5f1;border-radius:2px;position:relative}
+.mine-icon.desktop:after{position:absolute;bottom:-7px;width:13px;height:3px;background:#f3f5f1;content:""}
+.mine-recommend{display:flex;width:calc(100% - 6px);align-items:center;min-height:62px;margin-bottom:0;padding:0 14px;border:0;color:#f5f7f2;text-align:left}
+.mine-recommend b{font-size:19px;font-weight:500}
+.mine-recommend em{margin-left:auto}
+.mine-tab-bar{position:absolute;right:0;bottom:0;left:0;display:flex;height:72px;padding:9px 9px 12px;background:#0d1c17}
+.mine-tab-bar button{flex:1;border:0;background:transparent;color:#68716c;font-size:10px}
+.mine-tab-bar i{display:block;height:27px;font-size:23px;font-style:normal;line-height:23px}
+.mine-tab-bar .on{color:#4fd27e}
+.mine-tab-bar .on span{font-weight:700}
+/* 「我的」页按续费管理页的字号与留白收敛视觉比例。 */
+    .mine-screen{padding:12px 11px 82px}
+.mine-status{padding:1px 15px 0;font-size:11px}
+.mine-status b{font-size:12px}
+.mine-title{height:46px}
+.mine-title h1{font-size:20px;font-weight:700}
+.mine-more{top:9px;padding:7px 9px;font-size:12px}
+.mine-user{min-height:88px;padding:10px 9px 12px;gap:8px}
+.mine-avatar{width:54px;height:54px;font-size:31px}
+.mine-user>strong{font-size:18px;font-weight:600}
+.mine-vip-badge{font-size:8px}
+.mine-user>span{font-size:12px}
+.mine-vip-card{min-height:82px;margin:8px 1px 16px;padding:14px 13px}
+.mine-vip-card h2{margin-bottom:3px;font-size:18px;font-weight:700}
+.mine-vip-card p{font-size:11px}
+.mine-vip-card button{height:39px;padding:0 17px;font-size:16px}
+.mine-menu-group{margin-bottom:15px}
+.mine-row{min-height:54px;padding:0 13px}
+.mine-row b{font-size:16px;font-weight:500}
+.mine-row span{font-size:14px}
+.mine-row em,.mine-recommend em{font-size:24px}
+.mine-icon{flex-basis:25px;width:25px;height:25px;margin-right:11px;font-size:22px}
+.mine-icon.heart{font-size:29px}
+.mine-recommend{min-height:56px;padding:0 13px}
+.mine-recommend b{font-size:16px}
+.mine-tab-bar{height:68px;padding:8px 8px 11px}
+.mine-tab-bar button{font-size:9px}
+.mine-tab-bar i{height:25px;font-size:21px;line-height:21px}
+.mine-screen{padding:11px 11px 80px}
+.mine-status{font-size:10px}
+.mine-status b{font-size:11px}
+.mine-title{height:43px}
+.mine-title h1{font-size:18px;font-weight:600}
+.mine-more{top:8px;padding:6px 8px;font-size:11px}
+.mine-user{min-height:82px;padding:8px 8px 10px;gap:7px}
+.mine-avatar{width:50px;height:50px;font-size:28px}
+.mine-user>strong{font-size:16px;font-weight:400}
+.mine-vip-badge{font-size:7px}
+.mine-user>span{font-size:11px}
+.mine-vip-card{min-height:76px;margin:7px 1px 14px;padding:12px 12px}
+.mine-vip-card h2{margin-bottom:2px;font-size:16px;font-weight:600}
+.mine-vip-card p{font-size:10px}
+.mine-vip-card button{height:36px;padding:0 15px;font-size:14px;font-weight:400}
+.mine-menu-group{margin-bottom:13px}
+.mine-row{min-height:49px;padding:0 12px}
+.mine-row b{font-size:14px;font-weight:400}
+.mine-row span{font-size:12px}
+.mine-row em,.mine-recommend em{font-size:21px}
+.mine-icon{flex-basis:23px;width:23px;height:23px;margin-right:10px;font-size:20px}
+.mine-icon.heart{font-size:26px}
+.mine-recommend{min-height:51px;padding:0 12px}
+.mine-recommend b{font-size:14px;font-weight:400}
+.mine-tab-bar{height:65px;padding:7px 8px 10px}
+.mine-tab-bar button{font-size:8px}
+.mine-tab-bar i{height:23px;font-size:19px;line-height:19px}
+.phone.mine-phone,.phone.mine-phone .screen,.phone.mine-phone #screen,.phone.mine-phone .mine-screen{background:#0d1c17!important}
+.phone.mine-phone #tabBar{display:none}
+.mine-status-tabs{display:grid;gap:10px}
+.mine-tab-group{display:grid;gap:5px}
+.mine-tab-group>small{color:#788291;font-size:10px;font-weight:700}
+.mine-note-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.mine-note-tabs button{padding:6px 10px;border:0;border-radius:8px;background:#f0f2f6;color:#718096;font-size:11px}
+.mine-note-tabs button.active{background:#e9f1ff;color:#2363d5;font-weight:700}
+.mine-note-tabs button.is-disabled{opacity:.42;cursor:not-allowed}
+.phone.mine-phone .screen{position:absolute;inset:0;height:auto;overflow:hidden;background:#0d1c17}
+.phone.mine-phone .mine-screen{height:100%;min-height:100%;overflow:auto;background:#0d1c17}
+/* 我的页会员卡：状态信息、续费管理和付费入口分层，避免一个按钮承担两种行为。 */
+    .mine-vip-card{align-items:stretch;gap:12px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease}
+.mine-vip-card:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(66,48,25,.16)}
+.mine-vip-card:focus-within{outline:2px solid rgba(255,233,163,.8);outline-offset:2px}
+.mine-vip-card.status-canceled{background:linear-gradient(110deg,#dcefe4,#c9e4d6)}
+.mine-vip-card.status-expired{background:linear-gradient(110deg,#e6e8eb,#cfd4db)}
+.mine-card-copy{display:flex;min-width:0;flex:1;flex-direction:column;justify-content:center}
+.mine-card-head{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.mine-card-status,.mine-card-plan{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;background:rgba(75,53,40,.13);color:#59402e;font-size:10px;font-weight:700;white-space:nowrap}
+.mine-card-plan{background:rgba(255,255,255,.42);color:#765d38;font-weight:500}
+.status-canceled .mine-card-status{background:rgba(28,100,64,.13);color:#226242}
+.status-expired .mine-card-status{background:rgba(65,75,88,.13);color:#4d5968}
+.mine-vip-card h2{margin:0 0 4px}
+.mine-vip-card p{overflow:hidden;text-overflow:ellipsis}
+.mine-card-footnote{display:block;margin-top:6px;color:rgba(52,45,35,.66);font-size:9px;line-height:1.35}
+.mine-card-actions{display:flex;min-width:91px;align-items:flex-end;justify-content:center;flex-direction:column;gap:5px;flex-shrink:0}
+.mine-vip-card .mine-card-primary{width:100%;height:34px;padding:0 11px;background:#4b3528;color:#ffeaa4;font-size:13px;font-weight:700}
+.mine-vip-card .mine-card-secondary{height:21px;padding:0 3px;border:0;border-radius:0;background:transparent;color:#674f35;font-size:10px;font-weight:600}
+.mine-card-secondary span{margin-left:2px;font-size:13px}
+.status-canceled .mine-card-primary{background:#245b42;color:#e1f4e8}
+.status-expired .mine-card-primary{background:#39434f;color:#f5f7fa}
+.status-canceled .mine-card-secondary{color:#286346}
+.status-expired .mine-card-secondary{color:#4c5968}
+/* 卡片信息区保持干净，管理入口与日期同行，避免挤压主按钮。 */
+    .mine-vip-card{position:relative}
+.mine-card-head,.mine-card-footnote{display:none}
+.mine-card-copy{padding-bottom:0}
+.mine-vip-card h2{display:flex;align-items:baseline;gap:0;min-width:0;font-style:oblique 6deg;font-weight:600;letter-spacing:.2px;transform:skewX(-4deg);transform-origin:left center}
+.mine-card-tier{color:rgba(103,72,47,.84)}
+.mine-card-plan-title{color:rgba(139,108,70,.52);font-size:.82em;font-style:normal;font-weight:500;letter-spacing:0}
+.mine-card-detail-row{display:flex;min-width:0;align-items:center;gap:11px}
+.mine-card-detail-row>p{margin:0;color:rgba(76,66,55,.72);font-weight:500;white-space:nowrap}
+.mine-card-secondary{position:static;right:auto;bottom:auto;left:auto;height:18px;flex:0 0 auto;padding:0 0 0 11px;border-left:1px solid rgba(108,83,54,.2);color:rgba(116,91,59,.58);font-size:10px;font-weight:400;line-height:18px;letter-spacing:.1px}
+.mine-card-secondary::before{display:none}
+.mine-card-secondary span{margin-left:3px;font-size:12px;color:rgba(116,91,59,.42)}
+.mine-card-actions{justify-content:center}
+.mine-vip-card .mine-card-primary{position:relative;overflow:hidden;background:linear-gradient(135deg,#684a35 0%,#563a2a 52%,#432d22 100%);box-shadow:inset 0 1px 0 rgba(255,239,189,.18),0 5px 10px rgba(63,43,31,.2);transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.mine-vip-card .mine-card-primary::after{position:absolute;top:0;left:-38%;width:52%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,240,194,.14),transparent);content:"";transform:skewX(-18deg);pointer-events:none}
+.mine-vip-card .mine-card-primary:hover{filter:brightness(1.06);box-shadow:inset 0 1px 0 rgba(255,239,189,.24),0 7px 13px rgba(63,43,31,.25)}
+.mine-vip-card .mine-card-primary:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,239,189,.14),0 3px 7px rgba(63,43,31,.2)}
+.mine-vip-card .mine-card-secondary{font-weight:400}
+/* 多会员同时生效：汇总最高权益，同时保留每个商品的独立状态和管理入口。 */
+    .mine-vip-card.multi-active{background:linear-gradient(110deg,#fff0b1,#ffdc79)}
+.mine-active-members{margin:0 1px 16px;padding:11px 12px;border-radius:13px;background:#162a24}
+.mine-active-members-head{display:flex;align-items:center;justify-content:space-between;margin:0 2px 7px;color:#e9eee9}
+.mine-active-members-head b{font-size:13px;font-weight:600}
+.mine-active-members-head span{color:#aebbb3;font-size:10px}
+.mine-active-member{display:flex;align-items:center;gap:8px;padding:10px 2px;border-top:1px solid rgba(255,255,255,.08)}
+.mine-active-member>div{min-width:0;flex:1}
+.mine-active-member strong{display:block;overflow:hidden;color:#f2f5f1;font-size:12px;font-weight:500;text-overflow:ellipsis;white-space:nowrap}
+.mine-active-member p{margin:3px 0 0;color:#aebbb3;font-size:10px;line-height:1.4;white-space:nowrap}
+.mine-active-member button{height:25px;padding:0 9px;border:1px solid rgba(224,238,228,.28);border-radius:13px;background:transparent;color:#d9e8dc;font-size:10px;white-space:nowrap}
+.mine-active-member button:hover{border-color:#8cd39d;background:rgba(100,201,123,.12)}

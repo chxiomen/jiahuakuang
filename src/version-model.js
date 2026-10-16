@@ -9,6 +9,10 @@ function currentVersionItem() {
   return release(state.selectedRelease)?.changes.find(item => item.id === state.selectedChange) || null;
 }
 
+function versionNumberFor(version) {
+  return version?.versionNumber || version?.id || '';
+}
+
 function itemModel(item) {
   if (!item) return null;
   if (Object.prototype.hasOwnProperty.call(item, 'model')) return item.model;
@@ -44,7 +48,9 @@ workspaceStructurePayload = function () {
     pages: data.pages.map(serialiseWorkspacePage),
     releases: data.releases.map(version => ({
       id: version.id,
+      sourceId: version.id === 'v7.6.5' ? 'v7.5.6' : undefined,
       name: version.name,
+      versionNumber: versionNumberFor(version),
       hidden: Boolean(version.hidden),
       custom: Boolean(version.__workspaceCustom),
       changes: version.changes.map(item => serialiseVersionItem(item, version.id))
@@ -79,7 +85,9 @@ loadWorkspaceStructure = function () {
       const structure = JSON.parse(v2);
       for (const versionRecord of structure.releases || []) {
         const version = release(versionRecord.id);
-        if (!version || !Array.isArray(versionRecord.changes)) continue;
+        if (!version) continue;
+        version.versionNumber = versionRecord.versionNumber || version.id;
+        if (!Array.isArray(versionRecord.changes)) continue;
         const known = new Map(version.changes.map(item => [item.id, item]));
         const ordered = [];
         for (const record of versionRecord.changes) {
@@ -115,22 +123,44 @@ releaseTree = function () {
     const folded = state.folded.has(version.id);
     const outlineActive = state.noteMode === 'release' && state.selectedRelease === version.id;
     return `<article class="release ${folded ? 'folded' : ''}" data-version-row="${escape(version.id)}">
-      <div class="release-line"><button class="release-fold" data-fold-release="${escape(version.id)}" aria-label="${folded ? '展开' : '收起'}版本"><i class="chevron" aria-hidden="true"></i></button><button class="release-header" data-release="${escape(version.id)}"><span><b>${escape(version.id)} · ${escape(version.name)}</b></span></button></div>
+      <div class="release-line"><button class="release-fold" data-fold-release="${escape(version.id)}" aria-label="${folded ? '展开' : '收起'}版本"><i class="chevron" aria-hidden="true"></i></button><button class="release-header" data-release="${escape(version.id)}"><span><b>${escape(versionNumberFor(version))} · ${escape(version.name)}</b></span></button></div>
       <div class="release-content"><button class="release-outline ${outlineActive ? 'active' : ''}" data-release-outline="${escape(version.id)}"><span><b>需求大纲</b></span></button>
-      ${version.changes.filter(item => !item.hidden).map(item => `<div class="version-item-row ${state.selectedChange === item.id ? 'active' : ''}"><button class="change-item ${state.selectedChange === item.id ? 'active' : ''}" data-change="${escape(item.id)}" data-parent-release="${escape(version.id)}"><span><b>${escape(item.title || '未命名子项')}</b>${item.description ? `<small>${escape(item.description)}</small>` : ''}</span></button><button class="item-settings" data-item-menu="${escape(item.id)}" data-parent-release="${escape(version.id)}" title="子项操作" aria-label="子项操作" aria-haspopup="menu">⋯</button></div>`).join('')}
+      ${version.changes.filter(item => !item.hidden).map(item => `<div class="version-item-row ${state.selectedChange === item.id ? 'active' : ''}" data-item-menu="${escape(item.id)}" data-parent-release="${escape(version.id)}"><button class="change-item ${state.selectedChange === item.id ? 'active' : ''}" data-change="${escape(item.id)}" data-parent-release="${escape(version.id)}" aria-haspopup="menu"><span><b>${escape(item.title || '未命名子项')}</b>${item.description ? `<small>${escape(item.description)}</small>` : ''}</span></button></div>`).join('')}
       <button type="button" class="add-version-item" data-add-item="${escape(version.id)}">＋ 添加子项</button></div></article>`;
   }).join('')}<button type="button" class="add-version" data-add-version>＋ 新版本</button>`;
 };
 
+let closeVersionItemMenu = () => {};
 bindTree = function () {
+  closeVersionItemMenu();
   legacyBindTree();
   document.querySelectorAll('[data-add-item]').forEach(button => button.onclick = () => openVersionItemDialog(button.dataset.addItem));
-  document.querySelectorAll('[data-item-menu]').forEach(button => button.onclick = () => openVersionItemMenu(button, button.dataset.parentRelease, button.dataset.itemMenu));
   document.querySelector('[data-add-version]')?.addEventListener('click', openNewVersionDialog);
 };
 
-function openVersionItemMenu(trigger, versionId, itemId) {
-  document.querySelector('.version-item-menu')?.remove();
+// Delegate from the document so newly rendered rows always support right-click.
+// Capture first, before other navigation or editor handlers process the event.
+document.addEventListener('contextmenu', event => {
+  const row = event.target.closest('#tree .version-item-row[data-item-menu]');
+  if (!row) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  closeNavigationMenu();
+  openVersionItemMenu(row, row.dataset.parentRelease, row.dataset.itemMenu, { x: event.clientX, y: event.clientY });
+}, true);
+
+document.addEventListener('keydown', event => {
+  if (event.key !== 'ContextMenu' && !(event.shiftKey && event.key === 'F10')) return;
+  const row = event.target.closest('#tree .version-item-row[data-item-menu]');
+  if (!row) return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  closeNavigationMenu();
+  openVersionItemMenu(row, row.dataset.parentRelease, row.dataset.itemMenu);
+}, true);
+
+function openVersionItemMenu(trigger, versionId, itemId, position) {
+  closeVersionItemMenu();
   const version = release(versionId);
   const item = version?.changes.find(entry => entry.id === itemId);
   if (!item) return;
@@ -142,16 +172,25 @@ function openVersionItemMenu(trigger, versionId, itemId) {
     <button type="button" role="menuitem" class="danger" data-item-action="delete">删除</button>`;
   document.body.append(menu);
   const rect = trigger.getBoundingClientRect();
-  const left = Math.max(12, Math.min(rect.right - 184, window.innerWidth - 196));
-  const top = Math.min(rect.bottom + 6, window.innerHeight - 164);
+  const bounds = menu.getBoundingClientRect();
+  const left = Math.max(8, Math.min(position?.x || rect.right, window.innerWidth - bounds.width - 8));
+  const top = Math.max(8, Math.min(position?.y || rect.bottom, window.innerHeight - bounds.height - 8));
   Object.assign(menu.style, { left: `${left}px`, top: `${top}px` });
   const outsideClick = event => {
-    if (!menu.contains(event.target) && event.target !== trigger) close();
+    if (!menu.contains(event.target)) close();
+  };
+  const onKeyDown = event => {
+    if (event.key === 'Escape') { event.preventDefault(); close(); trigger.querySelector('button')?.focus(); }
   };
   const close = () => {
     document.removeEventListener('pointerdown', outsideClick);
+    document.removeEventListener('keydown', onKeyDown);
+    window.removeEventListener('resize', close);
+    document.removeEventListener('scroll', close, true);
     menu.remove();
+    if (closeVersionItemMenu === close) closeVersionItemMenu = () => {};
   };
+  closeVersionItemMenu = close;
   menu.querySelectorAll('[data-item-action]').forEach(button => button.onclick = () => {
     const action = button.dataset.itemAction;
     close();
@@ -159,7 +198,11 @@ function openVersionItemMenu(trigger, versionId, itemId) {
     if (action === 'model') openModelSelectionDialog(version, item);
     if (action === 'delete') openDeleteVersionItemDialog(version, item);
   });
-  requestAnimationFrame(() => document.addEventListener('pointerdown', outsideClick));
+  document.addEventListener('pointerdown', outsideClick);
+  document.addEventListener('keydown', onKeyDown);
+  window.addEventListener('resize', close);
+  document.addEventListener('scroll', close, true);
+  menu.querySelector('button').focus({ preventScroll: true });
 }
 
 function openRenameVersionItemDialog(version, item) {
@@ -190,30 +233,22 @@ function openModelSelectionDialog(version, item) {
   if (!ensureEditorAccess(() => openModelSelectionDialog(version, item)) || !abandonEditorIfNeeded()) return;
   const model = itemModel(item);
   const dialog = document.createElement('dialog');
-  dialog.className = 'version-item-dialog';
+  dialog.className = 'version-item-dialog model-selection-dialog';
   dialog.innerHTML = `<form method="dialog" class="version-item-form"><h2>原型选择</h2>
-    <div class="model-fields"><label>关联页面<select name="pageId"><option value="new">＋ 新建页面</option>${data.pages.filter(page => !page.hidden).map(page => `<option value="${escape(page.id)}" ${model?.pageId === page.id ? 'selected' : ''}>${escape(page.name)}</option>`).join('')}</select></label>
+    <div class="model-fields"><label>关联页面<select name="pageId"><option value="none">不展示</option><option value="new">＋ 新建页面</option>${data.pages.filter(page => !page.hidden).map(page => `<option value="${escape(page.id)}" ${model?.pageId === page.id ? 'selected' : ''}>${escape(page.name)}</option>`).join('')}</select></label>
       <label class="new-page-field">新页面名称<input name="newPageName" maxlength="100" placeholder="输入页面名称"></label>
       <label class="new-page-field">导航分组<input name="newPageGroup" maxlength="100" value="交易页面"></label></div>
-    <div class="dialog-actions">${model ? '<button type="button" class="delete-item" data-remove-model>解除原型关联</button>' : ''}<button type="button" data-close>取消</button><button type="submit" class="save">保存</button></div></form>`;
+    <div class="dialog-actions"><button type="button" data-close>取消</button><button type="submit" class="save">保存</button></div></form>`;
   document.body.append(dialog);
   const form = dialog.querySelector('form');
   const pageSelect = form.elements.pageId;
-  if (!model) pageSelect.value = data.pages.find(page => !page.hidden)?.id || 'new';
+  if (!model) pageSelect.value = 'none';
   const sync = () => {
     const isNew = pageSelect.value === 'new';
     dialog.querySelectorAll('.new-page-field').forEach(field => field.hidden = !isNew);
   };
   pageSelect.onchange = sync;
   form.querySelector('[data-close]').onclick = () => dialog.close();
-  form.querySelector('[data-remove-model]')?.addEventListener('click', async () => {
-    const before = item.model;
-    item.model = null; item.pageId = undefined; item.stateId = undefined;
-    if (!await persistWorkspaceStructure()) { item.model = before; item.pageId = before?.pageId; item.stateId = before?.stateId; return; }
-    dialog.close();
-    if (state.selectedChange === item.id) { state.noteMode = 'change'; state.selectedRelease = version.id; }
-    renderAll();
-  });
   dialog.addEventListener('close', () => dialog.remove());
   form.onsubmit = async event => {
     event.preventDefault();
@@ -227,21 +262,21 @@ function openModelSelectionDialog(version, item) {
         pageNote: { description: '', path: '', modules: [] }, states: [{ id: 'default', name: '默认态', stateNote: { rule: '' } }] };
       data.pages.push(newPage);
     }
-    const before = item.model;
-    item.model = { pageId, stateId: model?.pageId === pageId ? model.stateId : (findPage(pageId)?.states[0]?.id || 'default') };
-    item.pageId = item.model.pageId;
-    item.stateId = item.model.stateId;
+    const before = { model: item.model, pageId: item.pageId, stateId: item.stateId };
+    item.model = pageId === 'none' ? null : { pageId, stateId: model?.pageId === pageId ? model.stateId : (findPage(pageId)?.states[0]?.id || 'default') };
+    item.pageId = item.model?.pageId;
+    item.stateId = item.model?.stateId;
     if (!await persistWorkspaceStructure()) {
       if (newPage) data.pages.splice(data.pages.indexOf(newPage), 1);
-      item.model = before; item.pageId = before?.pageId; item.stateId = before?.stateId;
+      Object.assign(item, before);
       return;
     }
     dialog.close();
     state.selectedRelease = version.id;
     state.selectedChange = item.id;
     state.noteMode = 'change';
-    state.pageId = item.model.pageId;
-    state.stateId = item.model.stateId;
+    if (item.model) { state.pageId = item.model.pageId; state.stateId = item.model.stateId; }
+    if (newPage) { WorkspaceRouter.navigateVersion(version, { kind: 'items', target: item.id }); return; }
     renderAll();
   };
   sync();
@@ -255,6 +290,7 @@ function openNewVersionDialog() {
   dialog.innerHTML = `<form method="dialog" class="version-item-form"><h2>新增版本</h2>
     <label>版本号<input name="versionId" required maxlength="40" placeholder="例如 v7.5.7"></label>
     <label>版本名称<input name="versionName" required maxlength="100" placeholder="例如 会员体验优化"></label>
+    <label>初始内容<select name="fromVersion"><option value="empty">空白版本</option>${data.releases.filter(version => !version.hidden).map(version => `<option value="${escape(version.id)}" ${version.id === state.selectedRelease ? 'selected' : ''}>复制 ${escape(versionNumberFor(version))} · ${escape(version.name)}</option>`).join('')}</select></label>
     <div class="dialog-actions"><button type="button" data-close>取消</button><button type="submit" class="save">创建</button></div></form>`;
   document.body.append(dialog);
   dialog.querySelector('[data-close]').onclick = () => dialog.close();
@@ -264,15 +300,46 @@ function openNewVersionDialog() {
     const id = dialog.querySelector('[name="versionId"]').value.trim();
     const name = dialog.querySelector('[name="versionName"]').value.trim();
     if (!/^[\w.-]+$/.test(id) || !name) { showToast('版本号只支持字母、数字、点、横线和下划线'); return; }
-    if (release(id)) { showToast('版本号已存在'); return; }
-    const version = { id, name, changes: [], __workspaceCustom: true, status: 'draft' };
-    data.releases.push(version);
-    if (!await persistWorkspaceStructure()) { data.releases.splice(data.releases.indexOf(version), 1); return; }
+    if (release(id) || data.releases.some(version => versionNumberFor(version).toLowerCase() === id.toLowerCase())) { showToast('版本号已存在'); return; }
+    const fromVersion = dialog.querySelector('[name="fromVersion"]').value;
+    try {
+      const response = await fetch('/api/workspace/versions', { method: 'POST', headers: requirementsWriteHeaders(), body: JSON.stringify({ versionNumber: id, name, fromVersion: fromVersion === 'empty' ? workspaceBootstrap.activeVersion : fromVersion, empty: fromVersion === 'empty' }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '创建版本失败');
+      dialog.close();
+      WorkspaceRouter.navigateVersion(result.version);
+    } catch (error) { showToast(error.message); }
+  };
+  dialog.showModal();
+}
+
+function openVersionRenameDialog(versionId) {
+  if (!ensureEditorAccess(() => openVersionRenameDialog(versionId)) || !abandonEditorIfNeeded()) return;
+  const version = release(versionId);
+  if (!version) return;
+  const dialog = document.createElement('dialog');
+  dialog.className = 'version-item-dialog';
+  dialog.innerHTML = `<form method="dialog" class="version-item-form"><h2>重命名版本</h2>
+    <label>版本号<input name="versionNumber" required maxlength="40" value="${escape(versionNumberFor(version))}"></label>
+    <label>版本名称<input name="versionName" required maxlength="100" value="${escape(version.name)}"></label>
+    <div class="dialog-actions"><button type="button" data-close>取消</button><button type="submit" class="save">保存</button></div></form>`;
+  document.body.append(dialog);
+  const form = dialog.querySelector('form');
+  form.querySelector('[data-close]').onclick = () => dialog.close();
+  dialog.addEventListener('close', () => dialog.remove());
+  form.onsubmit = async event => {
+    event.preventDefault();
+    const versionNumber = form.elements.versionNumber.value.trim();
+    const name = form.elements.versionName.value.trim();
+    if (!/^[\w.-]+$/.test(versionNumber)) { showToast('版本号只支持字母、数字、点、横线和下划线'); return; }
+    if (!name) { showToast('请填写版本名称'); return; }
+    if (data.releases.some(other => other !== version && versionNumberFor(other).toLowerCase() === versionNumber.toLowerCase())) { showToast('版本号已存在'); return; }
+    const before = { name: version.name, versionNumber: version.versionNumber, aliases: version.aliases };
+    version.aliases = [...new Set([...(version.aliases || []), versionNumberFor(version)])];
+    version.name = name;
+    version.versionNumber = versionNumber;
+    if (!await persistWorkspaceStructure()) { Object.assign(version, before); return; }
     dialog.close();
-    state.tree = 'release';
-    state.selectedRelease = id;
-    state.selectedChange = null;
-    state.noteMode = 'release';
     renderAll();
   };
   dialog.showModal();
@@ -281,7 +348,7 @@ function openNewVersionDialog() {
 changeNote = function () {
   const item = currentVersionItem();
   if (!item) return '<div class="note-empty">请选择版本子项。</div>';
-  if (item.hasDocument === false) return '<div class="note-empty">此子项未关联需求文档。可以通过子项右侧的「⋯」添加文档。</div>';
+  if (item.hasDocument === false) return '<div class="note-empty">此子项未关联需求文档。</div>';
   if (!item.__workspaceCustom && item.documentKey === `change:${item.id}`) return legacyChangeNote();
   return requirementsNote(item.requirements || { sections: [] }, documentKeyFor(item, state.selectedRelease));
 };
@@ -290,7 +357,9 @@ syncWorkspaceMode = function () {
   legacySyncWorkspaceMode();
   if (state.noteMode === 'change') {
     const item = currentVersionItem();
-    $('#workspace').classList.toggle('doc-only', !itemModel(item));
+    const hasModel = Boolean(itemModel(item));
+    $('#workspace').classList.toggle('doc-only', !hasModel);
+    if (!hasModel) $('#workspace').classList.remove('payment-preview-mode', 'payment-calculator-mode');
   }
 };
 
@@ -298,7 +367,7 @@ const renderAllBeforeVersionModel = renderAll;
 renderAll = function () {
   renderAllBeforeVersionModel();
   const pill = document.querySelector('.app-header .pill');
-  if (pill) pill.textContent = state.selectedRelease || '';
+  if (pill) pill.textContent = versionNumberFor(release(state.selectedRelease));
 };
 
 const renderToolsBeforeVersionModel = renderTools;
@@ -386,6 +455,7 @@ function openVersionItemDialog(versionId, itemId = null) {
     state.selectedChange = target.id;
     state.noteMode = 'change';
     if (target.model) { state.pageId = target.model.pageId; state.stateId = target.model.stateId; }
+    if (newPage) { WorkspaceRouter.navigateVersion(version, { kind: 'items', target: target.id }); return; }
     renderAll();
   };
   sync();
@@ -397,7 +467,7 @@ function openDeleteVersionItemDialog(version, item) {
   const dialog = document.createElement('dialog');
   dialog.className = 'version-item-dialog';
   dialog.innerHTML = `<form method="dialog" class="version-item-form"><h2>删除子项</h2>
-    <p>确定从 ${escape(version.id)} 中删除「${escape(item.title || '未命名子项')}」？关联页面及已保存的内容不会被删除。</p>
+    <p>确定从 ${escape(versionNumberFor(version))} 中删除「${escape(item.title || '未命名子项')}」？关联页面及已保存的内容不会被删除。</p>
     <div class="dialog-actions"><button type="button" data-close>取消</button><button type="submit" class="delete-item">删除子项</button></div></form>`;
   document.body.append(dialog);
   dialog.querySelector('[data-close]').onclick = () => dialog.close();

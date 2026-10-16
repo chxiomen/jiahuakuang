@@ -3,6 +3,156 @@ let editorSession = null;
 let editorAbort = null;
 let navigationMenu = null;
 
+function isRequirementMarkdown(text) {
+  return /(?:^|\n) {0,3}(?:#{1,6}[ \t]+\S|>[ \t]?\S|[-+*][ \t]+\S|\d+[.)][ \t]+\S|```|~~~|(?:\|[^\n]*\|[ \t]*\n)?\|?[ \t]*:?-{3,}:?[ \t]*\|)/m.test(text)
+    || /(?:\*\*|__)[^\n]+?(?:\*\*|__)|\[[^\]\n]+\]\(https?:\/\/[^\s)]+\)|(?<!`)`[^`\n]+`(?!`)/.test(text);
+}
+
+let requirementMarkdownParser = null;
+function renderRequirementMarkdown(text) {
+  if (typeof window.markdownit !== 'function') return null;
+  if (!requirementMarkdownParser) {
+    requirementMarkdownParser = window.markdownit({ html: false, linkify: false, breaks: false });
+    requirementMarkdownParser.renderer.rules.table_open = () => '<div class="requirements-table-wrap"><table class="requirements-table">\n';
+    requirementMarkdownParser.renderer.rules.table_close = () => '</table></div>\n';
+  }
+  const parsed = document.createElement('template');
+  parsed.innerHTML = requirementMarkdownParser.render(text.replace(/\r\n?/g, '\n'));
+  parsed.content.querySelectorAll('li').forEach(item => {
+    const body = item.querySelector(':scope > p') || item;
+    const first = body.firstChild;
+    if (first?.nodeType !== Node.TEXT_NODE) return;
+    const task = /^\[([ xX])\](?=\s|$)/.exec(first.textContent);
+    if (!task) return;
+    first.textContent = first.textContent.slice(task[0].length).replace(/^\s/, '');
+    item.classList.add('requirements-task-item');
+    body.prepend(createRequirementTaskCheckbox(task[1].toLowerCase() === 'x'));
+    if (!body.textContent && !body.querySelector('br')) body.append(document.createElement('br'));
+  });
+  return `<div class="requirements-markdown">${parsed.innerHTML}</div>`;
+}
+
+function createRequirementTaskCheckbox(checked = false) {
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'requirements-task-checkbox';
+  checkbox.contentEditable = 'false';
+  checkbox.setAttribute('aria-label', '任务完成');
+  if (checked) checkbox.setAttribute('checked', '');
+  return checkbox;
+}
+
+function applyRequirementTaskShortcut(content) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !selection.isCollapsed) return false;
+  const range = selection.getRangeAt(0);
+  const node = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentElement : range.startContainer;
+  const item = node?.closest?.('li');
+  if (!item || !content.contains(item) || item.classList.contains('requirements-task-item')) return false;
+  const before = document.createRange();
+  before.selectNodeContents(item);
+  before.setEnd(range.startContainer, range.startOffset);
+  const task = /^\[([ xX])\]$/.exec(before.toString());
+  if (!task) return false;
+  const after = document.createRange();
+  after.selectNodeContents(item);
+  after.setStart(range.startContainer, range.startOffset);
+  if (after.toString().trim()) return false;
+  before.deleteContents();
+  item.classList.add('requirements-task-item');
+  const checkbox = createRequirementTaskCheckbox(task[1].toLowerCase() === 'x');
+  item.prepend(checkbox);
+  if (!item.querySelector('br') && !item.textContent) item.append(document.createElement('br'));
+  const next = document.createRange();
+  next.setStartAfter(checkbox);
+  next.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(next);
+  return true;
+}
+
+function applyRequirementMarkdownShortcut(content) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !selection.isCollapsed) return false;
+  const range = selection.getRangeAt(0);
+  const node = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentElement : range.startContainer;
+  if (!content.contains(node) || node.closest('li,td,th,blockquote,[contenteditable="false"]')) return false;
+  const block = node.closest('p,h1,h2,h3,h4,h5,h6') || (node === content ? content : null);
+  if (!block || (block === content && content.querySelector('p,div,section,ul,ol,table,h1,h2,h3,h4,h5,h6'))) return false;
+  const before = document.createRange();
+  before.selectNodeContents(block);
+  before.setEnd(range.startContainer, range.startOffset);
+  const shortcut = before.toString().replace(/\u00a0/g, ' ');
+  const after = document.createRange();
+  after.selectNodeContents(block);
+  after.setStart(range.startContainer, range.startOffset);
+  const remaining = after.cloneContents();
+  remaining.querySelectorAll?.('[data-editor-ui]').forEach(node => node.remove());
+  if (remaining.textContent.trim()) return false;
+  let replacement;
+  let cursor;
+  if (/^[-+*]$/.test(shortcut) || /^\d+[.)]$/.test(shortcut)) {
+    const ordered = /^\d/.test(shortcut);
+    replacement = document.createElement(ordered ? 'ol' : 'ul');
+    replacement.className = 'requirement-list';
+    if (ordered) replacement.start = Number.parseInt(shortcut, 10);
+    cursor = document.createElement('li');
+    cursor.append(document.createElement('br'));
+    replacement.append(cursor);
+  } else if (/^#{1,6}$/.test(shortcut)) {
+    replacement = document.createElement(`h${shortcut.length}`);
+    replacement.append(document.createElement('br'));
+    cursor = replacement;
+  } else if (shortcut === '>') {
+    replacement = document.createElement('blockquote');
+    replacement.className = 'requirements-input-quote';
+    cursor = document.createElement('p');
+    cursor.append(document.createElement('br'));
+    replacement.append(cursor);
+  } else return false;
+  if (block === content) {
+    before.deleteContents();
+    before.insertNode(replacement);
+  } else block.replaceWith(replacement);
+  const next = document.createRange();
+  next.selectNodeContents(cursor);
+  next.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(next);
+  return true;
+}
+
+function applyRequirementMarkdownInlineShortcut(content, marker) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !selection.isCollapsed) return false;
+  const range = selection.getRangeAt(0);
+  const textNode = range.startContainer;
+  if (textNode.nodeType !== Node.TEXT_NODE || !content.contains(textNode.parentElement) || textNode.parentElement.closest('code,pre,a,[contenteditable="false"]')) return false;
+  const before = textNode.data.slice(0, range.startOffset);
+  const rules = {
+    '*': [[/(^|[\s（(])\*\*([^*\n]+)\*$/, 'strong'], [/(^|[\s（(])\*([^*\n]+)$/, 'em']],
+    '_': [[/(^|[\s（(])__([^_\n]+)_$/, 'strong'], [/(^|[\s（(])_([^_\n]+)$/, 'em']],
+    '`': [[/(^|[\s（(])`([^`\n]+)$/, 'code']],
+    '~': [[/(^|[\s（(])~~([^~\n]+)~$/, 's']]
+  };
+  const match = rules[marker]?.map(([pattern, tag]) => ({ match: pattern.exec(before), tag })).find(item => item.match);
+  if (!match) return false;
+  const start = match.match.index + match.match[1].length;
+  const replacement = document.createElement(match.tag);
+  replacement.textContent = match.match[2];
+  const token = document.createRange();
+  token.setStart(textNode, start);
+  token.setEnd(textNode, range.startOffset);
+  token.deleteContents();
+  token.insertNode(replacement);
+  const next = document.createRange();
+  next.setStartAfter(replacement);
+  next.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(next);
+  return true;
+}
+
 function restoreAutomaticRequirementImageSizes(root) {
   const fittedImages = [ ...(root.matches?.('img[data-requirement-width-fit]') ? [root] : []), ...root.querySelectorAll('img[data-requirement-width-fit]') ];
   fittedImages.forEach(image => {
@@ -245,8 +395,19 @@ function travelRequirementHistory(direction) {
 function editorFloatingSelection() {
   const session = editorSession;
   const selection = window.getSelection();
-  if (!session || !selection?.rangeCount || selection.isCollapsed || !session.content.contains(selection.anchorNode) || !session.content.contains(selection.focusNode)) return null;
+  if (!session || !selection?.rangeCount || selection.isCollapsed || !selection.toString().trim() || !session.content.contains(selection.anchorNode) || !session.content.contains(selection.focusNode)) return null;
   return selection.getRangeAt(0);
+}
+
+function editorTablePointerTarget(event, content) {
+  const cell = event.target.closest?.('td,th');
+  if (!cell || !content.contains(cell)) return null;
+  const table = cell.closest('table');
+  const row = [...table.rows].find(candidate => {
+    const bounds = candidate.getBoundingClientRect();
+    return event.clientY >= bounds.top && event.clientY < bounds.bottom;
+  }) || cell.parentElement;
+  return { cell, row };
 }
 
 function updateFloatingToolbar() {
@@ -255,14 +416,17 @@ function updateFloatingToolbar() {
   if (session.toolbarInteracting || !session.link.hidden || session.floating.contains(document.activeElement)) return;
   const range = editorFloatingSelection();
   const bar = session.floating;
-  if (!range) { bar.hidden = true; return; }
+  if (!range) { bar.hidden = true; session.range = null; session.toolbarRow = null; return; }
   session.range = range.cloneRange();
   const node = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentElement : range.startContainer;
   const end = range.endContainer.nodeType === Node.TEXT_NODE ? range.endContainer.parentElement : range.endContainer;
   const cell = node?.closest?.('td,th');
   const sameCell = cell && cell === end?.closest?.('td,th');
-  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="link">${editorLinkForRange(range, session.content) ? '修改链接' : '添加链接'}</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
-  bar.innerHTML = `${format}<button data-float="doubt">存疑</button>`;
+  session.toolbarRow = sameCell && session.tablePointerTarget?.cell === cell
+    ? session.tablePointerTarget.row : sameCell ? cell.parentElement : null;
+  const mergeCells = session.editing && requirementMergeSelection(window.getSelection(), session.content);
+  const format = session.editing ? `<button data-float="bold">加粗</button><button data-float="italic">斜体</button><button data-float="underline">下划线</button><button data-float="link">${editorLinkForRange(range, session.content) ? '修改链接' : '添加链接'}</button><button data-float="ordered-list">有序列表</button><button data-float="unordered-list">无序列表</button><select data-float="font-size" aria-label="字号"><option value="">字号</option><option value="8px">8px</option><option value="10px">10px</option><option value="12px">12px</option><option value="14px">14px</option><option value="16px">16px</option><option value="18px">18px</option></select><select data-float="color" aria-label="文字颜色"><option value="">颜色</option><option value="#202631">黑</option><option value="#808080">灰</option><option value="#d94b58">红</option><option value="#276cf2">蓝</option><option value="#4c9a43">绿</option></select><select data-float="align" aria-label="对齐方式"><option value="">对齐</option><option value="left">靠左对齐</option><option value="center">居中对齐</option><option value="right">靠右对齐</option></select><button data-float="highlight">高亮</button><button data-float="outdent">减少缩进</button><button data-float="indent">缩进</button>${sameCell ? '<button data-float="add-row">行＋</button><button data-float="delete-row">行－</button><button data-float="add-column">列＋</button><button data-float="delete-column">列－</button><button data-float="cell-highlight">单元格高亮</button><button data-float="row-highlight">整行高亮</button><button data-float="column-highlight">整列高亮</button>' : ''}` : '<button data-float="edit">编辑</button>';
+  bar.innerHTML = `${format}${mergeCells ? '<button data-float="merge-cells">合并单元格</button>' : ''}${session.editing && sameCell && (cell.rowSpan > 1 || cell.colSpan > 1) ? '<button data-float="unmerge-cell">取消合并</button>' : ''}<button data-float="doubt">存疑</button>`;
   bar.hidden = false;
   const rect = range.getBoundingClientRect();
   bar.style.left = `${Math.max(8, Math.min(window.innerWidth - bar.offsetWidth - 8, rect.left + rect.width / 2 - bar.offsetWidth / 2))}px`;
@@ -362,6 +526,7 @@ function startRequirementEdit() {
   session.content.querySelectorAll('.requirement-section,.requirement-text-item').forEach(decorateRequirementBlock);
   session.snapshot = { html: editorContentHtml(session), title: session.title.textContent.trim() };
   session.editing = true;
+  if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   session.history = [requirementHistoryState(session)];
   session.historyIndex = 0;
   session.lastFocus = 'content';
@@ -389,6 +554,7 @@ function cancelRequirementEdit(force = false) {
   session.editor.classList.remove('is-editing');
   session.notes.classList.remove('is-editing');
   session.editing = false;
+  if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   session.toolbar.hidden = true;
   session.controls.hidden = false;
   session.floating.hidden = true;
@@ -421,16 +587,36 @@ function requirementWrites(session) {
   return writes;
 }
 
+async function persistTemporaryRequirementImages(session) {
+  for (const image of session.content.querySelectorAll('img[src^="blob:"]')) {
+    const response = await fetch(image.src);
+    if (!response.ok) throw new Error('无法读取临时图片，请重新粘贴');
+    const blob = await response.blob();
+    if (!blob.type.startsWith('image/')) throw new Error('粘贴的文件不是图片');
+    image.src = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('图片转换失败，请重新粘贴'));
+      reader.readAsDataURL(blob);
+    });
+  }
+  if (session.content.querySelector('img[src^="file:"]')) throw new Error('本地图片路径无法保存，请复制图片后粘贴');
+}
+
 async function saveRequirementEdit() {
   const session = editorSession;
   if (!session?.editing || session.saving) return;
   removeEmptyRequirementHeadings(session.content);
   session.saving = true;
   editorStatus('保存中');
-  const writes = requirementWrites(session);
   try {
+    await persistTemporaryRequirementImages(session);
+    const writes = requirementWrites(session);
     const response = await fetch('/api/requirements', { method: 'POST', headers: requirementsWriteHeaders(), body: JSON.stringify({ items: writes }) });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      const detail = await response.json().catch(() => null);
+      throw new Error(detail?.error || `HTTP ${response.status}`);
+    }
     for (const item of writes) savedRequirements[item.key] = item.html;
     workspaceStructure.documentTitle = session.title.textContent.trim() || '需求说明';
     session.snapshot = { html: editorContentHtml(session), title: session.title.textContent.trim() };
@@ -523,13 +709,18 @@ function removeEmptyRequirementHeadings(content) {
 
 function applyEditorFormat(action, value) {
   const session = editorSession;
+  const toolbarRow = session?.toolbarRow;
   if (!session?.editing || !restoreEditorSelection()) return;
   const selection = window.getSelection();
   const node = selection.anchorNode?.nodeType === Node.TEXT_NODE ? selection.anchorNode.parentElement : selection.anchorNode;
   const cell = node?.closest?.('td,th');
   const table = cell?.closest('table');
   const commands = { 'ordered-list': 'insertOrderedList', 'unordered-list': 'insertUnorderedList' };
+  const alignmentCommands = { left: 'justifyLeft', center: 'justifyCenter', right: 'justifyRight' };
   if (commands[action]) { document.execCommand(commands[action]); normalizeEditorLists(session.content); }
+  else if (action === 'merge-cells') mergeRequirementTableCells();
+  else if (action === 'unmerge-cell') unmergeRequirementTableCell();
+  else if (action === 'align' && alignmentCommands[value]) document.execCommand(alignmentCommands[value]);
   else if (['bold','italic','underline','indent','outdent'].includes(action)) document.execCommand(action);
   else if (action === 'highlight') document.execCommand('hiliteColor', false, '#fff2c9');
   else if (action === 'color' && value) document.execCommand('foreColor', false, value);
@@ -544,7 +735,7 @@ function applyEditorFormat(action, value) {
       const column = layout.positions.get(cell);
       new Set(layout.grid.map(row => row[column]).filter(Boolean)).forEach(target => target.classList.toggle('editor-cell-highlight'));
     }
-    if (['add-row','delete-row','add-column','delete-column'].includes(action)) changeRequirementTable(action);
+    if (['add-row','delete-row','add-column','delete-column'].includes(action)) changeRequirementTable(action, toolbarRow);
   }
   session.content.focus();
   updateFloatingToolbar();
@@ -557,8 +748,9 @@ function bindUnifiedEditor() {
   const editor = document.querySelector('#notes .requirements-editor');
   const head = document.querySelector('.note-head');
   head?.querySelector('.workspace-editor-controls')?.remove();
-  document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover,.requirements-link-popover').forEach(node => node.remove());
+  document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover,.requirements-link-popover,.requirements-image-preview').forEach(node => { if (node.open) node.close(); node.remove(); });
   editorSession = null;
+  if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   if (!editor || !head) return;
   const content = editor.querySelector('.requirements-editor-content');
   const title = head.querySelector('h2');
@@ -584,7 +776,11 @@ function bindUnifiedEditor() {
   link.className = 'requirements-link-popover';
   link.hidden = true;
   link.innerHTML = '<label for="requirement-link-url">链接地址</label><input id="requirement-link-url" type="text" inputmode="url" placeholder="https://example.com" autocomplete="url"><small class="requirements-link-error" role="alert"></small><div class="requirements-link-actions"><button type="button" data-link-remove>移除链接</button><button type="button" data-link-cancel>取消</button><button type="submit" class="primary">确定</button></div>';
-  document.body.append(floating, doubt, link);
+  const preview = document.createElement('dialog');
+  preview.className = 'requirements-image-preview';
+  preview.setAttribute('aria-label', '图片预览');
+  preview.innerHTML = '<button type="button" class="requirements-image-preview-close" aria-label="关闭图片预览">×</button><img alt="">';
+  document.body.append(floating, doubt, link, preview);
   editorSession = { editor, notes: document.querySelector('.notes'), content, title, toolbar, controls, floating, doubt, link, linkInput: link.querySelector('input'), linkError: link.querySelector('.requirements-link-error'), linkTarget: null, editing: false, saving: false, toolbarInteracting: false, snapshot: { html: content.innerHTML, title: title.textContent.trim() }, range: null, history: [], historyIndex: -1, historyApplying: false, lastFocus: 'content' };
   const signal = editorAbort.signal;
   controls.querySelector('[data-editor-start]').onclick = startRequirementEdit;
@@ -597,15 +793,38 @@ function bindUnifiedEditor() {
   link.querySelector('[data-link-cancel]').onclick = closeEditorLinkPopover;
   link.querySelector('[data-link-remove]').onclick = removeEditorLink;
   const session = editorSession;
+  const previewImage = preview.querySelector('img');
+  preview.querySelector('button').onclick = () => preview.close();
+  preview.addEventListener('click', event => { if (event.target === preview) preview.close(); }, { signal });
+  preview.addEventListener('close', () => { previewImage.removeAttribute('src'); }, { signal });
   scheduleRequirementImageFit(session);
   session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementImageFit(session); });
   session.historyObserver.observe(content, { subtree: true, childList: true, characterData: true, attributes: true });
   session.historyObserver.observe(title, { subtree: true, childList: true, characterData: true, attributes: true });
-  content.addEventListener('input', () => {
+  content.addEventListener('paste', event => {
+    if (!session.editing) return;
+    const plainText = event.clipboardData?.getData('text/plain');
+    if (!plainText || !isRequirementMarkdown(plainText)) return;
+    const html = renderRequirementMarkdown(plainText);
+    if (!html) return;
+    event.preventDefault();
+    document.execCommand('insertHTML', false, html);
+    recordRequirementHistory(session);
+  }, { signal });
+  content.addEventListener('beforeinput', event => {
+    if (!session.editing || event.isComposing || event.inputType !== 'insertText') return;
+    const converted = event.data === ' '
+      ? applyRequirementTaskShortcut(content) || applyRequirementMarkdownShortcut(content)
+      : applyRequirementMarkdownInlineShortcut(content, event.data);
+    if (!converted) return;
+    event.preventDefault();
+    recordRequirementHistory(session);
+  }, { signal });
+  content.addEventListener('input', event => {
     const selected = window.getSelection()?.anchorNode;
     const element = selected?.nodeType === Node.TEXT_NODE ? selected.parentElement : selected;
     const heading = element?.closest?.('h1,h2,h3,h4,h5,h6');
-    if (heading && content.contains(heading)) removeEmptyRequirementHeadings(content);
+    if (heading && content.contains(heading) && event.inputType?.startsWith('delete')) removeEmptyRequirementHeadings(content);
     recordRequirementHistory(session);
   }, { signal });
   content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementImageFit(session); }, { capture: true, signal });
@@ -624,19 +843,41 @@ function bindUnifiedEditor() {
     event.preventDefault();
     travelRequirementHistory(event.shiftKey ? 1 : -1);
   }, { signal });
-  content.addEventListener('mouseup', updateFloatingToolbar, { signal });
-  content.addEventListener('keyup', updateFloatingToolbar, { signal });
+  content.addEventListener('mouseup', event => {
+    session.tablePointerTarget = editorTablePointerTarget(event, content);
+    updateFloatingToolbar();
+  }, { signal });
+  content.addEventListener('keyup', () => { session.tablePointerTarget = null; updateFloatingToolbar(); }, { signal });
   content.addEventListener('click', event => {
+    const task = event.target.closest('.requirements-task-checkbox');
+    if (task && content.contains(task)) {
+      if (!session.editing) event.preventDefault();
+      return;
+    }
+    const image = event.target.closest('img');
+    if (image && content.contains(image)) {
+      event.preventDefault();
+      previewImage.src = image.currentSrc || image.src;
+      previewImage.alt = image.alt || '图片预览';
+      preview.showModal();
+      return;
+    }
     const marker = event.target.closest('.doubt-mark');
     if (marker) showDoubtPopover(marker);
     const anchor = event.target.closest('a[href]');
     if (anchor && session.editing) { event.preventDefault(); showEditorLinkPopover(anchor); }
   }, { signal });
+  content.addEventListener('change', event => {
+    const task = event.target.closest('.requirements-task-checkbox');
+    if (!session.editing || !task || !content.contains(task)) return;
+    task.toggleAttribute('checked', task.checked);
+    recordRequirementHistory(session);
+  }, { signal });
   floating.addEventListener('mousedown', event => { if (event.target.tagName === 'SELECT') session.toolbarInteracting = true; else event.preventDefault(); }, { signal });
   floating.addEventListener('focusin', event => { if (event.target.matches('select[data-float]')) session.toolbarInteracting = true; }, { signal });
   floating.addEventListener('focusout', event => { if (event.target.matches('select[data-float]')) requestAnimationFrame(() => { session.toolbarInteracting = false; updateFloatingToolbar(); }); }, { signal });
   floating.addEventListener('click', event => {
-    const action = event.target.closest('[data-float]')?.dataset.float;
+    const action = event.target.closest('button[data-float]')?.dataset.float;
     if (!action) return;
     if (action === 'edit') startRequirementEdit();
     else if (action === 'doubt') markEditorDoubt();
@@ -652,6 +893,7 @@ function bindUnifiedEditor() {
 window.addEventListener('beforeunload', event => { if (editorDirty()) { event.preventDefault(); event.returnValue = ''; } });
 document.addEventListener('click', event => {
   if (!editorSession?.editing) return;
+  if (event.target.closest('#phone')) return;
   if (!event.target.closest('#tree,#treeSwitch,#fullNote,[data-tool-state],[data-requirement-state],[data-mine-type],[data-mine-card],[data-mine-status],[data-payment-member],[data-payment-card],[data-payment-subscription],[data-payment-tab],[data-payment-plan],[data-platform],[data-target]')) return;
   if (!abandonEditorIfNeeded()) { event.preventDefault(); event.stopImmediatePropagation(); }
 }, true);
@@ -705,6 +947,7 @@ function inlineNavigationName(kind, id, isNew = false) {
 }
 
 async function navigationAction(kind, id, action) {
+  if (kind === 'version' && action === 'rename') { openVersionRenameDialog(id); return; }
   if (!ensureEditorAccess() || !abandonEditorIfNeeded()) return;
   if (kind === 'version' && action === 'insert') { openNewVersionDialog(); return; }
   const collection = kind === 'page' ? data.pages : data.releases;

@@ -2,13 +2,12 @@
 .release-outline,.add-version-item{padding-left:34px;padding-right:12px}
 .version-item-row{display:flex;align-items:stretch;gap:0;width:100%;border-radius:7px}
 .version-item-row:hover,.version-item-row.active{background:var(--blue-wash)}
-.version-item-row .change-item{display:block;flex:1;min-width:0;padding:8px 0 8px 34px;border-radius:0;background:transparent}
+.version-item-row .change-item{display:block;flex:1;min-width:0;padding:8px 12px 8px 34px;border-radius:0;background:transparent}
 .version-item-row:hover .change-item,.version-item-row.active .change-item{color:#2663c8}
-.item-settings{flex:0 0 48px;border:0;background:transparent;color:#657185;padding:0 12px;cursor:pointer;font-size:20px}
-.item-settings:hover,.add-version-item:hover{color:#2663c8}
-.version-item-menu{position:fixed;z-index:30;display:grid;min-width:184px;padding:12px 0;border:1px solid #dce3ec;border-radius:14px;background:#fff;box-shadow:0 16px 38px #14203326}
-.version-item-menu button{min-height:44px;border:0;background:transparent;padding:0 28px;color:#344054;text-align:left;font:inherit;font-size:16px;cursor:pointer}
-.version-item-menu button:hover{background:#f1f5ff;color:#2663c8}
+.add-version-item:hover{color:#2663c8}
+.version-item-menu,.navigation-context-menu{position:fixed;z-index:300;display:grid;box-sizing:border-box;min-width:132px;padding:4px;border:1px solid #dce3ec;border-radius:8px;background:#fff;box-shadow:0 8px 22px #14203326}
+.version-item-menu button,.navigation-context-menu button{min-height:30px;border:0;border-radius:4px;background:transparent;padding:5px 10px;color:#344054;text-align:left;font:inherit;font-size:12px;line-height:20px;cursor:pointer}
+.version-item-menu button:hover,.navigation-context-menu button:hover{background:#f1f5ff;color:#2663c8}
 .version-item-menu button.danger{color:#b42318}
 .version-item-menu button.danger:hover{background:#fff1f0}
 .release-line:hover,.release-line:focus-within{background:var(--blue-wash);border-radius:7px}
@@ -32,7 +31,11 @@
 .version-item-form [hidden]{display:none!important}
 .dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
 .dialog-actions button{border:1px solid #cbd5e1;border-radius:7px;background:white;padding:8px 16px;cursor:pointer}
-.dialog-actions .save{background:#1d4d40;color:white;border-color:#1d4d40}
+.dialog-actions .save{background:var(--blue);color:white;border-color:var(--blue)}
+.dialog-actions .save:hover{background:#2160c9;border-color:#2160c9}
+.model-selection-dialog{box-sizing:border-box;width:min(340px,calc(100vw - 32px));min-width:0;max-width:calc(100vw - 32px)}
+.model-selection-dialog .version-item-form{padding:20px;gap:16px}
+.model-selection-dialog .model-fields{padding:0;border:0;border-radius:0}
 .dialog-actions .delete-item{margin-right:auto;border-color:#e6b4b4;color:#b42318}
 .dialog-actions .delete-item:hover{background:#fff1f0}
 .version-item-form p{margin:0;color:#52657d;font-size:13px;line-height:1.6}

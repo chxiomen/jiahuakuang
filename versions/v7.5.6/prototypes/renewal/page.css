@@ -1,0 +1,142 @@
+/* PRD TBD · 图5 续费管理页默认态：按用户截图用原生 CSS/SVG 还原，不使用整页图片。 */
+    .phone.renewal-screen .notch,.phone.renewal-screen>.status-bar,.phone.renewal-screen .tab-bar{display:none}
+.phone.renewal-screen .screen{position:absolute;inset:0;height:auto;overflow:auto;padding:0;background:#001b11}
+.renewal{width:390px;min-height:1020px;zoom:.961538;background:#001b11;color:#f2f4f1;font-family:inherit}
+.renewal button{font-family:inherit}
+.renewal-head{height:78px;background:#163128;color:#fff}
+.renewal-status{display:flex;height:30px;align-items:center;justify-content:space-between;padding:0 24px;font-size:11px;line-height:1}
+.renewal-status b{font-size:12px}
+.renewal-status span{font-size:10px;letter-spacing:1px}
+.renewal-nav{display:grid;height:48px;grid-template-columns:54px 1fr 76px;align-items:center}
+.renewal-nav h1{margin:0;font-size:17px;font-weight:700;line-height:1;text-align:center}
+.renewal-nav button{padding:0;border:0;background:transparent;color:#fff}
+.renewal-back{font-family:Arial,sans-serif!important;font-size:37px;font-weight:200;line-height:28px}
+.renewal-support{font-size:13px;font-weight:600;white-space:nowrap}
+.renewal-body{padding:18px 11px 36px}
+.renewal-profile{display:flex;height:115px;align-items:center;justify-content:space-between;padding:0 17px;border-radius:11px;background:linear-gradient(100deg,#fff0b0,#ffdc78);color:#3a3a34;overflow:hidden}
+.renewal-profile>div{display:flex;z-index:1;flex-direction:column}
+.renewal-profile strong{font-size:17px;font-weight:700;line-height:25px}
+.renewal-profile>div>span{margin-top:6px;font-size:13px;font-weight:500;line-height:19px}
+.renewal-profile small{margin-top:6px;font-size:13px;font-weight:500;line-height:18px}
+.renewal-profile>b{margin:-1px -7px 0 0;color:rgba(185,138,39,.22);font-size:44px;font-style:italic;font-weight:800;letter-spacing:2px}
+.renewal-summary{margin-top:18px;padding:13px 16px 10px;border-radius:11px;background:#15342b}
+.renewal-summary p{display:flex;min-height:44px;align-items:center;justify-content:space-between;margin:0;color:#f7f8f5;font-size:17px;font-weight:600;line-height:24px}
+.renewal-summary p:first-child{margin-bottom:1px}
+.renewal-summary strong{font-size:17px;font-weight:700}
+.renewal-toggle{position:relative;width:47px;height:27px;cursor:pointer}
+.renewal-toggle input{position:absolute;opacity:0;pointer-events:none}
+.renewal-toggle i{position:absolute;inset:0;border-radius:99px;background:#dfe3e0;box-shadow:inset 0 0 2px rgba(0,0,0,.17)}
+.renewal-toggle i::after{position:absolute;top:2px;left:2px;width:23px;height:23px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.16);content:"";transition:.15s}
+.renewal-toggle input:checked+i{background:#0bc94b}
+.renewal-toggle input:checked+i::after{transform:translateX(20px)}
+.renewal-links{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:24px;color:#ebeeeb;font-size:13px;font-weight:600}
+.renewal-links button{padding:0;border:0;background:transparent;color:inherit;font-size:13px;font-weight:600}
+.renewal-links i{font-style:normal}
+.renewal-section-title{margin:30px 0 0 13px;color:#e5e8e5;font-size:17px;font-weight:700;line-height:24px}
+.renewal-services{display:grid;grid-template-columns:repeat(3,1fr);margin-top:31px}
+.renewal-services article{display:flex;align-items:center;flex-direction:column;text-align:center}
+.renewal-services svg{width:30px;height:31px;margin-bottom:12px;fill:none;stroke:#dce2df;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.7}
+.renewal-services b{color:#f1f3f1;font-size:15px;font-weight:700;line-height:21px}
+.renewal-services small{margin-top:5px;color:#c2cac5;font-size:10px;line-height:15px;white-space:nowrap}
+.renewal-record-heading{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:31px;color:#d3d9d5}
+.renewal-record-heading i{width:14px;height:1px;background:#71817a}
+.renewal-record-heading b{font-size:15px;font-weight:700;line-height:21px}
+.renewal-records{margin:17px 18px 0}
+.renewal-records article{padding:0 0 14px;margin-bottom:16px;border-bottom:1px solid rgba(148,172,159,.23)}
+.renewal-records article:last-child{margin-bottom:0}
+.renewal-records article>div{display:flex;align-items:center;justify-content:space-between}
+.renewal-records b,.renewal-records strong{color:#eff2ef;font-size:14px;font-weight:700;line-height:20px}
+.renewal-records p{margin:8px 0 0;color:#c1cac5;font-size:11px;font-weight:600;line-height:16px}
+/* 续费信息层级：截图内较大文字使用中等字重，避免视觉过重。 */
+    .renewal-nav h1,.renewal-profile strong,.renewal-summary p,.renewal-summary strong,.renewal-section-title,.renewal-services b,.renewal-record-heading b,.renewal-records b,.renewal-records strong{font-weight:500}
+/* 续费页轻量视觉整理：保留原有深绿、浅金配色，仅增强分组与阅读节奏。 */
+    .renewal{background:linear-gradient(180deg,#001b11 0,#00190f 100%)}
+.renewal-body{padding:20px 12px 46px}
+.renewal-profile{border:1px solid rgba(255,241,185,.42);box-shadow:0 9px 20px rgba(0,0,0,.12)}
+.renewal-summary{margin-top:20px;padding:11px 17px;border:1px solid rgba(139,180,159,.12);background:linear-gradient(135deg,#17372e,#123027);box-shadow:0 8px 18px rgba(0,0,0,.11)}
+.renewal-summary p{min-height:47px;color:#dce6e0;font-size:16px}
+.renewal-summary p+p{border-top:1px solid rgba(206,230,216,.09)}
+.renewal-summary strong{color:#fffdf4;font-size:18px;letter-spacing:.15px}
+.renewal-section-title{margin:32px 0 0 14px;color:#edf2ed;font-size:16px}
+.renewal-services{margin-top:18px;padding:17px 2px 15px;border:1px solid rgba(139,180,159,.12);border-radius:12px;background:rgba(20,52,42,.36)}
+.renewal-services article+article{border-left:1px solid rgba(177,204,191,.1)}
+.renewal-services svg{margin-bottom:10px;opacity:.95}
+.renewal-services small{color:#aebdb5}
+.renewal-record-heading{margin-top:34px}
+.renewal-record-heading i{width:18px;background:#607a6c}
+.renewal-records{margin:18px 19px 0}
+.renewal-records article{padding-bottom:15px;margin-bottom:17px;border-color:rgba(159,191,174,.19)}
+.renewal-records p{color:#afbeb6}
+.renewal-help .renewal-record-heading{margin-top:31px}
+.renewal-help p{padding:11px 12px;border:1px solid rgba(139,180,159,.1);border-left:2px solid rgba(223,186,93,.52);border-radius:0 8px 8px 0;background:rgba(20,52,42,.25);color:#c5d0ca;line-height:1.85}
+.renewal-profile.svip-profile{background:linear-gradient(100deg,#fff5df,#ffdcb6);border-color:rgba(255,239,211,.6)}
+.renewal-profile.svip-profile>b{color:rgba(185,138,39,.16)}
+/* 续费信息卡片：降低字号，保留标签与金额的层级关系。 */
+    .renewal-summary p{min-height:44px;font-size:14px;line-height:21px;letter-spacing:0}
+.renewal-summary strong{font-size:15px;letter-spacing:0}
+.renewal-requirement-state-tabs{display:flex;align-items:center;gap:12px}
+.renewal-requirement-state-tabs .renewal-state-group{display:flex;gap:6px}
+.renewal-requirement-state-tabs .renewal-state-divider{color:#b8c1ce;font-size:16px;line-height:1}
+.renewal-requirement-state-tabs button{min-width:52px;text-align:center}
+.renewal-requirements-layout{position:relative;display:block}
+.renewal-modal-spec{position:absolute;z-index:3;top:86px;left:calc(100% + 34px);width:300px;padding:0;color:#4c402d}
+.renewal-modal-selector{display:grid;gap:0;width:300px;margin:0 0 12px;padding:7px 10px;border:1px solid var(--line);border-radius:15px;background:#fff;box-shadow:none}
+.renewal-modal-selector-row{display:flex;gap:8px;align-items:center;padding:7px 0}
+.renewal-modal-selector-row+.renewal-modal-selector-row{border-top:1px solid rgba(157,169,184,.2)}
+.renewal-modal-selector-row::before{flex:0 0 38px;color:#78879d;font-size:10px;letter-spacing:.5px}
+.renewal-modal-selector-row:nth-child(1)::before{content:"状态"}
+.renewal-modal-selector-row:nth-child(2)::before{content:"等级"}
+.renewal-modal-selector-row:nth-child(3)::before{content:"周期"}
+.renewal-modal-selector-row>button{flex:1;min-width:0;height:30px;padding:0 5px;border:1px solid transparent;border-radius:9px;background:#f1f4f8;color:#718097;font-size:10px;white-space:nowrap;transition:.16s}
+.renewal-modal-selector-row>button+button{margin-left:0}
+.renewal-modal-selector-row>button:hover{border-color:#c9dafa;background:#edf4ff;color:#276cf2}
+.renewal-modal-selector-row>button.active{background:#edf4ff;color:#276cf2;font-weight:700;box-shadow:none}
+.renewal-modal-spec::before,.renewal-modal-spec::after{display:none}
+.renewal-modal-prototype{width:300px}
+.renewal-modal-prototype .repurchase-modal{width:300px;padding:23px 18px 17px}
+.renewal-modal-prototype .repurchase-modal-actions{pointer-events:none}
+.renewal-modal-prototype .repurchase-modal-copy{margin-top:14px}
+.renewal-modal-anchor{display:inline;border-bottom:1px dashed #276cf2;color:#276cf2;cursor:pointer}
+.renewal-modal-anchor:hover{color:#1659c9;border-bottom-color:#1659c9}
+.renewal-modal-connector-svg{position:absolute;z-index:2;top:0;left:0;overflow:visible;width:100%;height:100%;pointer-events:none}
+.renewal-modal-connector-svg line{fill:none;stroke:#9da9b8;stroke-dasharray:5 5;stroke-width:1.2}
+.renewal-modal-spec h3,.renewal-modal-spec>p,.renewal-modal-spec .spec-empty{display:none}
+@media(max-width:1320px){
+.renewal-modal-spec{position:relative;top:auto;left:auto;width:100%;margin:18px 0 0;padding-top:14px;border-top:1px dashed #c7a866}
+.renewal-modal-selector{width:100%}
+.renewal-modal-prototype{margin:0 auto}
+}
+.renewal-auto-row{border-top:1px solid rgba(206,230,216,.09)}
+.renewal-auto-row .renewal-toggle{margin-left:auto}
+.renewal-toggle input:disabled+i{opacity:.62;cursor:not-allowed}
+.phone.renewal-screen .renewal{position:relative;height:100%;min-height:0}
+.phone.renewal-screen .renewal-body{height:100%;overflow:auto;padding-bottom:82px;scroll-padding-bottom:82px}
+.renewal-action-links{position:absolute;z-index:6;right:0;bottom:0;left:0;display:flex;align-items:center;justify-content:center;min-height:48px;margin:0;padding:10px 18px 12px;color:#bfcac3;font-size:11px;background:linear-gradient(180deg,rgba(0,25,15,.18),rgba(0,25,15,.97) 35%);backdrop-filter:blur(5px)}
+.renewal-action-links button{padding:0 8px;border:0;background:transparent;color:inherit;font:inherit;line-height:20px}
+.renewal-action-links .renewal-protocol-link{color:#c8d1cb}
+.renewal-support-row{display:block;margin:7px 14px 0;color:#aebdb5;font-size:11px;font-weight:400;line-height:18px}
+.renewal-records p{color:#c5d0ca}
+.renewal-summary-card{position:relative;z-index:1;display:grid;gap:8px;max-width:none;margin:17px 0 14px;padding:13px 15px;border:1px solid #eee8de;border-radius:13px;background:#fcfbf8;color:#8d8b87;text-align:center;line-height:1.45}
+.renewal-summary-card>span{font-size:12px}
+.renewal-summary-card b{display:inline-flex;align-items:center;justify-content:flex-start;gap:22px;margin:0 auto;color:#4b443b;font-size:13px;font-weight:600;line-height:1.2;text-align:left;white-space:nowrap}
+.renewal-summary-card b span{overflow:hidden;text-overflow:ellipsis;font-size:13px}
+.renewal-summary-card b em{flex:0 0 auto;color:#907b61;font-size:12px;font-style:normal;font-weight:500;line-height:1.2}
+.renewal-modal-prototype .repurchase-modal{padding:54px 16px 19px}
+
+/* PRD TBD · iOS 续费中：保留两行扣费信息，底栏提供 Apple 退订引导入口。 */
+.renewal-ios .renewal-summary{padding-bottom:11px}
+.renewal-action-divider{color:#bfcac3;line-height:20px}
+.renewal-action-links .renewal-apple-cancel-link{color:#c8d1cb}
+.phone.renewal-screen .renewal-apple-sheet{height:322px;min-height:0;padding:18px 22px 23px;border-radius:24px 24px 0 0;box-sizing:border-box;color:#202824}
+.phone.renewal-screen .renewal-apple-sheet .handle{display:none}
+.phone.renewal-screen .renewal-apple-sheet h2{margin:0 34px 0 0;height:38px;text-align:left;font-size:18px;line-height:38px;font-weight:700}
+.phone.renewal-screen .renewal-apple-sheet .agreement-close{position:absolute;top:18px;right:20px;display:block;width:34px;height:38px;padding:0;border:0;background:transparent;color:#69716d;font-size:29px;font-weight:400;line-height:38px}
+.phone.renewal-screen .renewal-apple-sheet #sheetText{margin-top:13px}
+.phone.renewal-screen .renewal-apple-sheet #sheetText p{font-size:13px;line-height:22px;color:#5f6b66}
+.phone.renewal-screen .renewal-apple-sheet .renewal-apple-intro{min-height:44px}
+.phone.renewal-screen .renewal-apple-sheet .renewal-apple-path{margin-top:10px;padding:9px 14px;border-radius:12px;background:#f6f8fa}
+.phone.renewal-screen .renewal-apple-sheet .renewal-apple-path strong{display:block;font-size:12px;line-height:20px;color:#26302b}
+.phone.renewal-screen .renewal-apple-sheet .renewal-apple-path p{margin-top:4px;font-size:12px;line-height:28px;white-space:nowrap}
+.phone.renewal-screen .renewal-apple-sheet .renewal-apple-rights{margin-top:10px;font-size:12px!important;line-height:30px!important;color:#747b77!important}
+.phone.renewal-screen .renewal-apple-sheet .sheet-actions{margin-top:12px}
+.phone.renewal-screen .renewal-apple-sheet .sheet-actions .cancel{height:44px;border:0;border-radius:13px;background:#163b2e;color:#fff;font-size:15px;font-weight:500}

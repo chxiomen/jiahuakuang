@@ -3,6 +3,48 @@ const renderPhoneBeforeTextEditing = renderPhone;
 let textDecorationPending = false;
 let pendingModelClick = null;
 let activeModelTextEdit = null;
+let modelPreviewContext = null;
+
+// Preview actions may redraw the phone or request annotation notes. Keep the
+// document being edited mounted, with its draft and version selection intact.
+const renderNotesBeforeModelInteraction = renderNotes;
+renderNotes = function () {
+  if (modelPreviewContext && editorSession?.editing) return;
+  return renderNotesBeforeModelInteraction();
+};
+
+function preserveDocumentDuringModelClick(event) {
+  if (!editorSession?.editing || !$('#phone').contains(event.target) || modelPreviewContext) return;
+  const context = {
+    selectedRelease: state.selectedRelease,
+    selectedChange: state.selectedChange,
+    noteMode: state.noteMode,
+    activeAnnotation: state.activeAnnotation
+  };
+  modelPreviewContext = context;
+  setTimeout(() => {
+    const changed = state.selectedRelease !== context.selectedRelease || state.selectedChange !== context.selectedChange || state.noteMode !== context.noteMode;
+    Object.assign(state, context);
+    modelPreviewContext = null;
+    if (changed) { renderTree(); syncWorkspaceMode(); }
+    syncModelTextEditMode();
+    scheduleModelTextDecoration();
+  }, 0);
+}
+
+function canEditModelText() {
+  return Boolean(editorSession?.editing && modelTextKey());
+}
+
+function syncModelTextEditMode() {
+  const enabled = canEditModelText();
+  $('#phone').classList.toggle('model-text-editable', enabled);
+  if (!enabled && pendingModelClick) {
+    clearTimeout(pendingModelClick);
+    pendingModelClick = null;
+  }
+  if (!enabled && activeModelTextEdit) activeModelTextEdit.blur();
+}
 
 function modelTextKey() {
   const item = currentVersionItem();
@@ -32,8 +74,7 @@ function modelTextHash(value) {
 
 function decorateModelText() {
   const key = modelTextKey();
-  const phone = $('#phone');
-  phone.classList.toggle('model-text-editable', Boolean(key));
+  syncModelTextEditMode();
   if (!key) return;
   const overrides = modelTextOverrides(key);
   for (const [area, root] of [['screen', $('#screen')], ['tabs', $('#tabBar')]]) {
@@ -75,9 +116,24 @@ function modelTextAction(element) {
   return element.closest('button,a,label,[role="button"],[data-target],[data-payment-tab],[data-payment-plan],[data-tab],[data-lifetime-frame],[data-mine-active-member]');
 }
 
+// Keep caret placement and text selection native, but never deliver their
+// pointer events or default button/label activation to the containing control.
+for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+  document.addEventListener(type, event => {
+    const editing = activeModelTextEdit;
+    if (!editing) return;
+    const insideText = editing.contains(event.target);
+    const action = modelTextAction(editing);
+    if (!insideText && !action?.contains(event.target)) return;
+    if (type === 'click' || (!insideText && (type === 'pointerdown' || type === 'mousedown'))) event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+}
+
 document.addEventListener('click', event => {
+  preserveDocumentDuringModelClick(event);
   const span = event.target.closest?.('[data-model-text-id]');
-  if (!span || !$('#phone').contains(span) || !modelTextKey()) return;
+  if (!span || !$('#phone').contains(span) || !canEditModelText()) return;
   const action = modelTextAction(span);
   if (!action || activeModelTextEdit) return;
   event.preventDefault();
@@ -91,12 +147,17 @@ document.addEventListener('click', event => {
 
 document.addEventListener('dblclick', event => {
   const span = event.target.closest?.('[data-model-text-id]');
-  if (!span || !$('#phone').contains(span) || !modelTextKey()) return;
+  if (!span || !$('#phone').contains(span) || !canEditModelText()) return;
+  if (activeModelTextEdit === span) {
+    event.stopImmediatePropagation();
+    return;
+  }
   if (pendingModelClick) { clearTimeout(pendingModelClick); pendingModelClick = null; }
   event.preventDefault();
   event.stopPropagation();
   if (!ensureEditorAccess(() => { if (span.isConnected) span.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true })); })) return;
   if (activeModelTextEdit && activeModelTextEdit !== span) activeModelTextEdit.blur();
+  const key = modelTextKey();
   const original = span.textContent;
   activeModelTextEdit = span;
   span.contentEditable = 'plaintext-only';
@@ -116,7 +177,6 @@ document.addEventListener('dblclick', event => {
     activeModelTextEdit = null;
     const next = span.textContent.replace(/\r/g, '');
     if (!save || next === original) { span.textContent = original; return; }
-    const key = modelTextKey();
     if (!key) { span.textContent = original; return; }
     const overrides = modelTextOverrides(key);
     overrides[span.dataset.modelTextId] = next;

@@ -1,0 +1,229 @@
+<div class="requirements-markdown">
+
+<h2>一、iOS 与安卓的关键差异</h2>
+<div class="requirements-table-wrap"><table class="requirements-table">
+<thead>
+<tr>
+<th>对比项</th>
+<th>安卓</th>
+<th>iOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连续订阅签约</td>
+<td><code>wx.requestSubscribeSign</code>，或支付中签约</td>
+<td><code>wx.requestAppleSubscribeSign</code></td>
+</tr>
+<tr>
+<td>首次付款</td>
+<td>支持支付中签约</td>
+<td>Apple 订阅签约支付</td>
+</tr>
+<tr>
+<td>后续自动扣费</td>
+<td>微信侧周期扣费机制</td>
+<td>Apple 自动续订</td>
+</tr>
+<tr>
+<td>商户主动解约</td>
+<td>可按平台支持的方式处理</td>
+<td><b>不支持代用户解约</b></td>
+</tr>
+<tr>
+<td>用户解约</td>
+<td>微信支付相关管理入口</td>
+<td><b>Apple 账户的订阅管理入口</b></td>
+</tr>
+<tr>
+<td>解约后权益</td>
+<td>通常保留至当前已付费周期结束</td>
+<td>通常保留至当前已付费周期结束</td>
+</tr>
+<tr>
+<td>解约后立即重签同一商品</td>
+<td>需根据微信侧签约状态处理</td>
+<td><b>须等当前订阅周期结束<br></b></td>
+</tr>
+<tr>
+<td>签约其他订阅商品</td>
+<td>按微信侧规则和商户业务限制</td>
+<td>可以新签约，独立处理</td>
+</tr>
+<tr>
+<td>退款</td>
+<td>根据虚拟支付订单退款能力处理</td>
+<td>用户通过 Apple 申请退款，Apple 决策</td>
+</tr>
+<tr>
+<td>续费状态确认</td>
+<td>微信签约查询、订单查询及回调</td>
+<td>Apple 订阅相关通知、查询及支付通知</td>
+</tr>
+</tbody>
+</table></div>
+<p>以上 iOS 接口规则来自微信小程序官方的 <a href="https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/vip.html">苹果订阅文档</a>；安卓接口来自 <a href="https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/vips.html">小程序订阅制文档</a>。</p>
+<h2>二、取消自动续费</h2>
+<p><b>安卓</b>：<b> </b>支持在小程序内直接发起解约</p>
+<p><b>iOS</b>： 只能引导用户前往 Apple 取消续订</p><p><font style="font-size: 16px;"><b><span class="doubt-mark" title="存疑：点击填写备注" data-doubt-note="需要补充原型图">1. 页面交互更改</span></b></font></p>
+<p>1. 取消开关按钮<br>2. 增加提示：请前往 Apple 官方管理路径：iPhone「设置 → Apple 账户 → 订阅」<br>3. 下次扣款时间，变成预计下次扣款：<br>4. 增加提示：改续费由 Apple 接管，若要……</p>
+<h3>3. 补充「已解约用户再次签约」规则</h3>
+<p>根据你已确认的官方答复，同一商品的重签限制不影响其他商品。</p>
+<div class="requirements-table-wrap"><table class="requirements-table">
+<thead>
+<tr>
+<th>用户状态</th>
+<th>iOS 处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>从未签过此商品</td>
+<td>可以发起签约</td>
+</tr>
+<tr>
+<td>此商品已签约、正常续费中</td>
+<td>不允许重复签同一商品</td>
+</tr>
+<tr>
+<td>此商品已解约，但权益未到期</td>
+<td>不允许重新签同一商品</td>
+</tr>
+<tr>
+<td>此商品已解约，权益已到期</td>
+<td>可以重新签约</td>
+</tr>
+<tr>
+<td>已解约 VIP 包月，购买 SVIP 包月</td>
+<td>可以发起新商品签约</td>
+</tr>
+<tr>
+<td>已签 VIP 包月，购买 VIP 包年</td>
+<td>可按新商品发起签约，但需要业务侧限制重复付费</td>
+</tr>
+</tbody>
+</table></div>
+<p>建议后端判断签约资格时，维度为：</p>
+<p><code>用户 + 支付渠道 + 订阅商品 ID + 该商品签约状态</code></p>
+<p>而非简单以「当前用户是否有会员」或「是否有任何订阅」判断。</p>
+<h3>4. 补充「多个订阅同时存在」的权益处理</h3>
+<p>这是整个版本最需要产品明确决策的部分。</p>
+<p>例如：</p>
+<p>用户拥有 VIP 连续包月，当前权益还有 20 天，到今天又开通 SVIP 连续包月。</p>
+<p>由于这不是平台的升降级操作，而是新签约一个商品，因此：</p>
+<ul>
+<li>新的 SVIP 订阅可以立即付款、立即生效。</li>
+<li>原 VIP 订阅不会因为 SVIP 签约成功而自动取消。</li>
+<li>若用户没有主动取消 VIP 自动续费，两份订阅可能继续各自扣费。</li>
+<li>原 VIP 剩余 20 天如何处理，由加画框决定，而非 Apple 自动折算。</li>
+</ul>
+<p>建议采用以下产品规则：</p>
+<p>推荐权益策略</p>
+<p>建议采用</p>
+<p>当前有效会员等级 = 所有有效订阅中最高的会员等级。</p>
+<p>VIP 与 SVIP 的购买记录分别保留，不自动叠加时长，也不自动折算现金。若 SVIP 到期时原 VIP 仍有效，则恢复展示 VIP。</p>
+<p>如果允许提前开通更高级会员，支付前必须明确提示「原订阅不会自动停止，可能出现两份订阅同时扣费」，并引导用户先取消原商品续费。</p>
+<p>这里还有一个必须提前处理的风险：不能只将会员等级从 VIP 改为 SVIP，却丢失 VIP 原来的订阅记录。 否则原 VIP 未来可能继续扣费，后台却找不到对应协议。</p>
+
+<h3>6. 退款规则必须单独增加 iOS 版本</h3>
+<p>安卓可按微信虚拟支付的退款权限处理；iOS 退款由 Apple 管理，开发者不能像安卓一样直接发起退款。</p>
+<p>iOS 应新增：</p>
+<ol>
+<li>提示用户通过 Apple 购买记录申请退款。</li>
+<li>接收 <code>xpay_subscribe_ios_refund_query_notify</code> 退款问询，按接口要求在 3 秒内给出建议及依据。</li>
+<li>退款问询不代表 Apple 已批准退款，仍需等待实际退款结果。</li>
+<li>确认退款后重新计算会员有效期、权益及相关订单状态。</li>
+</ol>
+<p>取消自动续费 ≠ 申请退款 ≠ 立即失去会员权益。 这三个概念必须在需求、文案和后端状态里严格区分。</p>
+<h2>四、VIP/SVIP 和包月/包年的场景规则</h2>
+<p>建议在需求里增加一张「订阅变更决策表」，作为前后端共同遵循的规则。</p>
+<div class="requirements-table-wrap"><table class="requirements-table">
+<thead>
+<tr>
+<th>场景</th>
+<th>iOS 平台能力</th>
+<th>建议产品处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>VIP 包月 → SVIP 包月</td>
+<td>支持新签，立即扣费</td>
+<td>允许，但先提示取消原 VIP 续费及重复扣费风险</td>
+</tr>
+<tr>
+<td>SVIP 包月 → VIP 包月</td>
+<td>可按不同商品新签</td>
+<td>建议禁止立即购买，引导在原权益到期后订阅</td>
+</tr>
+<tr>
+<td>VIP 包月 → VIP 包年</td>
+<td>可按不同商品新签</td>
+<td>建议等原周期结束再购买，避免重复付费</td>
+</tr>
+<tr>
+<td>VIP 包年 → VIP 包月</td>
+<td>可按不同商品新签</td>
+<td>建议原周期结束后购买</td>
+</tr>
+<tr>
+<td>同一商品已解约、权益未到期</td>
+<td>不支持立即重签</td>
+<td>显示原会员到期时间，待到期后恢复入口</td>
+</tr>
+<tr>
+<td>VIP/SVIP 普通时长卡 → 连续订阅</td>
+<td>可以发起新订阅</td>
+<td>明确剩余时长是保留、叠加还是并行计算</td>
+</tr>
+<tr>
+<td>安卓已签约 → 使用 iOS 新签</td>
+<td>两条独立支付渠道</td>
+<td>不自动迁移、不自动解约，需检查是否重复订阅</td>
+</tr>
+</tbody>
+</table></div>
+<p>上表中，「平台支持」不等于「业务必须允许」。建议先从产品侧限制不必要的并行订阅，减少用户投诉、重复扣费和补偿问题。</p>
+
+<h2>五、其他必须补充的需求（P1）</h2>
+<div class="requirements-table-wrap"><table class="requirements-table">
+<thead>
+<tr>
+<th>需求模块</th>
+<th>需要补充的内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>商品配置</td>
+<td>iOS、安卓订阅商品 ID 分别配置；如果 VIP/SVIP 均提供月、年订阅，应分别配置对应 SKU</td>
+</tr>
+<tr>
+<td>价格与优惠</td>
+<td>iOS 原价、首期优惠、免费试用应分开定义；iOS <code>activitySellingPrice</code> 不传为原价，大于 0 为首期优惠，等于 0 为免费试用</td>
+</tr>
+<tr>
+<td>会员详情</td>
+<td>增加签约平台、自动续费状态、下一续费时间、当前权益到期时间</td>
+</tr>
+<tr>
+<td>支付失败</td>
+<td>首次付款失败不发权益；续费失败需处理重试、宽限期（如适用）、最终到期</td>
+</tr>
+<tr>
+<td>账号切换</td>
+<td>处理相同 Apple 账户对应不同微信业务账号、不同设备访问原权益的问题</td>
+</tr>
+<tr>
+<td>自动续费协议</td>
+<td>明确首期价格、续费价格、周期、扣款方、取消路径、退款方式</td>
+</tr>
+<tr>
+<td>开通资质</td>
+<td>iOS Apple 订阅能力需核对开通资格；微信文档包含苹果订阅功能申请及页面交互材料要求</td>
+</tr>
+</tbody>
+</table></div>
+
+
+</div>
