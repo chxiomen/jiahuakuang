@@ -3,6 +3,22 @@ let editorSession = null;
 let editorAbort = null;
 let navigationMenu = null;
 
+function isRequirementMarkdown(text) {
+  return /(?:^|\n) {0,3}(?:#{1,6}[ \t]+\S|>[ \t]?\S|[-+*][ \t]+\S|\d+[.)][ \t]+\S|```|~~~|(?:\|[^\n]*\|[ \t]*\n)?\|?[ \t]*:?-{3,}:?[ \t]*\|)/m.test(text)
+    || /(?:\*\*|__)[^\n]+?(?:\*\*|__)|\[[^\]\n]+\]\(https?:\/\/[^\s)]+\)|(?<!`)`[^`\n]+`(?!`)/.test(text);
+}
+
+let requirementMarkdownParser = null;
+function renderRequirementMarkdown(text) {
+  if (typeof window.markdownit !== 'function') return null;
+  if (!requirementMarkdownParser) {
+    requirementMarkdownParser = window.markdownit({ html: false, linkify: false, breaks: false });
+    requirementMarkdownParser.renderer.rules.table_open = () => '<div class="requirements-table-wrap"><table class="requirements-table">\n';
+    requirementMarkdownParser.renderer.rules.table_close = () => '</table></div>\n';
+  }
+  return `<div class="requirements-markdown">${requirementMarkdownParser.render(text.replace(/\r\n?/g, '\n'))}</div>`;
+}
+
 function restoreAutomaticRequirementImageSizes(root) {
   const fittedImages = [ ...(root.matches?.('img[data-requirement-width-fit]') ? [root] : []), ...root.querySelectorAll('img[data-requirement-width-fit]') ];
   fittedImages.forEach(image => {
@@ -437,16 +453,36 @@ function requirementWrites(session) {
   return writes;
 }
 
+async function persistTemporaryRequirementImages(session) {
+  for (const image of session.content.querySelectorAll('img[src^="blob:"]')) {
+    const response = await fetch(image.src);
+    if (!response.ok) throw new Error('无法读取临时图片，请重新粘贴');
+    const blob = await response.blob();
+    if (!blob.type.startsWith('image/')) throw new Error('粘贴的文件不是图片');
+    image.src = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('图片转换失败，请重新粘贴'));
+      reader.readAsDataURL(blob);
+    });
+  }
+  if (session.content.querySelector('img[src^="file:"]')) throw new Error('本地图片路径无法保存，请复制图片后粘贴');
+}
+
 async function saveRequirementEdit() {
   const session = editorSession;
   if (!session?.editing || session.saving) return;
   removeEmptyRequirementHeadings(session.content);
   session.saving = true;
   editorStatus('保存中');
-  const writes = requirementWrites(session);
   try {
+    await persistTemporaryRequirementImages(session);
+    const writes = requirementWrites(session);
     const response = await fetch('/api/requirements', { method: 'POST', headers: requirementsWriteHeaders(), body: JSON.stringify({ items: writes }) });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      const detail = await response.json().catch(() => null);
+      throw new Error(detail?.error || `HTTP ${response.status}`);
+    }
     for (const item of writes) savedRequirements[item.key] = item.html;
     workspaceStructure.documentTitle = session.title.textContent.trim() || '需求说明';
     session.snapshot = { html: editorContentHtml(session), title: session.title.textContent.trim() };
@@ -578,7 +614,7 @@ function bindUnifiedEditor() {
   const editor = document.querySelector('#notes .requirements-editor');
   const head = document.querySelector('.note-head');
   head?.querySelector('.workspace-editor-controls')?.remove();
-  document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover,.requirements-link-popover').forEach(node => node.remove());
+  document.querySelectorAll('.requirements-floating-toolbar,.doubt-note-popover,.requirements-link-popover,.requirements-image-preview').forEach(node => { if (node.open) node.close(); node.remove(); });
   editorSession = null;
   if (typeof syncModelTextEditMode === 'function') syncModelTextEditMode();
   if (!editor || !head) return;
@@ -606,7 +642,11 @@ function bindUnifiedEditor() {
   link.className = 'requirements-link-popover';
   link.hidden = true;
   link.innerHTML = '<label for="requirement-link-url">链接地址</label><input id="requirement-link-url" type="text" inputmode="url" placeholder="https://example.com" autocomplete="url"><small class="requirements-link-error" role="alert"></small><div class="requirements-link-actions"><button type="button" data-link-remove>移除链接</button><button type="button" data-link-cancel>取消</button><button type="submit" class="primary">确定</button></div>';
-  document.body.append(floating, doubt, link);
+  const preview = document.createElement('dialog');
+  preview.className = 'requirements-image-preview';
+  preview.setAttribute('aria-label', '图片预览');
+  preview.innerHTML = '<button type="button" class="requirements-image-preview-close" aria-label="关闭图片预览">×</button><img alt="">';
+  document.body.append(floating, doubt, link, preview);
   editorSession = { editor, notes: document.querySelector('.notes'), content, title, toolbar, controls, floating, doubt, link, linkInput: link.querySelector('input'), linkError: link.querySelector('.requirements-link-error'), linkTarget: null, editing: false, saving: false, toolbarInteracting: false, snapshot: { html: content.innerHTML, title: title.textContent.trim() }, range: null, history: [], historyIndex: -1, historyApplying: false, lastFocus: 'content' };
   const signal = editorAbort.signal;
   controls.querySelector('[data-editor-start]').onclick = startRequirementEdit;
@@ -619,10 +659,24 @@ function bindUnifiedEditor() {
   link.querySelector('[data-link-cancel]').onclick = closeEditorLinkPopover;
   link.querySelector('[data-link-remove]').onclick = removeEditorLink;
   const session = editorSession;
+  const previewImage = preview.querySelector('img');
+  preview.querySelector('button').onclick = () => preview.close();
+  preview.addEventListener('click', event => { if (event.target === preview) preview.close(); }, { signal });
+  preview.addEventListener('close', () => { previewImage.removeAttribute('src'); }, { signal });
   scheduleRequirementImageFit(session);
   session.historyObserver = new MutationObserver(() => { recordRequirementHistory(session); scheduleRequirementImageFit(session); });
   session.historyObserver.observe(content, { subtree: true, childList: true, characterData: true, attributes: true });
   session.historyObserver.observe(title, { subtree: true, childList: true, characterData: true, attributes: true });
+  content.addEventListener('paste', event => {
+    if (!session.editing) return;
+    const plainText = event.clipboardData?.getData('text/plain');
+    if (!plainText || !isRequirementMarkdown(plainText)) return;
+    const html = renderRequirementMarkdown(plainText);
+    if (!html) return;
+    event.preventDefault();
+    document.execCommand('insertHTML', false, html);
+    recordRequirementHistory(session);
+  }, { signal });
   content.addEventListener('input', () => {
     const selected = window.getSelection()?.anchorNode;
     const element = selected?.nodeType === Node.TEXT_NODE ? selected.parentElement : selected;
@@ -652,6 +706,14 @@ function bindUnifiedEditor() {
   }, { signal });
   content.addEventListener('keyup', () => { session.tablePointerTarget = null; updateFloatingToolbar(); }, { signal });
   content.addEventListener('click', event => {
+    const image = event.target.closest('img');
+    if (image && content.contains(image)) {
+      event.preventDefault();
+      previewImage.src = image.currentSrc || image.src;
+      previewImage.alt = image.alt || '图片预览';
+      preview.showModal();
+      return;
+    }
     const marker = event.target.closest('.doubt-mark');
     if (marker) showDoubtPopover(marker);
     const anchor = event.target.closest('a[href]');

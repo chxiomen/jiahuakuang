@@ -399,3 +399,23 @@
     .requirements-note .membership-core ol{margin:0;padding-left:25px}.requirements-note .membership-core li{margin:0 0 5px;padding-left:0;color:#435166}.requirements-note .membership-core li::marker{color:#6682b8;font-weight:700}
     .membership-core strong{color:#27364b!important}.requirements-note .membership-core .membership-tech-boundary{margin:14px 0 0!important;padding-top:10px;border-top:1px solid #dfe7f2;color:#566477;font-size:13px;line-height:1.6}
     @media(max-width:720px){.workspace.doc-only .notes:has(.membership-diagrams){width:100%;max-width:none}.membership-board,.membership-core{min-width:720px}}
+    .requirements-editor-content img{cursor:zoom-in}
+    .requirements-markdown{line-height:1.75}
+    .requirements-markdown h1,.requirements-markdown h2,.requirements-markdown h3,.requirements-markdown h4{display:block;margin:22px 0 10px!important;color:#25344a;font-weight:700}
+    .requirements-markdown h1{font-size:22px}.requirements-markdown h2{font-size:18px}.requirements-markdown h3{font-size:16px}.requirements-markdown h4{font-size:14px}
+    .requirements-markdown h3::before{content:none}
+    .requirements-markdown > :first-child{margin-top:0!important}
+    .requirements-markdown p{margin:0 0 12px}
+    .requirements-markdown ul,.requirements-markdown ol{margin:0 0 14px;padding-left:24px}
+    .requirements-markdown li{margin:0 0 4px}
+    .requirements-markdown li > p{margin:0}
+    .requirements-markdown blockquote{margin:12px 0;padding:5px 12px;border-left:3px solid #aac4f2;background:#f6f9ff;color:#53657b}
+    .requirements-markdown code{padding:2px 4px;border-radius:4px;background:#eef2f8;font-size:.92em}
+    .requirements-markdown pre{overflow:auto;margin:12px 0;padding:12px;border-radius:8px;background:#eef2f8;white-space:pre-wrap}
+    .requirements-markdown pre code{padding:0;background:none}
+    .requirements-markdown a{color:#276cf2}
+    .requirements-markdown .requirements-table-wrap{margin:12px 0 18px}
+    .requirements-image-preview{box-sizing:border-box;max-width:96vw;max-height:96vh;overflow:visible;padding:18px;border:0;border-radius:12px;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.3)}
+    .requirements-image-preview::backdrop{background:rgba(15,23,42,.82)}
+    .requirements-image-preview img{display:block;max-width:calc(96vw - 36px);max-height:calc(96vh - 36px);object-fit:contain}
+    .requirements-image-preview-close{position:absolute;top:-14px;right:-14px;display:grid;width:30px;height:30px;place-items:center;padding:0;border:0;border-radius:50%;background:#fff;color:#243047;font-size:24px;line-height:1;box-shadow:0 3px 12px rgba(0,0,0,.25)}
