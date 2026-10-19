@@ -1,33 +1,21 @@
 <!doctype html>
-<!-- 移动端原型工作台 v0.1｜PRD 5.2–5.4 的可交互实现。页面为主数据，版本仅保存变更关联。 -->
+<!-- 工作台公共入口；每个版本独立加载目录、文档、原型页面和样式。 -->
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>加画框-mini</title>
   <link rel="stylesheet" href="styles/workspace.css?v=20261016-markdown-preview">
-  <link rel="stylesheet" href="styles/version-model.css?v=20261015-compact-menu">
   <link rel="stylesheet" href="styles/revision-review.css">
 </head>
 <body>
-  <header class="app-header"><strong>加画框-mini</strong><span class="pill" id="currentVersion">v7.5.6</span><span class="hint">点击「进入编辑」后，可编辑需求说明并双击修改原型文案</span><button id="reviewRevisions" class="revision-launch" type="button" hidden>查看待审修订</button></header>
+  <header class="app-header"><strong>加画框-mini</strong><span class="pill" id="currentVersion"></span><span class="hint">点击「进入编辑」后，可编辑需求说明并双击修改原型文案</span><button id="copyWorkspaceLink" class="text-button" type="button">复制当前链接</button><button id="reviewRevisions" class="revision-launch" type="button" hidden>查看待审修订</button></header>
   <main class="workspace" id="workspace">
     <aside class="navigation panel"><div class="panel-head"><h2>导航</h2><button class="tree-switch" id="treeSwitch">版本树</button></div><div id="tree"></div></aside>
     <section class="stage"><div class="device-hover-zone"><div class="device-tools" id="deviceTools"></div><div class="phone" id="phone"><div class="notch"></div><div class="status-bar"><span>10:00</span><span>● ● ●　▰</span></div><div class="screen" id="screen"></div><nav class="tab-bar" id="tabBar"></nav><div class="mask" id="mask"></div><section class="sheet" id="sheet"><div class="handle"></div><h2 id="sheetTitle">确认操作</h2><button class="agreement-close" id="agreementClose" type="button" aria-label="关闭协议">×</button><div id="sheetText"></div><div class="sheet-actions"><button class="cancel" id="cancel">取消</button><button class="confirm" id="confirm">确认</button></div></section><div class="toast" id="toast">操作成功（原型模拟）</div></div></div></section>
     <aside class="notes panel"><div class="note-head"><h2>需求说明</h2><button class="text-button" id="fullNote">查看页面完整说明</button></div><div id="notes"></div></aside>
   </main>
-  <script src="src/catalog.js" defer></script>
-  <script src="src/page-prototypes.js" defer></script>
-  <script src="src/workspace-ui.js" defer></script>
-  <script src="src/requirement-renderer.js" defer></script>
-  <script src="src/workspace-structure.js" defer></script>
-  <script src="src/requirements-view.js" defer></script>
-  <script src="src/mine-flow.js" defer></script>
-  <script src="lib/markdown-it-14.1.0.min.js" defer></script>
-  <script src="editor-controller.js?v=20261016-markdown-preview" defer></script>
-  <script src="src/version-model.js?v=20261015-version-rename" defer></script>
-  <script src="src/model-text-editor.js?v=20261015-model-interactions" defer></script>
-  <script src="src/revision-review.js" defer></script>
-  <script src="src/revision-review-workflow.js" defer></script>
+  <script src="src/workspace-route-codec.js" defer></script>
+  <script src="src/workspace-bootstrap.js" defer></script>
 </body>
 </html>

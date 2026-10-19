@@ -1,0 +1,44 @@
+[
+  {
+    "id": "default",
+    "name": "默认态",
+    "stateNote": {
+      "rule": "默认展示 VIP 会员，选中连续包年 ¥88。页面按真实设计稿 1:1 呈现，在既有手机模型内纵向滚动。"
+    }
+  },
+  {
+    "id": "single-member",
+    "name": "单次卡会员",
+    "stateNote": {
+      "rule": "当前用户已拥有 VIP 或 SVIP 单次卡，沿用线上已开通会员逻辑，只展示当前会员权益，不展示套餐列表、协议文案和点击购买入口。"
+    }
+  },
+  {
+    "id": "subscription-renewing",
+    "name": "连续会员 · 续费中",
+    "stateNote": {
+      "rule": "VIP / SVIP 连续包月或连续包年且自动续费仍开启时，沿用终身 SVIP 的已开通卡片，只替换等级和商品名称，副文案为“权益生效中”。不展示套餐及购买入口。"
+    }
+  },
+  {
+    "id": "subscription-canceled",
+    "name": "订阅卡 · 已取消",
+    "stateNote": {
+      "rule": "VIP / SVIP 订阅卡已取消自动续费但权益仍有效，等同于单次卡会员状态，不展示套餐、协议或购买入口。"
+    }
+  },
+  {
+    "id": "lifetime-member",
+    "name": "终身会员",
+    "stateNote": {
+      "rule": "VIP 终身会员仍可正常购买 SVIP 商品，预览展示 SVIP 套餐列表；SVIP 终身会员沿用线上已开通会员逻辑，不展示套餐、协议或购买入口。"
+    }
+  },
+  {
+    "id": "lifetime-svip",
+    "name": "终身 SVIP",
+    "stateNote": {
+      "rule": "终身 SVIP 已拥有最高会员权益。VIP、SVIP 两个会员 Tab 均展示已开通卡片与权益对比，不展示套餐、协议或购买按钮，不允许发起其他商品购买。"
+    }
+  }
+]

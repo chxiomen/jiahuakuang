@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 3,
+  "documentTitle": "需求说明",
+  "migratedAt": "2026-10-16T04:26:20.448Z",
+  "versions": [
+    {
+      "id": "v7.5.6",
+      "versionNumber": "v7.6.5",
+      "name": "订阅套餐重开",
+      "directory": "v7.5.6",
+      "aliases": [
+        "v7.5.6"
+      ],
+      "hidden": false,
+      "custom": true
+    },
+    {
+      "id": "v7.5.7",
+      "versionNumber": "v7.5.7",
+      "name": "呃呃呃时代的",
+      "directory": "v7.5.7",
+      "aliases": [],
+      "hidden": true,
+      "custom": true
+    }
+  ]
+}

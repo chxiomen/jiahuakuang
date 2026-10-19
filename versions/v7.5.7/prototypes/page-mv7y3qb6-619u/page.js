@@ -1,0 +1,1 @@
+window.workspacePageRenderers["page-mv7y3qb6-619u"] = function () { return '<article class="custom-prototype"><h1>' + escape(page().name) + '</h1><p>' + escape(pageState().name) + '</p><p>在此页面的 page.js 和 page.css 中定义原型布局与交互。</p></article>'; };

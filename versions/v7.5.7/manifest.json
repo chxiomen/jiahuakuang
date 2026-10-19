@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 3,
+  "id": "v7.5.7",
+  "versionNumber": "v7.5.7",
+  "name": "呃呃呃时代的",
+  "directory": "v7.5.7",
+  "aliases": [],
+  "hidden": true,
+  "custom": true,
+  "pages": [
+    {
+      "id": "payment",
+      "name": "付费页",
+      "group": "交易页面",
+      "pageNote": {
+        "description": "真实会员开通页，承接会员类型切换、套餐选择、AI 积分说明、微信支付和权益对比。",
+        "path": "由会员中心“立即开通 / 立即续费”及受限能力拦截入口进入。",
+        "modules": [
+          "VIP / SVIP / AI 充值切换",
+          "横向滚动套餐",
+          "会员每月赠送 AI 积分",
+          "微信支付与协议",
+          "会员权益对比"
+        ]
+      },
+      "states": [
+        {
+          "id": "default",
+          "name": "默认态",
+          "stateNote": {
+            "rule": "默认展示 VIP 会员，选中连续包年 ¥88。页面按真实设计稿 1:1 呈现，在既有手机模型内纵向滚动。"
+          }
+        },
+        {
+          "id": "single-member",
+          "name": "单次卡会员",
+          "stateNote": {
+            "rule": "当前用户已拥有 VIP 或 SVIP 单次卡，沿用线上已开通会员逻辑，只展示当前会员权益，不展示套餐列表、协议文案和点击购买入口。"
+          }
+        },
+        {
+          "id": "subscription-renewing",
+          "name": "连续会员 · 续费中",
+          "stateNote": {
+            "rule": "VIP / SVIP 连续包月或连续包年且自动续费仍开启时，沿用终身 SVIP 的已开通卡片，只替换等级和商品名称，副文案为“权益生效中”。不展示套餐及购买入口。"
+          }
+        },
+        {
+          "id": "subscription-canceled",
+          "name": "订阅卡 · 已取消",
+          "stateNote": {
+            "rule": "VIP / SVIP 订阅卡已取消自动续费但权益仍有效，等同于单次卡会员状态，不展示套餐、协议或购买入口。"
+          }
+        },
+        {
+          "id": "lifetime-member",
+          "name": "终身会员",
+          "stateNote": {
+            "rule": "VIP 终身会员仍可正常购买 SVIP 商品，预览展示 SVIP 套餐列表；SVIP 终身会员沿用线上已开通会员逻辑，不展示套餐、协议或购买入口。"
+          }
+        },
+        {
+          "id": "lifetime-svip",
+          "name": "终身 SVIP",
+          "stateNote": {
+            "rule": "终身 SVIP 已拥有最高会员权益。VIP、SVIP 两个会员 Tab 均展示已开通卡片与权益对比，不展示套餐、协议或购买按钮，不允许发起其他商品购买。"
+          }
+        }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/payment/states.json"
+    },
+    {
+      "id": "renewal",
+      "name": "续费管理页",
+      "group": "交易页面",
+      "pageNote": {
+        "description": "自动续费管理页，展示当前续费商品、续费时间金额、自动续费状态、服务承诺与扣费记录。",
+        "path": "用户成功购买连续商品后返回小程序时自动进入；也可从会员服务入口进入。",
+        "modules": [
+          "续费会员信息",
+          "下次续费时间、金额与开关",
+          "扣费记录与自动续费协议",
+          "服务承诺",
+          "历史扣费记录"
+        ]
+      },
+      "states": [
+        {
+          "id": "active",
+          "name": "续费中",
+          "stateNote": {
+            "rule": "当前处于自动续费状态，展示下次扣费时间和金额，并提供取消续费指引。"
+          }
+        },
+        {
+          "id": "canceled",
+          "name": "已取消但权益有效",
+          "stateNote": {
+            "rule": "用户已取消自动续费，但当前会员权益仍未到期；展示到期时间，不再展示下一次扣费信息。"
+          }
+        },
+        {
+          "id": "expired",
+          "name": "已到期",
+          "stateNote": {
+            "rule": "会员权益已结束，不展示下一次扣费信息，并提供重新开通或续费入口。"
+          }
+        }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/renewal/states.json"
+    },
+    {
+      "id": "mine",
+      "name": "我的",
+      "group": "个人中心",
+      "pageNote": {
+        "description": "用户个人中心，展示用户身份、会员权益、作品与收藏入口，以及设置、客服和官方渠道。",
+        "path": "点击底部导航栏“我的”进入。",
+        "modules": [
+          "用户信息与会员身份",
+          "会员权益卡片",
+          "我的作品与我的收藏",
+          "设置与服务入口",
+          "推荐加画框",
+          "底部导航"
+        ]
+      },
+      "states": [
+        {
+          "id": "free",
+          "name": "Free",
+          "stateNote": {
+            "rule": "当前用户未开通会员，不展示订阅卡类型和续费状态。"
+          }
+        },
+        {
+          "id": "vip-subscription-renewing",
+          "name": "VIP · 连续包月 · 续费中",
+          "stateNote": {
+            "rule": "VIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+          }
+        },
+        {
+          "id": "vip-subscription-canceled",
+          "name": "VIP · 已取消续费",
+          "stateNote": {
+            "rule": "VIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-subscription-expired",
+          "name": "VIP · 连续包月 · 已过期",
+          "stateNote": {
+            "rule": "VIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-single-active",
+          "name": "VIP · 单次卡 · 生效中",
+          "stateNote": {
+            "rule": "VIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-single-expired",
+          "name": "VIP · 单次卡 · 已过期",
+          "stateNote": {
+            "rule": "VIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-renewing",
+          "name": "SVIP · 连续包月 · 续费中",
+          "stateNote": {
+            "rule": "SVIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-canceled",
+          "name": "SVIP · 已取消续费",
+          "stateNote": {
+            "rule": "SVIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-expired",
+          "name": "SVIP · 连续包月 · 已过期",
+          "stateNote": {
+            "rule": "SVIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-single-active",
+          "name": "SVIP · 单次卡 · 生效中",
+          "stateNote": {
+            "rule": "SVIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-single-expired",
+          "name": "SVIP · 单次卡 · 已过期",
+          "stateNote": {
+            "rule": "SVIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-subscription-annual-renewing",
+          "name": "VIP · 连续包年 · 续费中",
+          "stateNote": {
+            "rule": "VIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+          }
+        },
+        {
+          "id": "vip-subscription-annual-canceled",
+          "name": "VIP · 已取消续费",
+          "stateNote": {
+            "rule": "VIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-subscription-annual-expired",
+          "name": "VIP · 连续包年 · 已过期",
+          "stateNote": {
+            "rule": "VIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-annual-renewing",
+          "name": "SVIP · 连续包年 · 续费中",
+          "stateNote": {
+            "rule": "SVIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-annual-canceled",
+          "name": "SVIP · 已取消续费",
+          "stateNote": {
+            "rule": "SVIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-annual-expired",
+          "name": "SVIP · 连续包年 · 已过期",
+          "stateNote": {
+            "rule": "SVIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "multi-active",
+          "name": "双会员 · 同时生效",
+          "stateNote": {
+            "rule": "用户同时拥有 VIP 连续包月和 SVIP 单次卡。页面汇总展示当前最高权益 SVIP，并列出两个仍在生效的会员商品；每个商品的到期时间、扣费状态和管理入口独立展示，不能互相覆盖。"
+          }
+        }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/mine/states.json"
+    },
+    {
+      "id": "page-mv7y3qb6-619u",
+      "name": "tesss",
+      "group": "交易页面",
+      "hidden": true,
+      "__workspaceCustom": true,
+      "pageNote": {
+        "description": "",
+        "path": "",
+        "modules": []
+      },
+      "states": [
+        {
+          "id": "default",
+          "name": "默认态",
+          "stateNote": {
+            "rule": ""
+          }
+        }
+      ],
+      "stateFile": "prototypes/page-mv7y3qb6-619u/states.json"
+    }
+  ],
+  "changes": [
+    {
+      "id": "item-33addfe3-eb8b-4f37-903f-e5f52169f3fd",
+      "title": "还好好的",
+      "description": "",
+      "tag": "",
+      "type": "",
+      "hidden": true,
+      "custom": false,
+      "hasDocument": true,
+      "documentKey": "document:v7.5.7:item-33addfe3-eb8b-4f37-903f-e5f52169f3fd",
+      "model": {
+        "pageId": "payment",
+        "stateId": "default"
+      },
+      "pageId": "payment",
+      "stateId": "default"
+    }
+  ],
+  "prototype": {
+    "scripts": [
+      "prototypes/page-mv7y3qb6-619u/page.js",
+      "prototypes/payment/page.js",
+      "prototypes/renewal/page.js",
+      "prototypes/mine/page.js",
+      "prototypes/home/page.js",
+      "prototypes/member/page.js",
+      "prototypes/custom/page.js",
+      "prototypes/payment/interactions.js",
+      "prototypes/renewal/interactions.js",
+      "prototypes/mine/interactions.js",
+      "prototypes/shared/navigation.js",
+      "prototypes/shared/render.js",
+      "prototypes/shared/revisions.js"
+    ],
+    "styles": [
+      "prototypes/shared/page.css",
+      "prototypes/payment/page.css",
+      "prototypes/renewal/page.css",
+      "prototypes/mine/page.css",
+      "prototypes/home/page.css",
+      "prototypes/member/page.css",
+      "prototypes/page-mv7y3qb6-619u/page.css"
+    ],
+    "pages": {
+      "payment": {
+        "script": "prototypes/payment/page.js",
+        "style": "prototypes/payment/page.css",
+        "hideTabBar": true,
+        "phoneClass": "payment-screen"
+      },
+      "renewal": {
+        "script": "prototypes/renewal/page.js",
+        "style": "prototypes/renewal/page.css",
+        "hideTabBar": true,
+        "phoneClass": "renewal-screen"
+      },
+      "mine": {
+        "script": "prototypes/mine/page.js",
+        "style": "prototypes/mine/page.css",
+        "hideTabBar": true,
+        "phoneClass": "mine-phone"
+      },
+      "home": {
+        "script": "prototypes/home/page.js",
+        "style": "prototypes/home/page.css"
+      },
+      "member": {
+        "script": "prototypes/member/page.js",
+        "style": "prototypes/member/page.css"
+      },
+      "page-mv7y3qb6-619u": {
+        "script": "prototypes/page-mv7y3qb6-619u/page.js",
+        "style": "prototypes/page-mv7y3qb6-619u/page.css"
+      }
+    },
+    "documentScripts": [
+      "prototypes/shared/document.js",
+      "documents/renderers.js"
+    ]
+  },
+  "documents": [],
+  "updatedAt": "2026-10-16T03:42:24.264+00:00",
+  "assetRefs": {
+    "assets/payment-ai-credit.png": "/assets/snapshots/c95b85a1c8d43b0755eb6703c2ef3e3050dc95c388ad4c0f3561a961af906bef/payment-ai-credit.png",
+    "assets/payment-back.png": "/assets/snapshots/506f01edd6ffee819f374806bb85884c983ff16c9eb530c72de61b8740a67c71/payment-back.png",
+    "assets/payment-banner.png": "/assets/snapshots/78f4fded49059f35b8487e397bf12f773cb3b122326af8bc25d0580611be06c3/payment-banner.png",
+    "assets/payment-figma.png": "/assets/snapshots/fd004cc086b8bbb7f163d07729e376fad57e5599e154d53616781713a1850267/payment-figma.png",
+    "assets/payment-lifetime-crown.png": "/assets/snapshots/c9c0205fff621b485bd85f5d73a4cd03ffea5ed6f1a6b802c3f03c829103d20b/payment-lifetime-crown.png",
+    "assets/payment-raw-1.png": "/assets/snapshots/1461c18fcdac9d92f71ce9892c164bf89c7b6a3b3ae04de070ce77bf0bb6e06b/payment-raw-1.png",
+    "assets/payment-raw-2.png": "/assets/snapshots/cb4130f899fbf9e413bedd5ee5c811ee6d3f6104a692a522a49ec03c2b9891c7/payment-raw-2.png",
+    "assets/payment-support.png": "/assets/snapshots/312d962a5e024d6a83211e0d4a8d0e8bd97567123449c3b495e46e848ea4b9a8/payment-support.png",
+    "assets/vip-tab-left.png": "/assets/snapshots/cf8c7a2dfa2b9aa492c39e9a46c66776534ce4833df1d6dd9d6473311f725434/vip-tab-left.png",
+    "assets/vip-tab-middle.png": "/assets/snapshots/126b1fede842322e5dcfdc36245563e050bd2ee6332d7f66b12ae325f4873715/vip-tab-middle.png",
+    "assets/vip-tab-right.png": "/assets/snapshots/148ade0bad30886a626ea982c2d0f4d697e1a93ee9792c42c900505a2ecc6a97/vip-tab-right.png",
+    "assets/virtual-payment-signing.png": "/assets/snapshots/4d2d361ce5417444600dfb026be3f01a5c1ab9e78d0df5e9867acb4960f42db3/virtual-payment-signing.png"
+  }
+}

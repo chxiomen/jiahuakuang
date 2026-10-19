@@ -1,4 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null
+  "framework": null,
+  "ignoreCommand": "node scripts/ignore-snapshot-build.js",
+  "functions": {
+    "api/workspace.js": { "includeFiles": "versions/**" },
+    "api/workspace-file.js": { "includeFiles": "versions/**" },
+    "api/workspace/versions.js": { "includeFiles": "versions/**" },
+    "api/requirements.js": { "includeFiles": "versions/**" }
+  }
 }

@@ -116,6 +116,20 @@ function modelTextAction(element) {
   return element.closest('button,a,label,[role="button"],[data-target],[data-payment-tab],[data-payment-plan],[data-tab],[data-lifetime-frame],[data-mine-active-member]');
 }
 
+// Keep caret placement and text selection native, but never deliver their
+// pointer events or default button/label activation to the containing control.
+for (const type of ['pointerdown', 'mousedown', 'pointerup', 'mouseup', 'click']) {
+  document.addEventListener(type, event => {
+    const editing = activeModelTextEdit;
+    if (!editing) return;
+    const insideText = editing.contains(event.target);
+    const action = modelTextAction(editing);
+    if (!insideText && !action?.contains(event.target)) return;
+    if (type === 'click' || (!insideText && (type === 'pointerdown' || type === 'mousedown'))) event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+}
+
 document.addEventListener('click', event => {
   preserveDocumentDuringModelClick(event);
   const span = event.target.closest?.('[data-model-text-id]');
@@ -134,6 +148,10 @@ document.addEventListener('click', event => {
 document.addEventListener('dblclick', event => {
   const span = event.target.closest?.('[data-model-text-id]');
   if (!span || !$('#phone').contains(span) || !canEditModelText()) return;
+  if (activeModelTextEdit === span) {
+    event.stopImmediatePropagation();
+    return;
+  }
   if (pendingModelClick) { clearTimeout(pendingModelClick); pendingModelClick = null; }
   event.preventDefault();
   event.stopPropagation();

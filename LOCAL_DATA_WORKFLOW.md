@@ -1,22 +1,16 @@
-# 内容数据约定
+# 本地与正式数据
 
-正式环境的 `/api/requirements` 使用 Supabase，是唯一正式内容来源。
+本地 `node server.js` 只读写 `versions/`，不会连接正式数据库。正式站使用同一套版本目录结构，通过 Supabase 的 `requirements` 表保存每个版本的独立文件覆盖。仓库内 `versions/` 是初始文件；线上保存过的文件以数据库为准。原有正式正文在首次保存到新版文件键之前仍作为当前 `v7.6.5` 的内容来源，避免代码发布覆盖后续线上编辑。
 
-本地 `node server.js` 只读写 `prd-data.json`，用于调试编辑功能；本地改动不会访问或覆盖正式 Supabase。
-
-需要用正式内容刷新本地时，手动执行一次单向同步：
+需要把线上当前版本的内容复制回本地时，显式执行：
 
 ```powershell
-$env:PRODUCTION_REQUIREMENTS_URL='https://你的正式域名/api/requirements'
-node scripts/pull-production-data.js
+$env:PRODUCTION_REQUIREMENTS_URL='https://jiahuakuang.vercel.app/api/requirements'
+node scripts/pull-production-data.js --version=v7.6.5
 ```
 
-如果本机 Node.js 不能访问外网、但 PowerShell 可以访问，可改用：
+同步只读取线上、备份本地目标版本，并且不更新其他本地版本。`prd-data.json` 是迁移前快照，不是日常编辑的数据源。
 
-```powershell
-(Invoke-WebRequest 'https://你的正式域名/api/requirements').Content | node scripts/pull-production-data.js --stdin
-```
+正式站的 `/api/workspace`、`/api/requirements?version=...` 和 `/api/workspace-file` 从版本目录与数据库覆盖文件合成页面。新增版本和正文修改只保存所属版本的文件键。正式写入需要 `EDITOR_PASSWORD`，服务端连接 Supabase 仍需要 `SUPABASE_URL` 与 `SUPABASE_SERVICE_ROLE_KEY`。`/api/seed` 默认禁用，不用于代码发布。
 
-同步脚本只发送 GET 请求，并在覆盖本地快照前创建带时间戳的备份。它不会向线上写入任何内容。
-
-发布代码时不要调用 `/api/seed`。该接口默认禁用；即使需要人工初始化，也必须同时设置 `ALLOW_REQUIREMENTS_SEED=true` 和编辑密码。
+代码发布后，以 `/api/release` 的提交号和 `/api/workspace` 的实际响应确认 Vercel 部署，并打开版本直达链接检查页面。代码发布不会把本地 `prd-data.json` 写入数据库。

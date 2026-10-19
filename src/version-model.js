@@ -276,6 +276,7 @@ function openModelSelectionDialog(version, item) {
     state.selectedChange = item.id;
     state.noteMode = 'change';
     if (item.model) { state.pageId = item.model.pageId; state.stateId = item.model.stateId; }
+    if (newPage) { WorkspaceRouter.navigateVersion(version, { kind: 'items', target: item.id }); return; }
     renderAll();
   };
   sync();
@@ -289,6 +290,7 @@ function openNewVersionDialog() {
   dialog.innerHTML = `<form method="dialog" class="version-item-form"><h2>新增版本</h2>
     <label>版本号<input name="versionId" required maxlength="40" placeholder="例如 v7.5.7"></label>
     <label>版本名称<input name="versionName" required maxlength="100" placeholder="例如 会员体验优化"></label>
+    <label>初始内容<select name="fromVersion"><option value="empty">空白版本</option>${data.releases.filter(version => !version.hidden).map(version => `<option value="${escape(version.id)}" ${version.id === state.selectedRelease ? 'selected' : ''}>复制 ${escape(versionNumberFor(version))} · ${escape(version.name)}</option>`).join('')}</select></label>
     <div class="dialog-actions"><button type="button" data-close>取消</button><button type="submit" class="save">创建</button></div></form>`;
   document.body.append(dialog);
   dialog.querySelector('[data-close]').onclick = () => dialog.close();
@@ -299,15 +301,14 @@ function openNewVersionDialog() {
     const name = dialog.querySelector('[name="versionName"]').value.trim();
     if (!/^[\w.-]+$/.test(id) || !name) { showToast('版本号只支持字母、数字、点、横线和下划线'); return; }
     if (release(id) || data.releases.some(version => versionNumberFor(version).toLowerCase() === id.toLowerCase())) { showToast('版本号已存在'); return; }
-    const version = { id, name, changes: [], __workspaceCustom: true, status: 'draft' };
-    data.releases.push(version);
-    if (!await persistWorkspaceStructure()) { data.releases.splice(data.releases.indexOf(version), 1); return; }
-    dialog.close();
-    state.tree = 'release';
-    state.selectedRelease = id;
-    state.selectedChange = null;
-    state.noteMode = 'release';
-    renderAll();
+    const fromVersion = dialog.querySelector('[name="fromVersion"]').value;
+    try {
+      const response = await fetch('/api/workspace/versions', { method: 'POST', headers: requirementsWriteHeaders(), body: JSON.stringify({ versionNumber: id, name, fromVersion: fromVersion === 'empty' ? workspaceBootstrap.activeVersion : fromVersion, empty: fromVersion === 'empty' }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '创建版本失败');
+      dialog.close();
+      WorkspaceRouter.navigateVersion(result.version);
+    } catch (error) { showToast(error.message); }
   };
   dialog.showModal();
 }
@@ -333,7 +334,8 @@ function openVersionRenameDialog(versionId) {
     if (!/^[\w.-]+$/.test(versionNumber)) { showToast('版本号只支持字母、数字、点、横线和下划线'); return; }
     if (!name) { showToast('请填写版本名称'); return; }
     if (data.releases.some(other => other !== version && versionNumberFor(other).toLowerCase() === versionNumber.toLowerCase())) { showToast('版本号已存在'); return; }
-    const before = { name: version.name, versionNumber: version.versionNumber };
+    const before = { name: version.name, versionNumber: version.versionNumber, aliases: version.aliases };
+    version.aliases = [...new Set([...(version.aliases || []), versionNumberFor(version)])];
     version.name = name;
     version.versionNumber = versionNumber;
     if (!await persistWorkspaceStructure()) { Object.assign(version, before); return; }
@@ -453,6 +455,7 @@ function openVersionItemDialog(versionId, itemId = null) {
     state.selectedChange = target.id;
     state.noteMode = 'change';
     if (target.model) { state.pageId = target.model.pageId; state.stateId = target.model.stateId; }
+    if (newPage) { WorkspaceRouter.navigateVersion(version, { kind: 'items', target: target.id }); return; }
     renderAll();
   };
   sync();

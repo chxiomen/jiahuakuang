@@ -16,7 +16,141 @@ function renderRequirementMarkdown(text) {
     requirementMarkdownParser.renderer.rules.table_open = () => '<div class="requirements-table-wrap"><table class="requirements-table">\n';
     requirementMarkdownParser.renderer.rules.table_close = () => '</table></div>\n';
   }
-  return `<div class="requirements-markdown">${requirementMarkdownParser.render(text.replace(/\r\n?/g, '\n'))}</div>`;
+  const parsed = document.createElement('template');
+  parsed.innerHTML = requirementMarkdownParser.render(text.replace(/\r\n?/g, '\n'));
+  parsed.content.querySelectorAll('li').forEach(item => {
+    const body = item.querySelector(':scope > p') || item;
+    const first = body.firstChild;
+    if (first?.nodeType !== Node.TEXT_NODE) return;
+    const task = /^\[([ xX])\](?=\s|$)/.exec(first.textContent);
+    if (!task) return;
+    first.textContent = first.textContent.slice(task[0].length).replace(/^\s/, '');
+    item.classList.add('requirements-task-item');
+    body.prepend(createRequirementTaskCheckbox(task[1].toLowerCase() === 'x'));
+    if (!body.textContent && !body.querySelector('br')) body.append(document.createElement('br'));
+  });
+  return `<div class="requirements-markdown">${parsed.innerHTML}</div>`;
+}
+
+function createRequirementTaskCheckbox(checked = false) {
+  const checkbox = document.createElement('input');
+  checkbox.type = 'checkbox';
+  checkbox.className = 'requirements-task-checkbox';
+  checkbox.contentEditable = 'false';
+  checkbox.setAttribute('aria-label', '任务完成');
+  if (checked) checkbox.setAttribute('checked', '');
+  return checkbox;
+}
+
+function applyRequirementTaskShortcut(content) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !selection.isCollapsed) return false;
+  const range = selection.getRangeAt(0);
+  const node = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentElement : range.startContainer;
+  const item = node?.closest?.('li');
+  if (!item || !content.contains(item) || item.classList.contains('requirements-task-item')) return false;
+  const before = document.createRange();
+  before.selectNodeContents(item);
+  before.setEnd(range.startContainer, range.startOffset);
+  const task = /^\[([ xX])\]$/.exec(before.toString());
+  if (!task) return false;
+  const after = document.createRange();
+  after.selectNodeContents(item);
+  after.setStart(range.startContainer, range.startOffset);
+  if (after.toString().trim()) return false;
+  before.deleteContents();
+  item.classList.add('requirements-task-item');
+  const checkbox = createRequirementTaskCheckbox(task[1].toLowerCase() === 'x');
+  item.prepend(checkbox);
+  if (!item.querySelector('br') && !item.textContent) item.append(document.createElement('br'));
+  const next = document.createRange();
+  next.setStartAfter(checkbox);
+  next.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(next);
+  return true;
+}
+
+function applyRequirementMarkdownShortcut(content) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !selection.isCollapsed) return false;
+  const range = selection.getRangeAt(0);
+  const node = range.startContainer.nodeType === Node.TEXT_NODE ? range.startContainer.parentElement : range.startContainer;
+  if (!content.contains(node) || node.closest('li,td,th,blockquote,[contenteditable="false"]')) return false;
+  const block = node.closest('p,h1,h2,h3,h4,h5,h6') || (node === content ? content : null);
+  if (!block || (block === content && content.querySelector('p,div,section,ul,ol,table,h1,h2,h3,h4,h5,h6'))) return false;
+  const before = document.createRange();
+  before.selectNodeContents(block);
+  before.setEnd(range.startContainer, range.startOffset);
+  const shortcut = before.toString().replace(/\u00a0/g, ' ');
+  const after = document.createRange();
+  after.selectNodeContents(block);
+  after.setStart(range.startContainer, range.startOffset);
+  const remaining = after.cloneContents();
+  remaining.querySelectorAll?.('[data-editor-ui]').forEach(node => node.remove());
+  if (remaining.textContent.trim()) return false;
+  let replacement;
+  let cursor;
+  if (/^[-+*]$/.test(shortcut) || /^\d+[.)]$/.test(shortcut)) {
+    const ordered = /^\d/.test(shortcut);
+    replacement = document.createElement(ordered ? 'ol' : 'ul');
+    replacement.className = 'requirement-list';
+    if (ordered) replacement.start = Number.parseInt(shortcut, 10);
+    cursor = document.createElement('li');
+    cursor.append(document.createElement('br'));
+    replacement.append(cursor);
+  } else if (/^#{1,6}$/.test(shortcut)) {
+    replacement = document.createElement(`h${shortcut.length}`);
+    replacement.append(document.createElement('br'));
+    cursor = replacement;
+  } else if (shortcut === '>') {
+    replacement = document.createElement('blockquote');
+    replacement.className = 'requirements-input-quote';
+    cursor = document.createElement('p');
+    cursor.append(document.createElement('br'));
+    replacement.append(cursor);
+  } else return false;
+  if (block === content) {
+    before.deleteContents();
+    before.insertNode(replacement);
+  } else block.replaceWith(replacement);
+  const next = document.createRange();
+  next.selectNodeContents(cursor);
+  next.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(next);
+  return true;
+}
+
+function applyRequirementMarkdownInlineShortcut(content, marker) {
+  const selection = window.getSelection();
+  if (!selection?.rangeCount || !selection.isCollapsed) return false;
+  const range = selection.getRangeAt(0);
+  const textNode = range.startContainer;
+  if (textNode.nodeType !== Node.TEXT_NODE || !content.contains(textNode.parentElement) || textNode.parentElement.closest('code,pre,a,[contenteditable="false"]')) return false;
+  const before = textNode.data.slice(0, range.startOffset);
+  const rules = {
+    '*': [[/(^|[\s（(])\*\*([^*\n]+)\*$/, 'strong'], [/(^|[\s（(])\*([^*\n]+)$/, 'em']],
+    '_': [[/(^|[\s（(])__([^_\n]+)_$/, 'strong'], [/(^|[\s（(])_([^_\n]+)$/, 'em']],
+    '`': [[/(^|[\s（(])`([^`\n]+)$/, 'code']],
+    '~': [[/(^|[\s（(])~~([^~\n]+)~$/, 's']]
+  };
+  const match = rules[marker]?.map(([pattern, tag]) => ({ match: pattern.exec(before), tag })).find(item => item.match);
+  if (!match) return false;
+  const start = match.match.index + match.match[1].length;
+  const replacement = document.createElement(match.tag);
+  replacement.textContent = match.match[2];
+  const token = document.createRange();
+  token.setStart(textNode, start);
+  token.setEnd(textNode, range.startOffset);
+  token.deleteContents();
+  token.insertNode(replacement);
+  const next = document.createRange();
+  next.setStartAfter(replacement);
+  next.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(next);
+  return true;
 }
 
 function restoreAutomaticRequirementImageSizes(root) {
@@ -677,11 +811,20 @@ function bindUnifiedEditor() {
     document.execCommand('insertHTML', false, html);
     recordRequirementHistory(session);
   }, { signal });
-  content.addEventListener('input', () => {
+  content.addEventListener('beforeinput', event => {
+    if (!session.editing || event.isComposing || event.inputType !== 'insertText') return;
+    const converted = event.data === ' '
+      ? applyRequirementTaskShortcut(content) || applyRequirementMarkdownShortcut(content)
+      : applyRequirementMarkdownInlineShortcut(content, event.data);
+    if (!converted) return;
+    event.preventDefault();
+    recordRequirementHistory(session);
+  }, { signal });
+  content.addEventListener('input', event => {
     const selected = window.getSelection()?.anchorNode;
     const element = selected?.nodeType === Node.TEXT_NODE ? selected.parentElement : selected;
     const heading = element?.closest?.('h1,h2,h3,h4,h5,h6');
-    if (heading && content.contains(heading)) removeEmptyRequirementHeadings(content);
+    if (heading && content.contains(heading) && event.inputType?.startsWith('delete')) removeEmptyRequirementHeadings(content);
     recordRequirementHistory(session);
   }, { signal });
   content.addEventListener('load', event => { if (event.target instanceof HTMLImageElement) scheduleRequirementImageFit(session); }, { capture: true, signal });
@@ -706,6 +849,11 @@ function bindUnifiedEditor() {
   }, { signal });
   content.addEventListener('keyup', () => { session.tablePointerTarget = null; updateFloatingToolbar(); }, { signal });
   content.addEventListener('click', event => {
+    const task = event.target.closest('.requirements-task-checkbox');
+    if (task && content.contains(task)) {
+      if (!session.editing) event.preventDefault();
+      return;
+    }
     const image = event.target.closest('img');
     if (image && content.contains(image)) {
       event.preventDefault();
@@ -718,6 +866,12 @@ function bindUnifiedEditor() {
     if (marker) showDoubtPopover(marker);
     const anchor = event.target.closest('a[href]');
     if (anchor && session.editing) { event.preventDefault(); showEditorLinkPopover(anchor); }
+  }, { signal });
+  content.addEventListener('change', event => {
+    const task = event.target.closest('.requirements-task-checkbox');
+    if (!session.editing || !task || !content.contains(task)) return;
+    task.toggleAttribute('checked', task.checked);
+    recordRequirementHistory(session);
   }, { signal });
   floating.addEventListener('mousedown', event => { if (event.target.tagName === 'SELECT') session.toolbarInteracting = true; else event.preventDefault(); }, { signal });
   floating.addEventListener('focusin', event => { if (event.target.matches('select[data-float]')) session.toolbarInteracting = true; }, { signal });

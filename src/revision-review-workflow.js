@@ -1,10 +1,13 @@
-// Each amendment is attached to its actual requirement key and saved independently.
+const revisionReviewEnabled = false;
+
 const revisionReviewV2DismissKey = 'revision-review:membership-ios:20261014:v2:dismissed';
+
 const revisionItems = [
   { id: 'version-number', kind: 'version', group: '版本与范围', label: '版本号：v7.5.6 → v7.6.5', key: 'workspace:structure:v2', before: 'v7.5.6 · 订阅套餐重开', after: 'v7.6.5 · 订阅套餐重开', hint: '版本迭代' },
   ...revisionPatches.map((patch, index) => ({ ...patch, id: `patch-${index}`, kind: 'patch', before: patch.from, after: patch.to })),
   { id: 'ios-section', kind: 'ios', group: 'iOS 独立章节', label: '新增 5.5.4 iOS 会员订阅差异', key: revisionIosKey, before: '原需求缺少独立的 iOS 规则章节', after: revisionIosHtml, hint: '技术边界' }
 ];
+
 const revisionHints = {
   '5.5.3：连续套餐切换顺序': '取消原连续包月',
   '5.5：统一规则与异常处理': '续费中：',
@@ -22,10 +25,13 @@ const revisionHints = {
   '复购矩阵：VIP 续费中': 'VIP · 连续包月 / 包年（续费中）',
   '复购矩阵：SVIP 续费中': 'SVIP · 连续包月 / 包年（续费中）'
 };
+
 function revisionRejected(item) { return localStorage.getItem(`revision-review:v2:${item.id}:rejected`) === '1'; }
+
 function revisionResolvedKey(item, source) {
   return item.key === 'release:v7.5.6' && source['release:v7.6.5'] ? 'release:v7.6.5' : item.key;
 }
+
 function revisionItemStatus(item, source = savedRequirements) {
   if (revisionRejected(item)) return 'rejected';
   if (item.kind === 'version') {
@@ -45,7 +51,9 @@ function revisionItemStatus(item, source = savedRequirements) {
   if (current.includes(item.from)) return 'pending';
   return 'conflict';
 }
+
 function revisionCurrentRelease() { return release('v7.6.5') ? 'v7.6.5' : 'v7.5.6'; }
+
 function revisionRoute(item) {
   if (item.kind === 'version' || item.key.startsWith('release:')) return { kind: 'release' };
   if (item.kind === 'ios') return { change: revisionItemStatus(item) === 'applied' ? 'item-ios-subscription-rules' : 'c-repurchase-rules' };
@@ -59,6 +67,7 @@ function revisionRoute(item) {
   if (item.key.startsWith('change:c-subscription-server')) return { change: 'c-subscription-server' };
   return { change: item.key.replace(/^change:/, '') };
 }
+
 function revisionNavigate(item) {
   document.getElementById('revisionDialog')?.close();
   const route = revisionRoute(item);
@@ -95,12 +104,16 @@ function revisionNavigate(item) {
   target?.classList.add('revision-focus');
   setTimeout(() => target?.classList.remove('revision-focus'), 2000);
 }
+
 function revisionStatusLabel(status) { return ({ pending: '待确认', applied: '已应用', rejected: '已取消', conflict: '原文已变化' })[status]; }
+
 function revisionVisibleItems() { return revisionItems.filter(item => revisionItemStatus(item) !== 'rejected'); }
+
 function revisionUpdateLaunch() {
   const launch = document.getElementById('reviewRevisions');
   launch.hidden = revisionVisibleItems().length === 0;
 }
+
 function revisionRenderSummary() {
   let dialog = document.getElementById('revisionDialog');
   if (!dialog) { dialog = document.createElement('dialog'); dialog.id = 'revisionDialog'; dialog.className = 'revision-dialog'; document.body.append(dialog); }
@@ -116,12 +129,15 @@ function revisionRenderSummary() {
   dialog.querySelector('[data-review-apply-all]').onclick = revisionApplyAll;
   return dialog;
 }
+
 openRevisionReview = function () {
+  if (!revisionReviewEnabled) return;
   if (!revisionVisibleItems().length) return;
   const dialog = revisionRenderSummary();
   localStorage.removeItem(revisionReviewV2DismissKey);
   if (!dialog.open) dialog.showModal();
 };
+
 function revisionRefreshSummary() {
   const dialog = document.getElementById('revisionDialog');
   if (!dialog?.open) return;
@@ -130,12 +146,14 @@ function revisionRefreshSummary() {
   revisionRenderSummary();
   dialog.querySelector('.revision-scroll').scrollTop = previousScrollTop;
 }
+
 function revisionRejectOne(item) {
   localStorage.setItem(`revision-review:v2:${item.id}:rejected`, '1');
   revisionUpdateLaunch();
   revisionRefreshSummary();
   renderNotes();
 }
+
 async function revisionWriteOne(item, fresh) {
   const status = revisionItemStatus(item, fresh);
   if (status === 'applied') return [];
@@ -159,6 +177,7 @@ async function revisionWriteOne(item, fresh) {
   const key = revisionResolvedKey(item, fresh);
   return [{ key, html: fresh[key].replace(item.from, item.to) }];
 }
+
 async function revisionApplyOne(item, options = {}) {
   if (!ensureEditorAccess(() => revisionApplyOne(item, options))) return false;
   const statusNode = document.getElementById('revisionStatus');
@@ -186,6 +205,7 @@ async function revisionApplyOne(item, options = {}) {
     return false;
   }
 }
+
 async function revisionApplyAll() {
   if (!ensureEditorAccess(revisionApplyAll)) return;
   const pending = revisionItems.filter(item => revisionItemStatus(item) === 'pending');
@@ -197,6 +217,7 @@ async function revisionApplyAll() {
   renderAll();
   revisionRefreshSummary();
 }
+
 applyRevisionProposal = revisionApplyAll;
 
 function revisionAnchor(root, item, status) {
@@ -205,9 +226,11 @@ function revisionAnchor(root, item, status) {
   const find = text => text && (nodes.find(node => node.textContent.trim() === text) || nodes.find(node => node.textContent.includes(text)));
   return find(hint) || (status === 'applied' ? find(revisionPlain(item.after).split('\n').find(Boolean)?.trim().slice(0, 24)) : null);
 }
+
 function revisionInlineHtml(item, status) {
   return `<div class="revision-inline" data-editor-ui="true" data-revision-id="${item.id}"><div class="revision-inline-head"><b>${revisionEscape(item.label)}</b><span class="revision-status ${status}">${revisionStatusLabel(status)}</span></div><div class="revision-inline-comparison"><div><small>原文</small><p>${revisionEscape(revisionPlain(item.before))}</p></div><div class="revision-inline-new"><small>拟修改</small><p>${revisionEscape(revisionPlain(item.after))}</p></div></div><div class="revision-inline-actions">${status === 'pending' ? `<button type="button" class="revision-apply" data-inline-apply="${item.id}">确认此项</button><button type="button" data-inline-reject="${item.id}">取消此项</button>` : ''}<button type="button" data-inline-summary>查看修订总览</button></div></div>`;
 }
+
 function revisionInsertInline(root, item) {
   const status = revisionItemStatus(item);
   if (status === 'conflict' || status === 'rejected') return;
@@ -230,7 +253,9 @@ function revisionInsertInline(root, item) {
   else if (anchor.closest('.membership-state-card')) anchor.closest('.membership-state-card').append(widget);
   else anchor.after(widget);
 }
+
 function revisionRenderInline() {
+  if (!revisionReviewEnabled) return;
   if (!revisionProposal || !['release','change'].includes(state.noteMode)) return;
   const editor = document.querySelector('#notes .requirements-editor-content');
   if (!editor || editor.isContentEditable) return;
@@ -250,10 +275,18 @@ function revisionRenderInline() {
   editor.querySelectorAll('[data-inline-reject]').forEach(button => button.onclick = () => revisionRejectOne(revisionItems.find(item => item.id === button.dataset.inlineReject)));
   editor.querySelectorAll('[data-inline-summary]').forEach(button => button.onclick = openRevisionReview);
 }
+
 const renderNotesBeforeRevisionWorkflow = renderNotes;
+
 renderNotes = function () { renderNotesBeforeRevisionWorkflow(); revisionRenderInline(); };
 
 initRevisionReview = function () {
+  if (!revisionReviewEnabled) {
+    revisionProposal = null;
+    document.getElementById('reviewRevisions').hidden = true;
+    document.getElementById('revisionDialog')?.close();
+    return;
+  }
   if (!requirementsLoadSucceeded) return;
   revisionProposal = { items: revisionItems };
   const launch = document.getElementById('reviewRevisions');
@@ -265,18 +298,4 @@ initRevisionReview = function () {
   }
   renderAll();
   if (!launch.hidden && !localStorage.getItem(revisionReviewV2DismissKey)) openRevisionReview();
-};
-
-membershipRevisionApplied = function () {
-  const applied = label => revisionItemStatus(revisionItems.find(item => item.label === label)) === 'applied';
-  if (state.pageId === 'payment' && state.paymentSubscriptionState === 'renewing') {
-    return applied(state.paymentMemberType === 'svip' ? '图 4：SVIP 续费中付费页' : '图 4：VIP 续费中付费页');
-  }
-  if (state.pageId === 'payment' && state.paymentSubscriptionState === 'canceled') {
-    return applied('图 6 / 图 10 / 图 13：iOS 已取消当期');
-  }
-  if (state.pageId === 'renewal' && state.subscriptionPlatform === 'ios') {
-    return applied(state.stateId === 'canceled' ? '图 6 / 图 10 / 图 13：iOS 已取消当期' : '图 5 / 图 8：iOS 续费开关');
-  }
-  return false;
 };
