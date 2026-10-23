@@ -15,6 +15,18 @@
 .release-line:hover .chevron,.release-line:focus-within .chevron{border-color:#2663c8}
 .add-version-item{display:block;width:100%;border:0;background:transparent;color:#52657d;text-align:left;padding:8px 18px;cursor:pointer}
 .add-version{display:block;width:100%;padding:9px;border:1px dashed #bbc6d5;border-radius:8px;background:white;color:#52657d;text-align:left;cursor:pointer}
+.page-group{margin:0 0 9px}
+.page-group .release-header{min-width:0}
+.page-group .release-header b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.page-group .release-content{padding:4px 0 8px}
+.page-group .page-node{min-height:0;padding:0;border-radius:7px}
+.page-group .page-node:hover,.page-group .page-node.active{background:var(--blue-wash)}
+.page-group .page-select{display:block;width:100%;min-height:0;padding:8px 12px 8px 34px;border:0;border-radius:7px;background:transparent;color:#5d6979;text-align:left;font-size:11px;line-height:1.35}
+.page-group .page-node:hover .page-select,.page-group .page-node.active .page-select{color:#2663c8}
+.page-group .page-node.active .page-select{font-weight:600}
+.page-group .tree-group-edit{flex:0 0 28px;align-self:center;height:28px;margin-right:5px;padding:0;border:0;border-radius:6px;background:transparent;color:#8d98a8;font-size:14px}
+.page-group .tree-group-edit:hover,.page-group .tree-group-edit:focus-visible{background:var(--blue-wash);color:#2663c8}
+.page-group .release-line:hover .tree-group-edit{background:transparent}
 .version-item-dialog,.editor-access-dialog{border:1px solid #dce3ec;border-radius:14px;padding:0;box-shadow:0 20px 70px #14203344;min-width:min(430px,calc(100vw - 32px))}
 .version-item-dialog::backdrop{background:#14203355}
 .editor-access-dialog::backdrop{background:#14203355}

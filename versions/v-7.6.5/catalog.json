@@ -1,0 +1,490 @@
+{
+  "pages": [
+    {
+      "id": "payment",
+      "name": "付费页",
+      "group": "交易页面",
+      "pageNote": {
+        "description": "真实会员开通页，承接会员类型切换、套餐选择、AI 积分说明、微信支付和权益对比。",
+        "path": "由会员中心“立即开通 / 立即续费”及受限能力拦截入口进入。",
+        "modules": [
+          "VIP / SVIP / AI 充值切换",
+          "横向滚动套餐",
+          "会员每月赠送 AI 积分",
+          "微信支付与协议",
+          "会员权益对比"
+        ]
+      },
+      "states": [
+        {
+          "id": "default",
+          "name": "默认态",
+          "stateNote": {
+            "rule": "默认展示 VIP 会员，选中连续包年 ¥88。页面按真实设计稿 1:1 呈现，在既有手机模型内纵向滚动。"
+          }
+        },
+        {
+          "id": "single-member",
+          "name": "单次卡会员",
+          "stateNote": {
+            "rule": "当前用户已拥有 VIP 或 SVIP 单次卡，沿用线上已开通会员逻辑，只展示当前会员权益，不展示套餐列表、协议文案和点击购买入口。"
+          }
+        },
+        {
+          "id": "subscription-renewing",
+          "name": "连续会员 · 续费中",
+          "stateNote": {
+            "rule": "VIP / SVIP 连续包月或连续包年且自动续费仍开启时，沿用终身 SVIP 的已开通卡片，只替换等级和商品名称，副文案为“权益生效中”。不展示套餐及购买入口。"
+          }
+        },
+        {
+          "id": "subscription-canceled",
+          "name": "订阅卡 · 已取消",
+          "stateNote": {
+            "rule": "VIP / SVIP 订阅卡已取消自动续费但权益仍有效，等同于单次卡会员状态，不展示套餐、协议或购买入口。"
+          }
+        },
+        {
+          "id": "lifetime-member",
+          "name": "终身会员",
+          "stateNote": {
+            "rule": "VIP 终身会员仍可正常购买 SVIP 商品，预览展示 SVIP 套餐列表；SVIP 终身会员沿用线上已开通会员逻辑，不展示套餐、协议或购买入口。"
+          }
+        },
+        {
+          "id": "lifetime-svip",
+          "name": "终身 SVIP",
+          "stateNote": {
+            "rule": "终身 SVIP 已拥有最高会员权益。VIP、SVIP 两个会员 Tab 均展示已开通卡片与权益对比，不展示套餐、协议或购买按钮，不允许发起其他商品购买。"
+          }
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "id": "renewal",
+      "name": "续费管理页",
+      "group": "交易页面",
+      "pageNote": {
+        "description": "自动续费管理页，展示当前续费商品、续费时间金额、自动续费状态、服务承诺与扣费记录。",
+        "path": "用户成功购买连续商品后返回小程序时自动进入；也可从会员服务入口进入。",
+        "modules": [
+          "续费会员信息",
+          "下次续费时间、金额与开关",
+          "扣费记录与自动续费协议",
+          "服务承诺",
+          "历史扣费记录"
+        ]
+      },
+      "states": [
+        {
+          "id": "active",
+          "name": "续费中",
+          "stateNote": {
+            "rule": "当前处于自动续费状态，展示下次扣费时间和金额，并提供取消续费指引。"
+          }
+        },
+        {
+          "id": "canceled",
+          "name": "已取消但权益有效",
+          "stateNote": {
+            "rule": "用户已取消自动续费，但当前会员权益仍未到期；展示到期时间，不再展示下一次扣费信息。"
+          }
+        },
+        {
+          "id": "expired",
+          "name": "已到期",
+          "stateNote": {
+            "rule": "会员权益已结束，不展示下一次扣费信息，并提供重新开通或续费入口。"
+          }
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "id": "mine",
+      "name": "我的",
+      "group": "个人中心",
+      "pageNote": {
+        "description": "用户个人中心，展示用户身份、会员权益、作品与收藏入口，以及设置、客服和官方渠道。",
+        "path": "点击底部导航栏“我的”进入。",
+        "modules": [
+          "用户信息与会员身份",
+          "会员权益卡片",
+          "我的作品与我的收藏",
+          "设置与服务入口",
+          "推荐加画框",
+          "底部导航"
+        ]
+      },
+      "states": [
+        {
+          "id": "free",
+          "name": "Free",
+          "stateNote": {
+            "rule": "当前用户未开通会员，不展示订阅卡类型和续费状态。"
+          }
+        },
+        {
+          "id": "vip-subscription-renewing",
+          "name": "VIP · 连续包月 · 续费中",
+          "stateNote": {
+            "rule": "VIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+          }
+        },
+        {
+          "id": "vip-subscription-canceled",
+          "name": "VIP · 已取消续费",
+          "stateNote": {
+            "rule": "VIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-subscription-expired",
+          "name": "VIP · 连续包月 · 已过期",
+          "stateNote": {
+            "rule": "VIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-single-active",
+          "name": "VIP · 单次卡 · 生效中",
+          "stateNote": {
+            "rule": "VIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-single-expired",
+          "name": "VIP · 单次卡 · 已过期",
+          "stateNote": {
+            "rule": "VIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-renewing",
+          "name": "SVIP · 连续包月 · 续费中",
+          "stateNote": {
+            "rule": "SVIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-canceled",
+          "name": "SVIP · 已取消续费",
+          "stateNote": {
+            "rule": "SVIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-expired",
+          "name": "SVIP · 连续包月 · 已过期",
+          "stateNote": {
+            "rule": "SVIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-single-active",
+          "name": "SVIP · 单次卡 · 生效中",
+          "stateNote": {
+            "rule": "SVIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-single-expired",
+          "name": "SVIP · 单次卡 · 已过期",
+          "stateNote": {
+            "rule": "SVIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-subscription-annual-renewing",
+          "name": "VIP · 连续包年 · 续费中",
+          "stateNote": {
+            "rule": "VIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+          }
+        },
+        {
+          "id": "vip-subscription-annual-canceled",
+          "name": "VIP · 已取消续费",
+          "stateNote": {
+            "rule": "VIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "vip-subscription-annual-expired",
+          "name": "VIP · 连续包年 · 已过期",
+          "stateNote": {
+            "rule": "VIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-annual-renewing",
+          "name": "SVIP · 连续包年 · 续费中",
+          "stateNote": {
+            "rule": "SVIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-annual-canceled",
+          "name": "SVIP · 已取消续费",
+          "stateNote": {
+            "rule": "SVIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "svip-subscription-annual-expired",
+          "name": "SVIP · 连续包年 · 已过期",
+          "stateNote": {
+            "rule": "SVIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+          }
+        },
+        {
+          "id": "multi-active",
+          "name": "双会员 · 同时生效",
+          "stateNote": {
+            "rule": "用户同时拥有 VIP 连续包月和 SVIP 单次卡。页面汇总展示当前最高权益 SVIP，并列出两个仍在生效的会员商品；每个商品的到期时间、扣费状态和管理入口独立展示，不能互相覆盖。"
+          }
+        }
+      ],
+      "hidden": false
+    },
+    {
+      "id": "page-mv7y3qb6-619u",
+      "name": "tesss",
+      "group": "交易页面",
+      "hidden": true,
+      "__workspaceCustom": true,
+      "pageNote": {
+        "description": "",
+        "path": "",
+        "modules": []
+      },
+      "states": [
+        {
+          "id": "default",
+          "name": "默认态",
+          "stateNote": {
+            "rule": ""
+          }
+        }
+      ]
+    }
+  ],
+  "releases": [
+    {
+      "id": "v-7.6.5",
+      "name": "AI 功能优化",
+      "status": "draft",
+      "goal": "",
+      "changes": [],
+      "hidden": false,
+      "versionNumber": "v-7.6.5"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "a-payment-tabs",
+      "pageId": "payment",
+      "stateIds": [
+        "default"
+      ],
+      "platforms": [
+        "ios",
+        "android",
+        "mini"
+      ],
+      "targetId": "payment-tabs",
+      "title": "会员类型切换",
+      "displayRule": "默认展示 VIP 会员；同一页面可切换 VIP、SVIP 会员与 AI 充值。",
+      "action": "点击类型标签后刷新套餐区与权益说明，不离开当前滚动位置。",
+      "result": "保留用户已选套餐；实际套餐与价格由服务端下发。"
+    },
+    {
+      "id": "a-payment-plan",
+      "pageId": "payment",
+      "stateIds": [
+        "default"
+      ],
+      "platforms": [
+        "ios",
+        "android",
+        "mini"
+      ],
+      "targetId": "payment-plan",
+      "title": "套餐选择",
+      "displayRule": "默认选中“连续包月 ¥18”，同列展示连续包年、终身会员等套餐。",
+      "action": "点击任一套餐卡切换选中态，并同步微信支付金额。",
+      "result": "未支付前不变更会员身份；订单创建后锁定对应套餐与价格。"
+    },
+    {
+      "id": "a-payment-submit",
+      "pageId": "payment",
+      "stateIds": [
+        "default"
+      ],
+      "platforms": [
+        "ios",
+        "android",
+        "mini"
+      ],
+      "targetId": "payment-submit",
+      "title": "微信支付",
+      "displayRule": "展示当前套餐对应的微信支付金额及会员协议。",
+      "action": "点击后进入支付确认；iOS 受平台规则限制时展示联系客服说明。",
+      "result": "确认后仅模拟开通 VIP，真实业务需等待支付回调成功后刷新会员状态。"
+    }
+  ],
+  "mineStateCatalog": [
+    {
+      "id": "free",
+      "type": "Free",
+      "card": "",
+      "status": "",
+      "name": "Free",
+      "rule": "当前用户未开通会员，不展示订阅卡类型和续费状态。"
+    },
+    {
+      "id": "vip-subscription-renewing",
+      "type": "VIP",
+      "card": "订阅卡",
+      "status": "续费中",
+      "name": "VIP · 连续包月 · 续费中",
+      "rule": "VIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+    },
+    {
+      "id": "vip-subscription-canceled",
+      "type": "VIP",
+      "card": "订阅卡",
+      "status": "已取消",
+      "name": "VIP · 已取消续费",
+      "rule": "VIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "vip-subscription-expired",
+      "type": "VIP",
+      "card": "订阅卡",
+      "status": "已过期",
+      "name": "VIP · 连续包月 · 已过期",
+      "rule": "VIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "vip-single-active",
+      "type": "VIP",
+      "card": "单次卡",
+      "status": "生效中",
+      "name": "VIP · 单次卡 · 生效中",
+      "rule": "VIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "vip-single-expired",
+      "type": "VIP",
+      "card": "单次卡",
+      "status": "已过期",
+      "name": "VIP · 单次卡 · 已过期",
+      "rule": "VIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-subscription-renewing",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "status": "续费中",
+      "name": "SVIP · 连续包月 · 续费中",
+      "rule": "SVIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-subscription-canceled",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "status": "已取消",
+      "name": "SVIP · 已取消续费",
+      "rule": "SVIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-subscription-expired",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "status": "已过期",
+      "name": "SVIP · 连续包月 · 已过期",
+      "rule": "SVIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-single-active",
+      "type": "SVIP",
+      "card": "单次卡",
+      "status": "生效中",
+      "name": "SVIP · 单次卡 · 生效中",
+      "rule": "SVIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-single-expired",
+      "type": "SVIP",
+      "card": "单次卡",
+      "status": "已过期",
+      "name": "SVIP · 单次卡 · 已过期",
+      "rule": "SVIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "vip-subscription-annual-renewing",
+      "type": "VIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "续费中",
+      "name": "VIP · 连续包年 · 续费中",
+      "rule": "VIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+    },
+    {
+      "id": "vip-subscription-annual-canceled",
+      "type": "VIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已取消",
+      "name": "VIP · 已取消续费",
+      "rule": "VIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "vip-subscription-annual-expired",
+      "type": "VIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已过期",
+      "name": "VIP · 连续包年 · 已过期",
+      "rule": "VIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-subscription-annual-renewing",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "续费中",
+      "name": "SVIP · 连续包年 · 续费中",
+      "rule": "SVIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-subscription-annual-canceled",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已取消",
+      "name": "SVIP · 已取消续费",
+      "rule": "SVIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "svip-subscription-annual-expired",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已过期",
+      "name": "SVIP · 连续包年 · 已过期",
+      "rule": "SVIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    {
+      "id": "multi-active",
+      "type": "SVIP",
+      "card": "双会员",
+      "product": "2个会员同时生效",
+      "status": "生效中",
+      "name": "双会员 · 同时生效",
+      "multiple": true,
+      "rule": "用户同时拥有 VIP 连续包月和 SVIP 单次卡。页面汇总展示当前最高权益 SVIP，并列出两个仍在生效的会员商品；每个商品的到期时间、扣费状态和管理入口独立展示，不能互相覆盖。"
+    }
+  ]
+}

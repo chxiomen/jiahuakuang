@@ -134,6 +134,11 @@ let closeVersionItemMenu = () => {};
 bindTree = function () {
   closeVersionItemMenu();
   legacyBindTree();
+  document.querySelectorAll('[data-fold-page-group]').forEach(button => button.onclick = () => {
+    const group = button.dataset.foldPageGroup;
+    foldedPageGroups.has(group) ? foldedPageGroups.delete(group) : foldedPageGroups.add(group);
+    renderTree();
+  });
   document.querySelectorAll('[data-add-item]').forEach(button => button.onclick = () => openVersionItemDialog(button.dataset.addItem));
   document.querySelector('[data-add-version]')?.addEventListener('click', openNewVersionDialog);
 };

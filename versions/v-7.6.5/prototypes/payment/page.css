@@ -1,0 +1,199 @@
+/* PRD TBD · 图4 付费页默认态：参考 jhk-app-付费页.html 的真实组件结构，非整页截图。 */
+    .phone.payment-screen .notch,.phone.payment-screen>.status-bar,.phone.payment-screen .tab-bar{display:none}
+.phone.payment-screen .screen{position:absolute;inset:0;height:auto;overflow:auto;padding:0;background:#f7f7f7}
+.payment{width:390px;min-height:1356px;zoom:.961538;background:#f7f7f7;color:#26302a}
+.payment button{font-family:inherit}
+.pay-head{position:relative;height:305px;background:#fbfbfb}
+.pay-banner{position:absolute;inset:0 0 auto;height:275px;overflow:hidden;background:#241f19}
+.pay-banner>img{display:block;width:100%;height:275px;object-fit:cover}
+.pay-banner::after{content:"";position:absolute;right:0;bottom:0;left:0;height:108px;background:linear-gradient(180deg,rgba(9,30,18,0),rgba(9,30,18,.73))}
+.pay-status{position:absolute;z-index:2;top:0;right:0;left:0;display:flex;align-items:center;justify-content:space-between;height:30px;padding:0 20px;color:#fff;font-size:12px;font-weight:600}
+.pay-status-right{display:flex;align-items:center;gap:5px;font-size:10px;letter-spacing:1px}
+.pay-battery{width:16px;height:8px;border:1.5px solid #fff;border-radius:4px}
+.pay-nav{position:absolute;z-index:2;top:30px;right:0;left:0;display:flex;align-items:center;justify-content:space-between;height:42px;padding:0 18px}
+.pay-nav button{display:grid;width:26px;height:26px;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(9,30,18,.6);color:#fff}
+.pay-back::before{content:"";width:8px;height:8px;border-bottom:2px solid #fff;border-left:2px solid #fff;transform:rotate(45deg)}
+.pay-support::before{content:"◖◗";font-size:13px;letter-spacing:-4px;transform:rotate(-14deg)}
+.pay-slogan{position:absolute;z-index:2;bottom:40px;left:26px;margin:0;color:#f9f9f9;font-size:16px;font-weight:700}
+.pay-dots{position:absolute;z-index:2;bottom:24px;left:50%;width:44px;height:3px;transform:translateX(-50%);border-radius:2px;background:#767676}
+.pay-dots i{display:block;width:12px;height:3px;border-radius:2px;background:#fff}
+.pay-tabs{position:absolute;z-index:3;right:0;bottom:0;left:0;display:flex;height:42px;align-items:flex-end;background:#374943}
+.pay-tabs button{position:relative;flex:1;height:42px;border:0;background:#374943;color:#b8cec7;font-size:16.6px;font-weight:500}
+.pay-tabs button.on{height:42px;border-radius:17px 17px 0 0;background:#f7f7f7;color:#000}
+.pay-tabs button:nth-child(2).on{color:#4f3218}
+.pay-tabs button:nth-child(3).on{color:#0e5947}
+.pay-body{padding-bottom:28px;background:#f7f7f7}
+.pay-title{margin:0;padding:11px 0 0 25px;color:#434343;font-size:14.8px;font-weight:500;line-height:22px}
+.pay-plan-list{display:flex;gap:11px;padding:13px 20px 8px 25px;overflow-x:auto;scrollbar-width:none}
+.pay-plan-list::-webkit-scrollbar{display:none}
+.pay-plan{display:flex;flex:0 0 87px;height:115px;flex-direction:column;align-items:center;padding:0;border:1.33px solid transparent;border-radius:8px;background:#fff;color:#213129;box-shadow:0 0 7px rgba(0,0,0,.05)}
+.pay-plan .plan-name{margin-top:19px;font-size:12.9px;font-weight:500;line-height:18px}
+.pay-plan .plan-price{display:flex;align-items:flex-end;justify-content:center;line-height:1}
+.pay-plan .plan-price i{padding-bottom:4px;font-size:11px;font-style:normal;font-weight:500}
+.pay-plan .plan-price b{font-size:22px;line-height:32px}
+.pay-plan .plan-old{margin-top:11px;color:#9d9a96;font-size:9.3px;line-height:13px;text-decoration:line-through}
+.pay-plan.on{border-color:#ecca9f;background:linear-gradient(135deg,#fff,#fdf3ce,#ffeb9c);color:#644a09}
+.pay-plan.on .plan-old{color:#996d32}
+.pay-ai-card{display:flex;width:316px;height:58px;align-items:center;justify-content:space-between;margin:15px auto 0;padding-left:15px;border-radius:9px;background:#fff;box-shadow:0 0 7px rgba(0,0,0,.05)}
+.pay-ai-card strong{display:block;color:#213129;font-size:12.9px;font-weight:500;line-height:18px}
+.pay-ai-card strong i{display:inline-grid;width:15px;height:15px;place-items:center;margin-right:3px;border-radius:50%;background:#2cbb80;color:#fff;font-size:10px;font-style:normal}
+.pay-ai-card small{display:block;margin-top:3px;color:#a3aca9;font-size:11px;line-height:16px}
+.pay-detail{padding:15px 18px 15px 15px;border:0;background:transparent;color:#aeaeae;font-size:14px}
+.pay-buy{display:block;width:315px;height:42.5px;margin:15px auto 0;border:0;border-radius:24px;background:linear-gradient(90deg,#feeba0,#ffbd28);color:#000;font-size:16.6px;font-weight:500;box-shadow:0 0 7px rgba(0,0,0,.05)}
+.pay-method{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:11px;color:#9d9d9d;font-size:11px}
+.pay-wechat{display:inline-grid;width:13px;height:13px;place-items:center;border-radius:4px;background:#16bd62;color:#fff;font-size:9px}
+.pay-method em{color:#696969;font-style:normal}
+.pay-agree{margin:11px 0 0;color:#7c7c7c;font-size:11px;line-height:16px;text-align:center}
+.pay-agree a{color:#4c9a43;text-decoration:none}
+.pay-rights-title{margin-top:15px;padding-bottom:14px}
+.pay-rights{display:flex;overflow:hidden;margin:0 25px;border-radius:5.5px;background:#fff;box-shadow:0 0 8px rgba(0,0,0,.1)}
+.pay-filler{height:28px}
+/* 付费页视觉修订：与用户提供的真机参照逐项对齐。 */
+    .payment .pay-banner>img{height:275px;object-fit:cover;object-position:center 38%}
+.payment .pay-slogan{bottom:70px}
+.payment .pay-dots{bottom:54px}
+.payment .pay-nav button{position:relative;background:#092117}
+.payment .pay-support::before{content:"";width:12px;height:10px;border:2px solid #fff;border-bottom:0;border-radius:9px 9px 0 0;transform:none}
+.payment .pay-support::after{content:"";position:absolute;top:14px;left:6px;width:3px;height:5px;border-radius:2px;background:#fff;box-shadow:11px 0 0 #fff}
+.payment .pay-tabs{background:#374943}
+.payment .pay-tabs button{z-index:1;background:transparent}
+.payment .pay-tabs button:first-child{flex:0 0 160px}
+.payment .pay-tabs button:first-child.on{z-index:3;margin-right:-20px;border-radius:18px 23px 0 0;background:#f7f7f7;clip-path:polygon(0 0,126px 0,139px 7px,151px 34px,160px 42px,0 42px)}
+.payment .pay-tabs button:nth-child(2){padding-left:19px}
+.payment .pay-plan-list{padding-top:34px}
+.payment .pay-plan{position:relative;overflow:visible}
+.payment .plan-tag{position:absolute;z-index:2;top:-21px;left:-1px;height:22px;padding:0 17px;border-radius:13px 13px 13px 0;background:linear-gradient(90deg,#ff9624,#ed4125);color:#fff;font-size:12px;font-weight:500;line-height:22px;white-space:nowrap}
+.payment .pay-ai-card{width:340px;margin-right:0;margin-left:25px}
+.payment .pay-method{display:none}
+/* 套餐区字重与热门标签：标签以卡片上边缘为中线，名称和价格拉开。 */
+    .payment .pay-title,.payment .pay-plan .plan-name,.payment .pay-ai-card strong{font-family:"PingFang SC","Microsoft YaHei",sans-serif;font-weight:800}
+.payment .plan-tag{top:-11px}
+.payment .pay-plan .plan-price{margin-top:8px}
+.payment .pay-buy{width:340px;margin-right:0;margin-left:25px}
+.payment .pay-purchase-notice{box-sizing:border-box;width:340px;margin:15px 0 0 25px;color:#9b6730;font-size:11px;line-height:17px;text-align:center}
+.payment .pay-purchase-notice+.pay-buy{margin-top:7px}
+.payment .pay-buy:disabled{background:#dedede;color:#8d8d8d;box-shadow:none;cursor:not-allowed}
+.payment .pay-agree{width:340px;box-sizing:border-box;margin-left:25px}
+.payment .pay-plan-list{scroll-behavior:smooth;overscroll-behavior-x:contain;touch-action:pan-x}
+.payment .pay-plan-list::after{flex:0 0 5px;content:""}
+.payment .pay-credit-body{display:grid;min-height:500px;place-items:center}
+.payment .pay-credit-pending{margin:0;color:#9aa2ad;font-size:15px}
+.payment .pay-ai-card strong i{display:inline-block;width:15px;height:15px;margin:0 3px 0 1px;border-radius:0;background:url("/assets/snapshots/c95b85a1c8d43b0755eb6703c2ef3e3050dc95c388ad4c0f3561a961af906bef/payment-ai-credit.png") center/contain no-repeat;color:transparent;font-size:0;vertical-align:-2px}
+.payment .pay-plan-list{padding-top:24px}
+.payment .pay-ai-card strong i{margin:0 4px 0 2px;vertical-align:middle;transform:translateY(-1px)}
+/* Banner 延展到 Tab 背后；底部使用 1/4 高度的轻黑渐变，衔接文字与 Tab。 */
+    .payment .pay-banner{height:305px}
+.payment .pay-banner>img{height:305px}
+.payment .pay-banner::after{height:76px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.34))}
+/* 导航圆钮严格采用给定切图：#091E12 64% 圆底 + 原始白色箭头 / 客服图标。 */
+    .payment .pay-nav button{background:rgba(9,30,18,.64)!important}
+.payment .pay-nav button::before,.payment .pay-nav button::after{content:none}
+.payment .pay-nav button img{display:block;width:16px;height:16px;object-fit:contain}
+/* Tab 使用参考页原始三张形状蒙版：左 / 中 / 右背景独立叠放，文字层置顶。 */
+    .payment .pay-tabs{display:block;background:transparent}
+.payment img.pay-tab-bg{position:absolute;top:0;display:block;height:42px;background:transparent;-webkit-mask:none;mask:none;object-fit:fill}
+.payment img.pay-tab-bg.l{left:0;width:131px}
+.payment img.pay-tab-bg.m{left:50%;width:203px;margin-left:-101.5px}
+.payment img.pay-tab-bg.r{right:0;width:131px}
+.payment img.pay-tab-bg.on{z-index:2}
+.payment img.pay-tab-bg:not(.on){filter:brightness(0) saturate(100%) invert(24%) sepia(10%) saturate(1130%) hue-rotate(112deg) brightness(91%) contrast(88%)}
+.payment .pay-tab-txt{position:absolute;z-index:3;inset:0;display:flex;gap:10px}
+.payment .pay-tab-txt button,.payment .pay-tabs button,.payment .pay-tabs button:first-child,.payment .pay-tabs button:first-child.on{flex:1;height:42px;margin:0;padding:0;border:0;border-radius:0;background:transparent;clip-path:none;color:#b8cec7;font-size:16.6px;font-weight:500}
+.payment .pay-tab-txt button.t0.on{color:#000}
+.payment .pay-tab-txt button.t1.on{color:#4f3218}
+.payment .pay-tab-txt button.t2.on{color:#0e5947}
+.payment .pay-tabs button:nth-child(2){padding-left:0}
+.payment .pay-agree{display:flex;align-items:center;justify-content:center;gap:5px;min-height:19px;line-height:19px}
+.payment .pay-agree.recurring-agreement{align-items:flex-start;justify-content:flex-start}
+.payment .pay-agree input{position:relative;flex:0 0 12px;width:12px;height:12px;margin:3px 0 0;border:1px solid #b7bdc5;border-radius:2px;background:#fff;appearance:none;cursor:pointer}
+.payment .pay-agree input:checked{border-color:#9aa2ad;background:#9aa2ad}
+.payment .pay-agree input:checked::after{position:absolute;top:1px;width:4px;height:7px;border:solid #fff;border-width:0 1px 1px 0;left:3px;transform:rotate(45deg);content:""}
+.payment .pay-agree label{display:block;flex:1;line-height:19px;text-align:left;cursor:pointer}
+.payment-requirement-state-tabs{display:grid;gap:8px;padding:12px 0;border-bottom:1px solid var(--line);background:#fff}
+.payment-requirement-state-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.payment-requirement-state-label{flex:0 0 72px;margin:0;color:#8490a1;font-size:11px;font-weight:400;white-space:nowrap}
+.payment-requirement-state-tabs button{height:27px;padding:0 10px;border:1px solid #e2e7ef;border-radius:7px;background:#fff;color:#6c788a;font-size:11px;cursor:pointer}
+.payment-requirement-state-tabs button:hover{border-color:#b9cae8;color:var(--blue)}
+.payment-requirement-state-tabs button.active{border-color:#c8dafb;background:var(--blue-wash);color:var(--blue);font-weight:700}
+.payment-requirement-state-tabs+.requirements-note{padding-right:0;padding-left:0}
+.workspace.payment-calculator-mode{grid-template-columns:250px minmax(480px,1fr) 340px}
+.workspace.payment-calculator-mode .stage{display:none}
+.workspace.payment-calculator-mode .notes{grid-column:2;min-width:0;max-width:none}
+.workspace.payment-calculator-mode .purchase-calculator{display:block;grid-column:3;grid-row:1}
+@media(max-width:1120px){
+.workspace.payment-calculator-mode{grid-template-columns:230px minmax(0,1fr)}
+.workspace.payment-calculator-mode .notes{grid-column:2}
+.workspace.payment-calculator-mode .purchase-calculator{grid-column:1/-1;grid-row:auto}
+}
+@media(max-width:720px){
+.workspace.payment-calculator-mode{display:flex}
+.workspace.payment-calculator-mode .notes{order:2;width:100%}
+.workspace.payment-calculator-mode .purchase-calculator{order:3;width:100%}
+}
+/* PRD TBD · 图6 未勾选点击支付：直接阅读当前商品的协议，底部操作固定。 */
+    .sheet.payment-agreement-sheet{top:auto;right:0;bottom:0;left:0;display:flex;height:72%;min-height:0;max-height:calc(100% - 90px);flex-direction:column;padding:0;border:0;border-radius:18px 18px 0 0;background:#fff;box-shadow:0 -12px 36px rgba(0,0,0,.13);transform:translateY(105%)}
+.sheet.payment-agreement-sheet.show{transform:translateY(0)}
+.sheet.payment-agreement-sheet .handle,.sheet.payment-agreement-sheet h2{display:none}
+.sheet.payment-agreement-sheet #sheetText{flex:1;min-height:0;overflow-y:auto;padding:39px 26px 25px;scrollbar-width:none}
+.sheet.payment-agreement-sheet #sheetText::-webkit-scrollbar{display:none}
+.sheet.payment-agreement-sheet .sheet-actions{flex:0 0 auto;position:relative;margin:0;padding:18px 17px 25px;border-top:1px solid #eee;background:#fff}
+.sheet.payment-agreement-sheet .cancel{position:absolute;z-index:1;top:-100%;right:13px;width:30px;height:30px;padding:0;border:0;background:transparent;color:transparent}
+.sheet.payment-agreement-sheet .cancel::before,.sheet.payment-agreement-sheet .cancel::after{position:absolute;top:14px;left:7px;width:17px;height:2px;border-radius:2px;background:#171717;content:""}
+.sheet.payment-agreement-sheet .cancel::before{transform:rotate(45deg)}
+.sheet.payment-agreement-sheet .cancel::after{transform:rotate(-45deg)}
+.sheet.payment-agreement-sheet .confirm{display:block;width:100%;height:53px;flex:none;border:0;border-radius:28px;background:#fa62a3;color:#fff;font-size:16px;font-weight:600;box-shadow:none}
+.sheet.payment-agreement-sheet .agreement-close{position:absolute;z-index:2;top:10px;right:12px;display:block;width:30px;height:30px;padding:0;border:0;background:transparent;color:#171717;font-size:32px;font-weight:300;line-height:26px}
+.sheet.payment-agreement-sheet .cancel{display:none}
+.sheet.payment-agreement-sheet #sheetText{white-space:normal}
+.sheet.payment-agreement-sheet .confirm{background:linear-gradient(90deg,#feeba0,#ffbd28);color:#000;font-weight:500;box-shadow:0 0 7px rgba(0,0,0,.05)}
+.vip-modal-crown{position:absolute;z-index:1;top:-67px;left:50%;width:98px;height:98px;object-fit:contain;filter:drop-shadow(0 4px 5px rgba(151,102,30,.15));transform:translateX(-50%)}
+.workspace.payment-calculator-mode{grid-template-columns:250px 433px minmax(420px,1fr) 340px}
+.workspace.payment-calculator-mode .stage{display:block;grid-column:2;grid-row:1}
+.workspace.payment-calculator-mode .notes{grid-column:3;grid-row:1}
+.workspace.payment-calculator-mode .purchase-calculator{display:block;grid-column:4;grid-row:1}
+@media(min-width:1121px) and (max-width:1700px){
+.workspace.payment-calculator-mode{grid-template-columns:250px 433px minmax(0,1fr)}
+.workspace.payment-calculator-mode .notes{grid-column:3;grid-row:1}
+.workspace.payment-calculator-mode .purchase-calculator{grid-column:3;grid-row:2}
+}
+@media(max-width:1120px){
+.workspace.payment-calculator-mode{grid-template-columns:230px 433px}
+.workspace.payment-calculator-mode .stage{grid-column:2;grid-row:1}
+.workspace.payment-calculator-mode .notes{grid-column:1/-1;grid-row:2}
+.workspace.payment-calculator-mode .purchase-calculator{grid-column:1/-1;grid-row:3}
+}
+@media(max-width:720px){
+.workspace.payment-calculator-mode .stage{order:1}
+.workspace.payment-calculator-mode .navigation{order:2}
+.workspace.payment-calculator-mode .notes{order:3}
+.workspace.payment-calculator-mode .purchase-calculator{order:4}
+}
+/* 付费页右侧仅保留需求说明，不展示空的复购辅助模块。 */
+    .workspace.payment-calculator-mode{grid-template-columns:250px 433px minmax(0,1fr)}
+.workspace.payment-calculator-mode .purchase-calculator{display:none!important}
+@media(max-width:1120px){
+.workspace.payment-calculator-mode{grid-template-columns:230px 433px}
+}
+@media(max-width:720px){
+.workspace.payment-calculator-mode{display:flex}
+}
+/* 付费页预览不展示右侧页面说明与辅助模块。 */
+    .workspace.payment-preview-mode{grid-template-columns:250px 433px minmax(0,1fr)}
+.workspace.payment-preview-mode .stage{display:block;grid-column:2;grid-row:1}
+.workspace.payment-preview-mode .notes{display:block;grid-column:3;grid-row:1}
+.workspace.payment-preview-mode .purchase-calculator{display:none!important}
+@media(max-width:1120px){
+.workspace.payment-preview-mode{grid-template-columns:230px 433px}
+.workspace.payment-preview-mode .notes{grid-column:1/-1;grid-row:2}
+}
+@media(max-width:720px){
+.workspace.payment-preview-mode{display:flex}
+}
+/* PRD TBD · 图7 终身 SVIP：会员 Tab 共用已开通形态，无购买入口。 */
+    .payment.member-owned{background:#f7f7f7}
+.payment.member-owned .pay-body{padding:0 0 35px}
+.payment.member-owned .pay-rights-title{margin-top:39px;padding:0 0 14px 26px;font-size:16px;font-weight:600;line-height:24px}
+.payment.member-owned .pay-rights{margin:0 26px;border-radius:7px;box-shadow:0 2px 13px rgba(0,0,0,.09)}
+.payment.member-owned .rights-cell{height:36px;font-size:13px}
+.payment.member-owned .rights-col.gold{background:linear-gradient(180deg,#fffaf4,#fff0d7)}
+.payment.member-owned .rights-col.gold .rights-cell:first-child{color:#b56b09}

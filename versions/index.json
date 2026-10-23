@@ -22,6 +22,15 @@
       "aliases": [],
       "hidden": true,
       "custom": true
+    },
+    {
+      "id": "v-7.6.5",
+      "versionNumber": "v-7.6.5",
+      "name": "AI 功能优化",
+      "directory": "v-7.6.5",
+      "aliases": [],
+      "hidden": false,
+      "custom": true
     }
   ]
 }

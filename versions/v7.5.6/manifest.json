@@ -11,6 +11,122 @@
   "custom": true,
   "pages": [
     {
+      "id": "home",
+      "name": "首页",
+      "group": "首页",
+      "pageNote": {
+        "description": "AI 功能优化首页，展示场景主视觉、核心制作入口、工具和精选模板。",
+        "path": "小程序启动后进入；底部“加框”标签返回此页。",
+        "modules": ["场景主视觉", "选图加框与 AI 加框", "十项工具入口", "精选模板", "底部导航"]
+      },
+      "states": [
+        {
+          "id": "default",
+          "name": "默认态",
+          "stateNote": { "rule": "点击 AI 加框并模拟上传照片后，直接进入 AI 模板选择页。" }
+        }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/home/states.json"
+    },
+    {
+      "id": "single-image-editor",
+      "name": "单图加框页 - 一键美化入口",
+      "group": "首页",
+      "pageNote": {
+        "description": "单图加框编辑页，底部提供一键美化入口。",
+        "path": "首页点击“选图加框”进入；点击“一键美化”先放大分析作品，再随机生成 AI 效果。",
+        "modules": ["作品画布", "素材与编辑工具", "一键美化", "全屏分析", "生成中与取消"]
+      },
+      "states": [
+        { "id": "default", "name": "编辑页", "stateNote": { "rule": "点击“一键美化”先放大分析作品，再随机生成，不先选择模板。" } },
+        { "id": "scanning", "name": "分析作品", "stateNote": { "rule": "平缓放大上传的作品并模拟分析，约 1.6 秒后进入生成中；可取消。" } },
+        { "id": "generating", "name": "生成中", "stateNote": { "rule": "在放大的作品上显示生成中蒙层，约 3 秒后进入 AI 效果预览；可取消。" } }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/single-image-editor/states.json"
+    },
+    {
+      "id": "home-ai-templates",
+      "name": "AI 加框 - 模板选择",
+      "group": "首页",
+      "pageNote": {
+        "description": "首页 AI 加框上传作品后的模板列表。",
+        "path": "首页点击“AI 加框”，模拟上传照片完成后进入。",
+        "modules": ["上传作品预览", "模板分类与列表", "生同款生成"]
+      },
+      "states": [
+        { "id": "scheme2", "name": "选择模板", "stateNote": { "rule": "上传完成后展示作品与模板列表。" } },
+        { "id": "scheme2-selected", "name": "已选中模板", "stateNote": { "rule": "点选模板后预览效果；未生成时点击“生同款”，已生成时点击“重试”开始生成。" } }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/ai-secondary/home-states.json"
+    },
+    {
+      "id": "ai-preview",
+      "name": "AI模板-生成预览",
+      "group": "首页",
+      "pageNote": {
+        "description": "AI 生成完成后的作品预览，展示免费效果或会员素材的对应权益与操作。",
+        "path": "单图加框页点击一键美化后直接随机生成；首页 AI 加框需先上传并选择模板。",
+        "modules": ["生成作品", "生成完成或会员权益提示", "浏览更多模板", "分享、保存或开通会员"]
+      },
+      "states": [
+        {
+          "id": "default",
+          "name": "生成预览",
+          "stateNote": { "rule": "按 Figma“AI模板-生成预览”画板展示。" }
+        },
+        {
+          "id": "member",
+          "name": "会员素材",
+          "stateNote": { "rule": "按 Figma“AI模板-生成预览 - 会员素材”画板展示金色 VIP 提示条和开通会员按钮；更换模板可返回抽屉。" }
+        }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/ai-preview/states.json"
+    },
+    {
+      "id": "single-image-ai-preview",
+      "name": "单图加框页 - AI模板-生成预览",
+      "group": "首页",
+      "pageNote": {
+        "description": "选择更多 AI 模板并生成后的单图预览，区分免费素材与会员素材。",
+        "path": "在 AI 模板选择页预览模板，点击“生同款”并等待约 3 秒进入。",
+        "modules": ["生成作品", "素材权益提示", "更换模版", "分享与保存或开通会员"]
+      },
+      "states": [
+        {
+          "id": "free",
+          "name": "免费素材",
+          "stateNote": { "rule": "选中不带 VIP 标签的模板，点击“生同款”后展示约 3 秒生成倒计时，进入免费效果预览，可保存至相册。" }
+        },
+        {
+          "id": "member",
+          "name": "会员素材",
+          "stateNote": { "rule": "选中右上角带 VIP 标签的模板，点击“生同款”后展示约 3 秒生成倒计时，进入会员效果预览，提示开通会员后可保存。" }
+        }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/single-image-ai-preview/states.json"
+    },
+    {
+      "id": "ai-secondary",
+      "name": "单图加框页 - AI 二级页面",
+      "group": "首页",
+      "pageNote": {
+        "description": "AI 模板选择页，进入时保持作品预览不变。",
+        "path": "从 AI 生成预览点击“浏览更多模板 / 更换模板”进入，默认选中当前生成模板；其他模板先预览，再点击“生同款”生成。",
+        "modules": ["作品预览", "模板分类", "模板列表", "生同款与重试"]
+      },
+      "states": [
+        { "id": "scheme2", "name": "选择模板", "stateNote": { "rule": "保持作品图，点击三列列表素材后仅选中模板并加载模板图。" } },
+        { "id": "scheme2-selected", "name": "已选中模板", "stateNote": { "rule": "生成结果进入时默认选中对应模板并预览生成效果，缩略图显示“重试”；未生成模板选中后显示“生同款”。" } }
+      ],
+      "hidden": false,
+      "stateFile": "prototypes/ai-secondary/states.json"
+    },
+    {
       "id": "payment",
       "name": "付费页",
       "group": "交易页面",
@@ -1056,6 +1172,10 @@
       "prototypes/renewal/page.js",
       "prototypes/mine/page.js",
       "prototypes/home/page.js",
+      "prototypes/single-image-editor/page.js",
+      "prototypes/ai-preview/page.js",
+      "prototypes/single-image-ai-preview/page.js",
+      "prototypes/ai-secondary/page.js",
       "prototypes/member/page.js",
       "prototypes/custom/page.js",
       "prototypes/payment/interactions.js",
@@ -1071,6 +1191,10 @@
       "prototypes/renewal/page.css",
       "prototypes/mine/page.css",
       "prototypes/home/page.css",
+      "prototypes/single-image-editor/page.css",
+      "prototypes/ai-preview/page.css",
+      "prototypes/single-image-ai-preview/page.css",
+      "prototypes/ai-secondary/page.css",
       "prototypes/member/page.css",
       "prototypes/page-mv7y3qb6-619u/page.css"
     ],
@@ -1095,7 +1219,39 @@
       },
       "home": {
         "script": "prototypes/home/page.js",
-        "style": "prototypes/home/page.css"
+        "style": "prototypes/home/page.css",
+        "hideTabBar": true,
+        "phoneClass": "ai-home-phone"
+      },
+      "single-image-editor": {
+        "script": "prototypes/single-image-editor/page.js",
+        "style": "prototypes/single-image-editor/page.css",
+        "hideTabBar": true,
+        "phoneClass": "ai-editor-phone"
+      },
+      "home-ai-templates": {
+        "script": "prototypes/ai-secondary/page.js",
+        "style": "prototypes/ai-secondary/page.css",
+        "hideTabBar": true,
+        "phoneClass": "ai-secondary-phone"
+      },
+      "ai-preview": {
+        "script": "prototypes/ai-preview/page.js",
+        "style": "prototypes/ai-preview/page.css",
+        "hideTabBar": true,
+        "phoneClass": "ai-preview-phone"
+      },
+      "single-image-ai-preview": {
+        "script": "prototypes/single-image-ai-preview/page.js",
+        "style": "prototypes/single-image-ai-preview/page.css",
+        "hideTabBar": true,
+        "phoneClass": "ai-single-preview-phone"
+      },
+      "ai-secondary": {
+        "script": "prototypes/ai-secondary/page.js",
+        "style": "prototypes/ai-secondary/page.css",
+        "hideTabBar": true,
+        "phoneClass": "ai-secondary-phone"
       },
       "member": {
         "script": "prototypes/member/page.js",

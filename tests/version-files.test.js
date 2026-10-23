@@ -16,6 +16,25 @@ function fixture(t) {
   return new VersionedWorkspaceStore(directory);
 }
 
+test('a blank version exposes an editable outline and renders its saved content', t => {
+  const store = fixture(t);
+  const source = store.resolve();
+  const blank = store.createVersion({ versionNumber: 'v-blank-outline', name: '空白大纲', fromVersion: source.id, empty: true });
+  const version = store.bootstrap(blank.id).catalog.releases.find(item => item.id === blank.id);
+  const script = fs.readFileSync(path.join(__dirname, '../src/requirement-renderer.js'), 'utf8');
+  const savedRequirements = {};
+  const render = () => vm.runInNewContext(script + `\nreleaseNote('${blank.id}')`, {
+    release: id => id === blank.id ? version : null,
+    savedRequirements,
+    state: {},
+    escape: value => String(value)
+  });
+  assert.match(render(), /data-requirement-key="release:v-blank-outline"/);
+  assert.match(render(), /class="requirements-note requirements-editor-content"/);
+  savedRequirements[`release:${blank.id}`] = '<p>新版本需求</p>';
+  assert.match(render(), /新版本需求/);
+});
+
 test('legacy document keys remain addressable, including blank and historical variants', t => {
   const store = fixture(t);
   const original = JSON.parse(fs.readFileSync(path.join(__dirname, '../prd-data.json'), 'utf8')).requirements;
