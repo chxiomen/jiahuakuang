@@ -1,0 +1,280 @@
+[
+  {
+    "id": "free",
+    "name": "Free",
+    "stateNote": {
+      "rule": "当前用户未开通会员，不展示订阅卡类型和续费状态。"
+    },
+    "prototype": {
+      "id": "free",
+      "type": "Free",
+      "card": "",
+      "status": "",
+      "name": "Free",
+      "rule": "当前用户未开通会员，不展示订阅卡类型和续费状态。"
+    }
+  },
+  {
+    "id": "vip-subscription-renewing",
+    "name": "VIP · 连续包月 · 续费中",
+    "stateNote": {
+      "rule": "VIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+    },
+    "prototype": {
+      "id": "vip-subscription-renewing",
+      "type": "VIP",
+      "card": "订阅卡",
+      "status": "续费中",
+      "name": "VIP · 连续包月 · 续费中",
+      "rule": "VIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+    }
+  },
+  {
+    "id": "vip-subscription-canceled",
+    "name": "VIP · 已取消续费",
+    "stateNote": {
+      "rule": "VIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "vip-subscription-canceled",
+      "type": "VIP",
+      "card": "订阅卡",
+      "status": "已取消",
+      "name": "VIP · 已取消续费",
+      "rule": "VIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "vip-subscription-expired",
+    "name": "VIP · 连续包月 · 已过期",
+    "stateNote": {
+      "rule": "VIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "vip-subscription-expired",
+      "type": "VIP",
+      "card": "订阅卡",
+      "status": "已过期",
+      "name": "VIP · 连续包月 · 已过期",
+      "rule": "VIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "vip-single-active",
+    "name": "VIP · 单次卡 · 生效中",
+    "stateNote": {
+      "rule": "VIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "vip-single-active",
+      "type": "VIP",
+      "card": "单次卡",
+      "status": "生效中",
+      "name": "VIP · 单次卡 · 生效中",
+      "rule": "VIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "vip-single-expired",
+    "name": "VIP · 单次卡 · 已过期",
+    "stateNote": {
+      "rule": "VIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "vip-single-expired",
+      "type": "VIP",
+      "card": "单次卡",
+      "status": "已过期",
+      "name": "VIP · 单次卡 · 已过期",
+      "rule": "VIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-subscription-renewing",
+    "name": "SVIP · 连续包月 · 续费中",
+    "stateNote": {
+      "rule": "SVIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-subscription-renewing",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "status": "续费中",
+      "name": "SVIP · 连续包月 · 续费中",
+      "rule": "SVIP 用户购买连续包月商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-subscription-canceled",
+    "name": "SVIP · 已取消续费",
+    "stateNote": {
+      "rule": "SVIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-subscription-canceled",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "status": "已取消",
+      "name": "SVIP · 已取消续费",
+      "rule": "SVIP 用户已取消连续包月的自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-subscription-expired",
+    "name": "SVIP · 连续包月 · 已过期",
+    "stateNote": {
+      "rule": "SVIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-subscription-expired",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "status": "已过期",
+      "name": "SVIP · 连续包月 · 已过期",
+      "rule": "SVIP 连续包月权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-single-active",
+    "name": "SVIP · 单次卡 · 生效中",
+    "stateNote": {
+      "rule": "SVIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-single-active",
+      "type": "SVIP",
+      "card": "单次卡",
+      "status": "生效中",
+      "name": "SVIP · 单次卡 · 生效中",
+      "rule": "SVIP 用户购买单次商品，当前权益生效中；单次卡不展示续费中和已取消状态。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-single-expired",
+    "name": "SVIP · 单次卡 · 已过期",
+    "stateNote": {
+      "rule": "SVIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-single-expired",
+      "type": "SVIP",
+      "card": "单次卡",
+      "status": "已过期",
+      "name": "SVIP · 单次卡 · 已过期",
+      "rule": "SVIP 单次卡权益已过期，提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "vip-subscription-annual-renewing",
+    "name": "VIP · 连续包年 · 续费中",
+    "stateNote": {
+      "rule": "VIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+    },
+    "prototype": {
+      "id": "vip-subscription-annual-renewing",
+      "type": "VIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "续费中",
+      "name": "VIP · 连续包年 · 续费中",
+      "rule": "VIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“进群”进入交流群入口。"
+    }
+  },
+  {
+    "id": "vip-subscription-annual-canceled",
+    "name": "VIP · 已取消续费",
+    "stateNote": {
+      "rule": "VIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "vip-subscription-annual-canceled",
+      "type": "VIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已取消",
+      "name": "VIP · 已取消续费",
+      "rule": "VIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "vip-subscription-annual-expired",
+    "name": "VIP · 连续包年 · 已过期",
+    "stateNote": {
+      "rule": "VIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "vip-subscription-annual-expired",
+      "type": "VIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已过期",
+      "name": "VIP · 连续包年 · 已过期",
+      "rule": "VIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-subscription-annual-renewing",
+    "name": "SVIP · 连续包年 · 续费中",
+    "stateNote": {
+      "rule": "SVIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-subscription-annual-renewing",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "续费中",
+      "name": "SVIP · 连续包年 · 续费中",
+      "rule": "SVIP 用户购买连续包年商品，当前自动续费已开启。会员卡展示下次扣款日期，按钮为“管理续费”。主按钮“终身权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-subscription-annual-canceled",
+    "name": "SVIP · 已取消续费",
+    "stateNote": {
+      "rule": "SVIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-subscription-annual-canceled",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已取消",
+      "name": "SVIP · 已取消续费",
+      "rule": "SVIP 用户已取消连续包年自动续费，但当前会员权益仍在有效期内。会员卡展示权益到期日，按钮为“重新开通”。主按钮“恢复续费”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "svip-subscription-annual-expired",
+    "name": "SVIP · 连续包年 · 已过期",
+    "stateNote": {
+      "rule": "SVIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    },
+    "prototype": {
+      "id": "svip-subscription-annual-expired",
+      "type": "SVIP",
+      "card": "订阅卡",
+      "product": "连续包年",
+      "status": "已过期",
+      "name": "SVIP · 连续包年 · 已过期",
+      "rule": "SVIP 连续包年权益已过期，不再展示下次扣款信息，并提供重新开通入口。主按钮“恢复权益”点击后直接进入付费页，并自动选中对应商品，不展示中间弹窗。"
+    }
+  },
+  {
+    "id": "multi-active",
+    "name": "双会员 · 同时生效",
+    "stateNote": {
+      "rule": "用户同时拥有 VIP 连续包月和 SVIP 单次卡。页面汇总展示当前最高权益 SVIP，并列出两个仍在生效的会员商品；每个商品的到期时间、扣费状态和管理入口独立展示，不能互相覆盖。"
+    },
+    "prototype": {
+      "id": "multi-active",
+      "type": "SVIP",
+      "card": "双会员",
+      "product": "2个会员同时生效",
+      "status": "生效中",
+      "name": "双会员 · 同时生效",
+      "multiple": true,
+      "rule": "用户同时拥有 VIP 连续包月和 SVIP 单次卡。页面汇总展示当前最高权益 SVIP，并列出两个仍在生效的会员商品；每个商品的到期时间、扣费状态和管理入口独立展示，不能互相覆盖。"
+    }
+  }
+]

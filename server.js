@@ -94,7 +94,7 @@ const server = http.createServer(async (req, res) => {
   fs.readFile(filePath, (error, content) => {
     if (error) return send(res, error.code === 'ENOENT' ? 404 : 500, { error: error.message });
     const ext = path.extname(filePath);
-    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png' };
+    const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.css': 'text/css; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg' };
     send(res, 200, content, types[ext] || 'application/octet-stream');
   });
 });

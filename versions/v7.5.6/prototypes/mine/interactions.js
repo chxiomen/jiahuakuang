@@ -3,6 +3,7 @@ function mineRenewalState(info){return info.status==='续费中'?'active':info.s
 function openMineRenewal(){
   const info=mineStateInfo();
   if(info.type==='Free')return openAction('join');
+  rememberPageOrigin('renewal');
   state.pageId='renewal';
   const selectedMultipleMember=info.id==='multi-active'&&state.renewalMember==='svip-single';
   state.stateId=info.id==='multi-active'?'active':mineRenewalState(info);
@@ -18,6 +19,7 @@ function openMinePayment(){
   const info=mineStateInfo();
   const isUpgrade=info.status==='续费中';
   const isSingle=info.card==='单次卡';
+  rememberPageOrigin('payment');
   state.pageId='payment';
   state.stateId='default';
   state.paymentTab=isUpgrade||info.type==='SVIP'?'svip':'vip';

@@ -121,56 +121,6 @@ function revisionItemStatus(item, source = savedRequirements) {
 function membershipRevisionApplied() {
   return Boolean(savedRequirements[revisionIosKey]);
 }
-const paymentHtmlBeforeRevision = paymentHtml;
-paymentHtml = function () {
-  if (!membershipRevisionApplied()) return paymentHtmlBeforeRevision();
-  const renewing = state.pageId === 'payment' && state.paymentCardType === 'subscription' && state.paymentSubscriptionState === 'renewing' && state.paymentMemberType !== 'free';
-  const iosCanceled = state.pageId === 'payment' && state.paymentCardType === 'subscription' && state.paymentSubscriptionState === 'canceled' && state.paymentMemberType !== 'free' && state.subscriptionPlatform === 'ios';
-  if (!renewing && !iosCanceled) return paymentHtmlBeforeRevision();
-  const originalStateId = state.stateId;
-  state.stateId = 'default';
-  const raw = paymentHtmlBeforeRevision();
-  state.stateId = originalStateId;
-  const root = document.createElement('div');
-  root.innerHTML = raw;
-  const screen = root.querySelector('.payment');
-  const list = screen.querySelector('.pay-plan-list');
-  const buy = screen.querySelector('.pay-buy');
-  const available = plan => {
-    const recurring = plan === 'annual' || plan === 'monthly';
-    if (iosCanceled) return !recurring;
-    if (state.paymentTab === 'credit') return true;
-    if (state.paymentMemberType === 'svip') return !recurring;
-    if (state.paymentTab === 'vip') return !recurring;
-    return state.subscriptionPlatform !== 'ios' || !recurring;
-  };
-  if (list) {
-    list.querySelectorAll('[data-payment-plan]').forEach(plan => {
-      if (!available(plan.dataset.paymentPlan)) {
-        plan.disabled = true;
-        plan.classList.add('revision-plan-disabled');
-      }
-    });
-    if (!available(state.paymentPlan)) {
-      const first = list.querySelector('[data-payment-plan]:not([disabled])');
-      if (first) {
-        state.paymentPlan = first.dataset.paymentPlan;
-        list.querySelectorAll('[data-payment-plan]').forEach(plan => plan.classList.toggle('on', plan === first));
-        const price = first.querySelector('.plan-price b')?.textContent;
-        if (price) buy.textContent = `微信支付${price}元`;
-      }
-    }
-  }
-  const notice = document.createElement('p');
-  notice.className = 'revision-phone-note';
-  if (iosCanceled) notice.textContent = '当前订阅周期结束后可重新开通（2026年10月21日）；单次卡和永久卡可照常购买';
-  else if (state.subscriptionPlatform === 'ios' && ((state.paymentTab === state.paymentMemberType && ['life','year12','month3','month1'].includes(state.paymentPlan)) || (state.paymentMemberType === 'vip' && state.paymentTab === 'svip' && state.paymentPlan === 'life'))) notice.textContent = '购买后自动续费将关闭，已付天数保留';
-  else if (state.subscriptionPlatform === 'ios' && state.paymentMemberType === 'vip' && state.paymentTab === 'svip' && ['annual','monthly'].includes(state.paymentPlan)) notice.textContent = '升级后 VIP 连续包月将自动关闭';
-  else if (state.subscriptionPlatform === 'ios' && state.paymentMemberType === 'svip' && state.paymentTab === 'vip') notice.textContent = 'SVIP 到期后生效';
-  if (notice.textContent && buy) buy.before(notice);
-  if (iosCanceled && list) list.insertAdjacentHTML('afterend', '<p class="revision-disabled-copy">连续包月、连续包年当期内暂不可重新签约</p>');
-  return screen.outerHTML;
-};
 const renderToolsBeforeRevision = renderTools;
 renderTools = function () {
   renderToolsBeforeRevision();
